@@ -1,13 +1,13 @@
 {
   "records": [
     {
-      "CreatedDate": "2026-07-06T06:00:00.000+0000",
+      "CreatedDate": "2026-07-01T06:00:00.000+0000",
       "Id": "a0j71905B1A95DF4B0",
-      "LastModifiedDate": "2026-07-06T06:00:00.000+0000",
+      "LastModifiedDate": "2026-07-01T06:00:00.000+0000",
       "Name": "BO-3004",
-      "bos__Carrier_Rate__c": 1350,
-      "bos__Carrier__c": "001F20F3DAA4B0297A",
-      "bos__Customer_Rate__c": 1630,
+      "bos__Carrier_Rate__c": null,
+      "bos__Carrier__c": null,
+      "bos__Customer_Rate__c": null,
       "bos__Customer__c": "0014DD806107C8FF73",
       "bos__Distance_Miles__c": 242.1,
       "bos__Equipment_Type__c": "Reefer",
@@ -19,7 +19,7 @@
           "bos__Weight__c": 24000
         }
       ],
-      "bos__Load_Status__c": "Paid",
+      "bos__Load_Status__c": "Quotes Requested",
       "bos__Stops__r": [
         {
           "bos__Arrival_Time__c": null,
@@ -74,12 +74,7 @@
       "bos__Postal_Code__c": "77478",
       "bos__State__c": "TX",
       "type": "Location"
-    },
-    "001F20F3DAA4B0297A": {
-      "Name": "Port City Transport",
-      "record_type": "Carrier",
-      "type": "Account"
     }
   },
-  "synced_at": "2026-07-06T06:00:00.000+0000"
+  "synced_at": "2026-07-01T06:00:00.000+0000"
 }

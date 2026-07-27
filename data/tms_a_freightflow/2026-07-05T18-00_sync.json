@@ -2,46 +2,46 @@
   "loads": [
     {
       "carrier": {
-        "carrierMasterId": 857186,
-        "dotNumber": "3900202",
-        "mcNumber": "1350202",
-        "name": "Cedar Express",
+        "carrierMasterId": 357057,
+        "dotNumber": "3900205",
+        "mcNumber": "1350205",
+        "name": "Heritage Trucking",
         "phoneNumber": "+12145550101"
       },
-      "createdDate": "2026-07-06T01:00:00-05:00",
+      "createdDate": "2026-07-05T13:00:00-05:00",
       "customer": {
-        "customerId": 493634,
-        "name": "Lone Star Beverages"
+        "customerId": 149401,
+        "name": "Prairie Foods"
       },
       "equipment": "53 ft Van | Dry",
-      "lastModifiedDate": "2026-07-06T01:00:00-05:00",
+      "lastModifiedDate": "2026-07-05T13:00:00-05:00",
       "mileage": 242.1,
-      "shipmentId": 135569,
-      "status": "Delivered",
+      "shipmentId": 393490,
+      "status": "En Route",
       "stops": [
+        {
+          "actualDepartureDateTime": null,
+          "city": "HOUSTON",
+          "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
+          "state": "TX",
+          "stopType": "First Pickup",
+          "zipCode": "77002"
+        },
         {
           "actualDepartureDateTime": null,
           "city": "GRAND PRAIRIE",
           "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
           "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
           "state": "TX",
-          "stopType": "First Pickup",
-          "zipCode": "75050"
-        },
-        {
-          "actualDepartureDateTime": null,
-          "city": "KATY",
-          "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
-          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
-          "state": "TX",
           "stopType": "Last Drop",
-          "zipCode": "77449"
+          "zipCode": "75050"
         }
       ],
-      "totalBuy": 1200,
-      "totalSell": 1480,
+      "totalBuy": 1175,
+      "totalSell": 1455,
       "weightTotal": 24000
     }
   ],
-  "syncedAt": "2026-07-06T01:00:00-05:00"
+  "syncedAt": "2026-07-05T13:00:00-05:00"
 }

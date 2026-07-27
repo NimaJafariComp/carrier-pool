@@ -2,46 +2,46 @@
   "loads": [
     {
       "carrier": {
-        "carrierMasterId": 857186,
-        "dotNumber": "3900202",
-        "mcNumber": "1350202",
-        "name": "Cedar Express",
+        "carrierMasterId": 250037,
+        "dotNumber": "3900203",
+        "mcNumber": "1350203",
+        "name": "Texas General",
         "phoneNumber": "+12145550101"
       },
-      "createdDate": "2026-07-06T01:00:00-05:00",
+      "createdDate": "2026-07-07T13:00:00-05:00",
       "customer": {
-        "customerId": 493634,
-        "name": "Lone Star Beverages"
+        "customerId": 907640,
+        "name": "Metro Retail"
       },
-      "equipment": "53 ft Van | Dry",
-      "lastModifiedDate": "2026-07-06T01:00:00-05:00",
+      "equipment": "53 ft Van | Reefer",
+      "lastModifiedDate": "2026-07-07T13:00:00-05:00",
       "mileage": 242.1,
-      "shipmentId": 135569,
-      "status": "Delivered",
+      "shipmentId": 351331,
+      "status": "Completed",
       "stops": [
         {
           "actualDepartureDateTime": null,
-          "city": "GRAND PRAIRIE",
+          "city": "HOUSTON",
           "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
           "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
           "state": "TX",
           "stopType": "First Pickup",
-          "zipCode": "75050"
+          "zipCode": "77002"
         },
         {
           "actualDepartureDateTime": null,
-          "city": "KATY",
+          "city": "SAN ANTONIO",
           "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
           "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
           "state": "TX",
           "stopType": "Last Drop",
-          "zipCode": "77449"
+          "zipCode": "78205"
         }
       ],
-      "totalBuy": 1200,
-      "totalSell": 1480,
+      "totalBuy": 1225,
+      "totalSell": 1505,
       "weightTotal": 24000
     }
   ],
-  "syncedAt": "2026-07-06T01:00:00-05:00"
+  "syncedAt": "2026-07-07T13:00:00-05:00"
 }

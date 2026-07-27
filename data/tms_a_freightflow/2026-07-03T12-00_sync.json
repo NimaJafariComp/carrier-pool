@@ -2,22 +2,22 @@
   "loads": [
     {
       "carrier": {
-        "carrierMasterId": 857186,
-        "dotNumber": "3900202",
-        "mcNumber": "1350202",
-        "name": "Cedar Express",
+        "carrierMasterId": 169083,
+        "dotNumber": "3900201",
+        "mcNumber": "1350201",
+        "name": "Lone Star Van",
         "phoneNumber": "+12145550101"
       },
-      "createdDate": "2026-07-06T01:00:00-05:00",
+      "createdDate": "2026-07-03T07:00:00-05:00",
       "customer": {
         "customerId": 493634,
         "name": "Lone Star Beverages"
       },
       "equipment": "53 ft Van | Dry",
-      "lastModifiedDate": "2026-07-06T01:00:00-05:00",
+      "lastModifiedDate": "2026-07-03T07:00:00-05:00",
       "mileage": 242.1,
-      "shipmentId": 135569,
-      "status": "Delivered",
+      "shipmentId": 352333,
+      "status": "Dispatched",
       "stops": [
         {
           "actualDepartureDateTime": null,
@@ -38,10 +38,10 @@
           "zipCode": "77449"
         }
       ],
-      "totalBuy": 1200,
-      "totalSell": 1480,
+      "totalBuy": 1150,
+      "totalSell": 1430,
       "weightTotal": 24000
     }
   ],
-  "syncedAt": "2026-07-06T01:00:00-05:00"
+  "syncedAt": "2026-07-03T07:00:00-05:00"
 }

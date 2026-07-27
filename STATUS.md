@@ -74,9 +74,46 @@ acceptance evidence has not yet been recorded.
 - Contract tests normalize every supplied comment-stripped schema example as a
   file through its source adapter.
 
-## Phases 6–16 — Not started
+## Phase 6 — Deterministic data generator — Tasks 6.1–6.7 complete
 
-- Phase 6: deterministic scenario data generator.
+- `docs/DATA_SCENARIOS.md` defines the three-tenant catalog, 26 required
+  scenarios, exact lifecycle/correction events, Day 11 target cases, and later
+  verification names.
+- `docs/architecture/data-generator.md` defines the generator boundary,
+  lifecycle reducer, scheduler, serializers, derived manifest, and validator.
+- Typed generator catalog models and deterministic lifecycle reducer support
+  replacement totals, append-only financial entries, multi-stop routes,
+  equipment/ZIP corrections, and Day 11 active targets.
+- Focused tests cover lifecycle sequencing including status regression, correction
+  application, append-only ledger entries, Day 11 target protection, and seeded
+  determinism.
+- Hand-authored catalog factory provides three source-bound tenants, 15 Texas
+  Triangle locations, nine customers, and eight carriers per tenant. Every
+  carrier has stable MC/DOT values; one authority is intentionally shared across
+  two tenant-local carrier records. Profiles cover rich/thin lanes, low/high
+  history, broad equipment, and recent/stale delivery evidence.
+- Validation tests cover catalog determinism, uniqueness, tenant/reference
+  integrity, repeated authority isolation, and all three Day 11 targets.
+- Pure FreightFlow, HaulDesk, and BrokerOS serializers emit plain JSON matching
+  source vocabulary, IDs, units, timestamp formats, replacement/ledger semantics,
+  and BrokerOS required references. Serializer contracts round-trip through the
+  existing adapters and structurally match supplied JSONC examples.
+- Deterministic scheduler and safe writer create 120 historical files (four slots
+  per day for ten days across all sources) plus three Day 11 active-load files.
+  `carrier-pool generate` and `make generate` write only known plain-JSON paths,
+  preserve JSONC schema examples, and rerun byte-for-byte identically.
+- `data/scenarios.json` is deterministically derived from canonical typed scenario
+  definitions and schedule paths. It contains all 26 required scenario IDs,
+  tenant/source bindings, valid entity IDs, source files, descriptions, expected
+  effects, verification tests, and expected warnings.
+- `carrier-pool validate-data` and `make validate` validate the complete generated
+  schedule, strict plain-JSON/source schemas, references, identities, timestamps,
+  units, ZIP catalog coverage, lifecycle/money timing, Day 11 protection, required
+  scenario coverage, and declared normalization warnings. Focused negative tests
+  reject missing schedule files, broken BrokerOS references, and undeclared warnings.
+
+## Phases 7–16 — Not started
+
 - Phase 7: complete chronological ingestion/rebuild logic.
 - Phase 8: geography and comparable-lane retrieval.
 - Phase 9: rate estimation and leakage-free backtesting.
@@ -90,7 +127,7 @@ acceptance evidence has not yet been recorded.
 
 ## Latest verification — 2026-07-27
 
-- Backend suite with PostgreSQL: `110 passed`.
+- Backend suite with PostgreSQL: `132 passed`.
 - PostgreSQL integration target: `7 passed` (temporal persistence, direct-SQL
   RLS, FreightFlow replacement/idempotency, HaulDesk ledger, BrokerOS restatement).
 - Ruff: pass. Pyright: `0 errors, 0 warnings, 0 informations`.

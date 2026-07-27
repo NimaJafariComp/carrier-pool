@@ -1,0 +1,1156 @@
+{
+  "scenario_ids": [
+    "SC-01",
+    "SC-02",
+    "SC-03",
+    "SC-04",
+    "SC-05",
+    "SC-06",
+    "SC-07",
+    "SC-08",
+    "SC-09",
+    "SC-10",
+    "SC-11",
+    "SC-12",
+    "SC-13",
+    "SC-14",
+    "SC-15",
+    "SC-16",
+    "SC-17",
+    "SC-18",
+    "SC-19",
+    "SC-20",
+    "SC-21",
+    "SC-22",
+    "SC-23",
+    "SC-24",
+    "SC-25",
+    "SC-26"
+  ],
+  "scenarios": [
+    {
+      "description": "FreightFlow full lifecycle.",
+      "entity_ids": {
+        "carrier_ids": [
+          "FF-C-201"
+        ],
+        "customer_ids": [
+          "FF-CUST-101"
+        ],
+        "load_ids": [
+          "FF-1101"
+        ]
+      },
+      "expected_effect": "Completed exact-lane history.",
+      "expected_warnings": [],
+      "scenario_id": "SC-01",
+      "source_files": [
+        "tms_a_freightflow/2026-07-01T00-00_sync.json",
+        "tms_a_freightflow/2026-07-02T06-00_sync.json",
+        "tms_a_freightflow/2026-07-03T12-00_sync.json",
+        "tms_a_freightflow/2026-07-04T18-00_sync.json",
+        "tms_a_freightflow/2026-07-06T00-00_sync.json",
+        "tms_a_freightflow/2026-07-07T06-00_sync.json",
+        "tms_a_freightflow/2026-07-08T12-00_sync.json",
+        "tms_a_freightflow/2026-07-09T18-00_sync.json"
+      ],
+      "source_systems": [
+        "FREIGHTFLOW"
+      ],
+      "tenant_ids": [
+        "ff-broker"
+      ],
+      "verification_test": "test_sc01_freightflow_full_lifecycle"
+    },
+    {
+      "description": "HaulDesk full lifecycle.",
+      "entity_ids": {
+        "carrier_ids": [
+          "HD-C-401"
+        ],
+        "customer_ids": [
+          "HD-CUST-302"
+        ],
+        "load_ids": [
+          "HD-2101"
+        ]
+      },
+      "expected_effect": "Ledger-backed completed load.",
+      "expected_warnings": [],
+      "scenario_id": "SC-02",
+      "source_files": [
+        "tms_b_hauldesk/2026-07-01T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-01T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-01T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-01T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T18-00_sync.json"
+      ],
+      "source_systems": [
+        "HAULDESK"
+      ],
+      "tenant_ids": [
+        "hd-broker"
+      ],
+      "verification_test": "test_sc02_hauldesk_full_lifecycle"
+    },
+    {
+      "description": "BrokerOS full lifecycle.",
+      "entity_ids": {
+        "carrier_ids": [
+          "BO-C-601"
+        ],
+        "customer_ids": [
+          "BO-CUST-501"
+        ],
+        "load_ids": [
+          "BO-3101"
+        ]
+      },
+      "expected_effect": "Directional reefer evidence.",
+      "expected_warnings": [],
+      "scenario_id": "SC-03",
+      "source_files": [
+        "tms_c_brokeros/2026-07-01T00-00_sync.json",
+        "tms_c_brokeros/2026-07-01T12-00_sync.json",
+        "tms_c_brokeros/2026-07-02T00-00_sync.json",
+        "tms_c_brokeros/2026-07-02T12-00_sync.json",
+        "tms_c_brokeros/2026-07-03T00-00_sync.json",
+        "tms_c_brokeros/2026-07-03T12-00_sync.json",
+        "tms_c_brokeros/2026-07-04T00-00_sync.json",
+        "tms_c_brokeros/2026-07-04T12-00_sync.json",
+        "tms_c_brokeros/2026-07-05T00-00_sync.json",
+        "tms_c_brokeros/2026-07-05T12-00_sync.json",
+        "tms_c_brokeros/2026-07-06T00-00_sync.json",
+        "tms_c_brokeros/2026-07-06T12-00_sync.json",
+        "tms_c_brokeros/2026-07-07T00-00_sync.json",
+        "tms_c_brokeros/2026-07-07T12-00_sync.json",
+        "tms_c_brokeros/2026-07-08T00-00_sync.json",
+        "tms_c_brokeros/2026-07-08T12-00_sync.json",
+        "tms_c_brokeros/2026-07-09T00-00_sync.json",
+        "tms_c_brokeros/2026-07-09T12-00_sync.json",
+        "tms_c_brokeros/2026-07-10T00-00_sync.json",
+        "tms_c_brokeros/2026-07-10T12-00_sync.json"
+      ],
+      "source_systems": [
+        "BROKEROS"
+      ],
+      "tenant_ids": [
+        "bo-broker"
+      ],
+      "verification_test": "test_sc03_brokeros_full_lifecycle"
+    },
+    {
+      "description": "Booking-time carrier pay.",
+      "entity_ids": {
+        "carrier_ids": [
+          "FF-C-207"
+        ],
+        "customer_ids": [
+          "FF-CUST-101"
+        ],
+        "load_ids": [
+          "FF-1201"
+        ]
+      },
+      "expected_effect": "Pay appears only after booking.",
+      "expected_warnings": [],
+      "scenario_id": "SC-04",
+      "source_files": [
+        "tms_a_freightflow/2026-07-01T06-00_sync.json",
+        "tms_a_freightflow/2026-07-02T12-00_sync.json",
+        "tms_a_freightflow/2026-07-03T18-00_sync.json",
+        "tms_a_freightflow/2026-07-05T00-00_sync.json",
+        "tms_a_freightflow/2026-07-06T06-00_sync.json",
+        "tms_a_freightflow/2026-07-07T12-00_sync.json",
+        "tms_a_freightflow/2026-07-08T18-00_sync.json",
+        "tms_a_freightflow/2026-07-10T00-00_sync.json"
+      ],
+      "source_systems": [
+        "FREIGHTFLOW"
+      ],
+      "tenant_ids": [
+        "ff-broker"
+      ],
+      "verification_test": "test_sc04_carrier_rate_appears_at_booking"
+    },
+    {
+      "description": "Final amount correction.",
+      "entity_ids": {
+        "carrier_ids": [],
+        "customer_ids": [
+          "FF-CUST-101"
+        ],
+        "load_ids": [
+          "FF-1101"
+        ]
+      },
+      "expected_effect": "Later as-of sees final pay.",
+      "expected_warnings": [],
+      "scenario_id": "SC-05",
+      "source_files": [
+        "tms_a_freightflow/2026-07-01T00-00_sync.json",
+        "tms_a_freightflow/2026-07-02T06-00_sync.json",
+        "tms_a_freightflow/2026-07-03T12-00_sync.json",
+        "tms_a_freightflow/2026-07-04T18-00_sync.json",
+        "tms_a_freightflow/2026-07-06T00-00_sync.json",
+        "tms_a_freightflow/2026-07-07T06-00_sync.json",
+        "tms_a_freightflow/2026-07-08T12-00_sync.json",
+        "tms_a_freightflow/2026-07-09T18-00_sync.json"
+      ],
+      "source_systems": [
+        "FREIGHTFLOW"
+      ],
+      "tenant_ids": [
+        "ff-broker"
+      ],
+      "verification_test": "test_sc05_final_amount_changes_after_delivery"
+    },
+    {
+      "description": "Customer-rate correction.",
+      "entity_ids": {
+        "carrier_ids": [
+          "FF-C-208"
+        ],
+        "customer_ids": [
+          "FF-CUST-102"
+        ],
+        "load_ids": [
+          "FF-1301"
+        ]
+      },
+      "expected_effect": "Corrected sell total preserves history.",
+      "expected_warnings": [],
+      "scenario_id": "SC-06",
+      "source_files": [
+        "tms_a_freightflow/2026-07-01T12-00_sync.json",
+        "tms_a_freightflow/2026-07-02T18-00_sync.json",
+        "tms_a_freightflow/2026-07-04T00-00_sync.json",
+        "tms_a_freightflow/2026-07-05T06-00_sync.json",
+        "tms_a_freightflow/2026-07-06T12-00_sync.json",
+        "tms_a_freightflow/2026-07-07T18-00_sync.json",
+        "tms_a_freightflow/2026-07-09T00-00_sync.json",
+        "tms_a_freightflow/2026-07-10T06-00_sync.json"
+      ],
+      "source_systems": [
+        "FREIGHTFLOW"
+      ],
+      "tenant_ids": [
+        "ff-broker"
+      ],
+      "verification_test": "test_sc06_customer_rate_correction_preserves_history"
+    },
+    {
+      "description": "Pickup ZIP correction.",
+      "entity_ids": {
+        "carrier_ids": [
+          "FF-C-201"
+        ],
+        "customer_ids": [
+          "FF-CUST-101"
+        ],
+        "load_ids": [
+          "FF-1101"
+        ]
+      },
+      "expected_effect": "Later evidence uses corrected lane.",
+      "expected_warnings": [],
+      "scenario_id": "SC-07",
+      "source_files": [
+        "tms_a_freightflow/2026-07-01T00-00_sync.json",
+        "tms_a_freightflow/2026-07-02T06-00_sync.json",
+        "tms_a_freightflow/2026-07-03T12-00_sync.json",
+        "tms_a_freightflow/2026-07-04T18-00_sync.json",
+        "tms_a_freightflow/2026-07-06T00-00_sync.json",
+        "tms_a_freightflow/2026-07-07T06-00_sync.json",
+        "tms_a_freightflow/2026-07-08T12-00_sync.json",
+        "tms_a_freightflow/2026-07-09T18-00_sync.json"
+      ],
+      "source_systems": [
+        "FREIGHTFLOW"
+      ],
+      "tenant_ids": [
+        "ff-broker"
+      ],
+      "verification_test": "test_sc07_pickup_zip_correction_changes_lane_evidence"
+    },
+    {
+      "description": "Equipment correction.",
+      "entity_ids": {
+        "carrier_ids": [
+          "BO-C-606"
+        ],
+        "customer_ids": [
+          "BO-CUST-501"
+        ],
+        "load_ids": [
+          "BO-3101"
+        ]
+      },
+      "expected_effect": "Unknown equipment remains historical fact.",
+      "expected_warnings": [],
+      "scenario_id": "SC-08",
+      "source_files": [
+        "tms_c_brokeros/2026-07-01T00-00_sync.json",
+        "tms_c_brokeros/2026-07-01T12-00_sync.json",
+        "tms_c_brokeros/2026-07-02T00-00_sync.json",
+        "tms_c_brokeros/2026-07-02T12-00_sync.json",
+        "tms_c_brokeros/2026-07-03T00-00_sync.json",
+        "tms_c_brokeros/2026-07-03T12-00_sync.json",
+        "tms_c_brokeros/2026-07-04T00-00_sync.json",
+        "tms_c_brokeros/2026-07-04T12-00_sync.json",
+        "tms_c_brokeros/2026-07-05T00-00_sync.json",
+        "tms_c_brokeros/2026-07-05T12-00_sync.json",
+        "tms_c_brokeros/2026-07-06T00-00_sync.json",
+        "tms_c_brokeros/2026-07-06T12-00_sync.json",
+        "tms_c_brokeros/2026-07-07T00-00_sync.json",
+        "tms_c_brokeros/2026-07-07T12-00_sync.json",
+        "tms_c_brokeros/2026-07-08T00-00_sync.json",
+        "tms_c_brokeros/2026-07-08T12-00_sync.json",
+        "tms_c_brokeros/2026-07-09T00-00_sync.json",
+        "tms_c_brokeros/2026-07-09T12-00_sync.json",
+        "tms_c_brokeros/2026-07-10T00-00_sync.json",
+        "tms_c_brokeros/2026-07-10T12-00_sync.json"
+      ],
+      "source_systems": [
+        "BROKEROS"
+      ],
+      "tenant_ids": [
+        "bo-broker"
+      ],
+      "verification_test": "test_sc08_equipment_correction_preserves_unknown_history"
+    },
+    {
+      "description": "HaulDesk fuel surcharge.",
+      "entity_ids": {
+        "carrier_ids": [
+          "HD-C-402"
+        ],
+        "customer_ids": [
+          "HD-CUST-302"
+        ],
+        "load_ids": [
+          "HD-2101"
+        ]
+      },
+      "expected_effect": "Pay increases exactly once.",
+      "expected_warnings": [],
+      "scenario_id": "SC-09",
+      "source_files": [
+        "tms_b_hauldesk/2026-07-01T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-01T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-01T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-01T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T18-00_sync.json"
+      ],
+      "source_systems": [
+        "HAULDESK"
+      ],
+      "tenant_ids": [
+        "hd-broker"
+      ],
+      "verification_test": "test_sc09_hauldesk_fuel_surcharge_applies_once"
+    },
+    {
+      "description": "HaulDesk negative adjustment.",
+      "entity_ids": {
+        "carrier_ids": [
+          "HD-C-402"
+        ],
+        "customer_ids": [
+          "HD-CUST-302"
+        ],
+        "load_ids": [
+          "HD-2101"
+        ]
+      },
+      "expected_effect": "Pay falls exactly once.",
+      "expected_warnings": [],
+      "scenario_id": "SC-10",
+      "source_files": [
+        "tms_b_hauldesk/2026-07-01T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-01T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-01T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-01T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T18-00_sync.json"
+      ],
+      "source_systems": [
+        "HAULDESK"
+      ],
+      "tenant_ids": [
+        "hd-broker"
+      ],
+      "verification_test": "test_sc10_hauldesk_negative_adjustment_applies_once"
+    },
+    {
+      "description": "BrokerOS carrier-rate restatement.",
+      "entity_ids": {
+        "carrier_ids": [
+          "BO-C-602"
+        ],
+        "customer_ids": [
+          "BO-CUST-501"
+        ],
+        "load_ids": [
+          "BO-3101"
+        ]
+      },
+      "expected_effect": "Latest replacement rate wins.",
+      "expected_warnings": [],
+      "scenario_id": "SC-11",
+      "source_files": [
+        "tms_c_brokeros/2026-07-01T00-00_sync.json",
+        "tms_c_brokeros/2026-07-01T12-00_sync.json",
+        "tms_c_brokeros/2026-07-02T00-00_sync.json",
+        "tms_c_brokeros/2026-07-02T12-00_sync.json",
+        "tms_c_brokeros/2026-07-03T00-00_sync.json",
+        "tms_c_brokeros/2026-07-03T12-00_sync.json",
+        "tms_c_brokeros/2026-07-04T00-00_sync.json",
+        "tms_c_brokeros/2026-07-04T12-00_sync.json",
+        "tms_c_brokeros/2026-07-05T00-00_sync.json",
+        "tms_c_brokeros/2026-07-05T12-00_sync.json",
+        "tms_c_brokeros/2026-07-06T00-00_sync.json",
+        "tms_c_brokeros/2026-07-06T12-00_sync.json",
+        "tms_c_brokeros/2026-07-07T00-00_sync.json",
+        "tms_c_brokeros/2026-07-07T12-00_sync.json",
+        "tms_c_brokeros/2026-07-08T00-00_sync.json",
+        "tms_c_brokeros/2026-07-08T12-00_sync.json",
+        "tms_c_brokeros/2026-07-09T00-00_sync.json",
+        "tms_c_brokeros/2026-07-09T12-00_sync.json",
+        "tms_c_brokeros/2026-07-10T00-00_sync.json",
+        "tms_c_brokeros/2026-07-10T12-00_sync.json"
+      ],
+      "source_systems": [
+        "BROKEROS"
+      ],
+      "tenant_ids": [
+        "bo-broker"
+      ],
+      "verification_test": "test_sc11_brokeros_rate_restatement"
+    },
+    {
+      "description": "Rich DFW to Houston history.",
+      "entity_ids": {
+        "carrier_ids": [
+          "FF-C-201"
+        ],
+        "customer_ids": [
+          "FF-CUST-101"
+        ],
+        "load_ids": [
+          "FF-1101"
+        ]
+      },
+      "expected_effect": "Private exact-lane evidence.",
+      "expected_warnings": [],
+      "scenario_id": "SC-12",
+      "source_files": [
+        "tms_a_freightflow/2026-07-01T00-00_sync.json",
+        "tms_a_freightflow/2026-07-02T06-00_sync.json",
+        "tms_a_freightflow/2026-07-03T12-00_sync.json",
+        "tms_a_freightflow/2026-07-04T18-00_sync.json",
+        "tms_a_freightflow/2026-07-06T00-00_sync.json",
+        "tms_a_freightflow/2026-07-07T06-00_sync.json",
+        "tms_a_freightflow/2026-07-08T12-00_sync.json",
+        "tms_a_freightflow/2026-07-09T18-00_sync.json"
+      ],
+      "source_systems": [
+        "FREIGHTFLOW"
+      ],
+      "tenant_ids": [
+        "ff-broker"
+      ],
+      "verification_test": "test_sc12_rich_dfw_hou_history"
+    },
+    {
+      "description": "Rich Houston to San Antonio reefer history.",
+      "entity_ids": {
+        "carrier_ids": [
+          "BO-C-601"
+        ],
+        "customer_ids": [
+          "BO-CUST-501"
+        ],
+        "load_ids": [
+          "BO-3101"
+        ]
+      },
+      "expected_effect": "Neighbor-lane evidence.",
+      "expected_warnings": [],
+      "scenario_id": "SC-13",
+      "source_files": [
+        "tms_c_brokeros/2026-07-01T00-00_sync.json",
+        "tms_c_brokeros/2026-07-01T12-00_sync.json",
+        "tms_c_brokeros/2026-07-02T00-00_sync.json",
+        "tms_c_brokeros/2026-07-02T12-00_sync.json",
+        "tms_c_brokeros/2026-07-03T00-00_sync.json",
+        "tms_c_brokeros/2026-07-03T12-00_sync.json",
+        "tms_c_brokeros/2026-07-04T00-00_sync.json",
+        "tms_c_brokeros/2026-07-04T12-00_sync.json",
+        "tms_c_brokeros/2026-07-05T00-00_sync.json",
+        "tms_c_brokeros/2026-07-05T12-00_sync.json",
+        "tms_c_brokeros/2026-07-06T00-00_sync.json",
+        "tms_c_brokeros/2026-07-06T12-00_sync.json",
+        "tms_c_brokeros/2026-07-07T00-00_sync.json",
+        "tms_c_brokeros/2026-07-07T12-00_sync.json",
+        "tms_c_brokeros/2026-07-08T00-00_sync.json",
+        "tms_c_brokeros/2026-07-08T12-00_sync.json",
+        "tms_c_brokeros/2026-07-09T00-00_sync.json",
+        "tms_c_brokeros/2026-07-09T12-00_sync.json",
+        "tms_c_brokeros/2026-07-10T00-00_sync.json",
+        "tms_c_brokeros/2026-07-10T12-00_sync.json"
+      ],
+      "source_systems": [
+        "BROKEROS"
+      ],
+      "tenant_ids": [
+        "bo-broker"
+      ],
+      "verification_test": "test_sc13_rich_hou_sat_reefer_history"
+    },
+    {
+      "description": "Thin suburb lane.",
+      "entity_ids": {
+        "carrier_ids": [
+          "HD-C-404"
+        ],
+        "customer_ids": [
+          "HD-CUST-302"
+        ],
+        "load_ids": [
+          "HD-2101"
+        ]
+      },
+      "expected_effect": "Sparse fallback evidence.",
+      "expected_warnings": [],
+      "scenario_id": "SC-14",
+      "source_files": [
+        "tms_b_hauldesk/2026-07-01T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-01T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-01T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-01T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T18-00_sync.json"
+      ],
+      "source_systems": [
+        "HAULDESK"
+      ],
+      "tenant_ids": [
+        "hd-broker"
+      ],
+      "verification_test": "test_sc14_thin_suburb_lane"
+    },
+    {
+      "description": "Many similar-load carrier.",
+      "entity_ids": {
+        "carrier_ids": [
+          "FF-C-201"
+        ],
+        "customer_ids": [
+          "FF-CUST-101"
+        ],
+        "load_ids": [
+          "FF-1101"
+        ]
+      },
+      "expected_effect": "Strong historical-fit candidate.",
+      "expected_warnings": [],
+      "scenario_id": "SC-15",
+      "source_files": [
+        "tms_a_freightflow/2026-07-01T00-00_sync.json",
+        "tms_a_freightflow/2026-07-02T06-00_sync.json",
+        "tms_a_freightflow/2026-07-03T12-00_sync.json",
+        "tms_a_freightflow/2026-07-04T18-00_sync.json",
+        "tms_a_freightflow/2026-07-06T00-00_sync.json",
+        "tms_a_freightflow/2026-07-07T06-00_sync.json",
+        "tms_a_freightflow/2026-07-08T12-00_sync.json",
+        "tms_a_freightflow/2026-07-09T18-00_sync.json"
+      ],
+      "source_systems": [
+        "FREIGHTFLOW"
+      ],
+      "tenant_ids": [
+        "ff-broker"
+      ],
+      "verification_test": "test_sc15_many_similar_loads"
+    },
+    {
+      "description": "One highly similar carrier.",
+      "entity_ids": {
+        "carrier_ids": [
+          "FF-C-202"
+        ],
+        "customer_ids": [
+          "FF-CUST-101"
+        ],
+        "load_ids": [
+          "FF-1201"
+        ]
+      },
+      "expected_effect": "Evidence shrinks for low sample size.",
+      "expected_warnings": [],
+      "scenario_id": "SC-16",
+      "source_files": [
+        "tms_a_freightflow/2026-07-01T06-00_sync.json",
+        "tms_a_freightflow/2026-07-02T12-00_sync.json",
+        "tms_a_freightflow/2026-07-03T18-00_sync.json",
+        "tms_a_freightflow/2026-07-05T00-00_sync.json",
+        "tms_a_freightflow/2026-07-06T06-00_sync.json",
+        "tms_a_freightflow/2026-07-07T12-00_sync.json",
+        "tms_a_freightflow/2026-07-08T18-00_sync.json",
+        "tms_a_freightflow/2026-07-10T00-00_sync.json"
+      ],
+      "source_systems": [
+        "FREIGHTFLOW"
+      ],
+      "tenant_ids": [
+        "ff-broker"
+      ],
+      "verification_test": "test_sc16_one_similar_load_is_shrunk"
+    },
+    {
+      "description": "Broad equipment, poor lane fit.",
+      "entity_ids": {
+        "carrier_ids": [
+          "FF-C-203"
+        ],
+        "customer_ids": [
+          "FF-CUST-102"
+        ],
+        "load_ids": [
+          "FF-1301"
+        ]
+      },
+      "expected_effect": "Lane fit outweighs equipment breadth.",
+      "expected_warnings": [],
+      "scenario_id": "SC-17",
+      "source_files": [
+        "tms_a_freightflow/2026-07-01T12-00_sync.json",
+        "tms_a_freightflow/2026-07-02T18-00_sync.json",
+        "tms_a_freightflow/2026-07-04T00-00_sync.json",
+        "tms_a_freightflow/2026-07-05T06-00_sync.json",
+        "tms_a_freightflow/2026-07-06T12-00_sync.json",
+        "tms_a_freightflow/2026-07-07T18-00_sync.json",
+        "tms_a_freightflow/2026-07-09T00-00_sync.json",
+        "tms_a_freightflow/2026-07-10T06-00_sync.json"
+      ],
+      "source_systems": [
+        "FREIGHTFLOW"
+      ],
+      "tenant_ids": [
+        "ff-broker"
+      ],
+      "verification_test": "test_sc17_broad_equipment_poor_lane_fit"
+    },
+    {
+      "description": "Recent delivery evidence.",
+      "entity_ids": {
+        "carrier_ids": [
+          "FF-C-204"
+        ],
+        "customer_ids": [
+          "FF-CUST-103"
+        ],
+        "load_ids": [
+          "FF-1401"
+        ]
+      },
+      "expected_effect": "Recent location evidence helps Day 11.",
+      "expected_warnings": [],
+      "scenario_id": "SC-18",
+      "source_files": [
+        "tms_a_freightflow/2026-07-01T18-00_sync.json",
+        "tms_a_freightflow/2026-07-03T00-00_sync.json",
+        "tms_a_freightflow/2026-07-04T06-00_sync.json",
+        "tms_a_freightflow/2026-07-05T12-00_sync.json",
+        "tms_a_freightflow/2026-07-06T18-00_sync.json",
+        "tms_a_freightflow/2026-07-08T00-00_sync.json",
+        "tms_a_freightflow/2026-07-09T06-00_sync.json",
+        "tms_a_freightflow/2026-07-10T12-00_sync.json"
+      ],
+      "source_systems": [
+        "FREIGHTFLOW"
+      ],
+      "tenant_ids": [
+        "ff-broker"
+      ],
+      "verification_test": "test_sc18_recent_delivery_location_evidence"
+    },
+    {
+      "description": "Stale delivery evidence.",
+      "entity_ids": {
+        "carrier_ids": [
+          "FF-C-205"
+        ],
+        "customer_ids": [
+          "FF-CUST-103"
+        ],
+        "load_ids": [
+          "FF-1402"
+        ]
+      },
+      "expected_effect": "Old location evidence decays.",
+      "expected_warnings": [],
+      "scenario_id": "SC-19",
+      "source_files": [
+        "tms_a_freightflow/2026-07-02T00-00_sync.json",
+        "tms_a_freightflow/2026-07-03T06-00_sync.json",
+        "tms_a_freightflow/2026-07-04T12-00_sync.json",
+        "tms_a_freightflow/2026-07-05T18-00_sync.json",
+        "tms_a_freightflow/2026-07-07T00-00_sync.json",
+        "tms_a_freightflow/2026-07-08T06-00_sync.json",
+        "tms_a_freightflow/2026-07-09T12-00_sync.json",
+        "tms_a_freightflow/2026-07-10T18-00_sync.json"
+      ],
+      "source_systems": [
+        "FREIGHTFLOW"
+      ],
+      "tenant_ids": [
+        "ff-broker"
+      ],
+      "verification_test": "test_sc19_old_delivery_evidence_decays"
+    },
+    {
+      "description": "Ordered multi-stop BrokerOS load.",
+      "entity_ids": {
+        "carrier_ids": [
+          "BO-C-603"
+        ],
+        "customer_ids": [
+          "BO-CUST-501"
+        ],
+        "load_ids": [
+          "BO-3004"
+        ]
+      },
+      "expected_effect": "Stop order remains intact.",
+      "expected_warnings": [],
+      "scenario_id": "SC-20",
+      "source_files": [
+        "tms_c_brokeros/2026-07-01T06-00_sync.json",
+        "tms_c_brokeros/2026-07-01T18-00_sync.json",
+        "tms_c_brokeros/2026-07-02T06-00_sync.json",
+        "tms_c_brokeros/2026-07-02T18-00_sync.json",
+        "tms_c_brokeros/2026-07-03T06-00_sync.json",
+        "tms_c_brokeros/2026-07-03T18-00_sync.json",
+        "tms_c_brokeros/2026-07-04T06-00_sync.json",
+        "tms_c_brokeros/2026-07-04T18-00_sync.json",
+        "tms_c_brokeros/2026-07-05T06-00_sync.json",
+        "tms_c_brokeros/2026-07-05T18-00_sync.json",
+        "tms_c_brokeros/2026-07-06T06-00_sync.json",
+        "tms_c_brokeros/2026-07-06T18-00_sync.json",
+        "tms_c_brokeros/2026-07-07T06-00_sync.json",
+        "tms_c_brokeros/2026-07-07T18-00_sync.json",
+        "tms_c_brokeros/2026-07-08T06-00_sync.json",
+        "tms_c_brokeros/2026-07-08T18-00_sync.json",
+        "tms_c_brokeros/2026-07-09T06-00_sync.json",
+        "tms_c_brokeros/2026-07-09T18-00_sync.json",
+        "tms_c_brokeros/2026-07-10T06-00_sync.json",
+        "tms_c_brokeros/2026-07-10T18-00_sync.json"
+      ],
+      "source_systems": [
+        "BROKEROS"
+      ],
+      "tenant_ids": [
+        "bo-broker"
+      ],
+      "verification_test": "test_sc20_brokeros_multistop_order"
+    },
+    {
+      "description": "Unknown-equipment load.",
+      "entity_ids": {
+        "carrier_ids": [],
+        "customer_ids": [
+          "BO-CUST-501"
+        ],
+        "load_ids": [
+          "BO-3101"
+        ]
+      },
+      "expected_effect": "Unknown remains first class.",
+      "expected_warnings": [],
+      "scenario_id": "SC-21",
+      "source_files": [
+        "tms_c_brokeros/2026-07-01T00-00_sync.json",
+        "tms_c_brokeros/2026-07-01T12-00_sync.json",
+        "tms_c_brokeros/2026-07-02T00-00_sync.json",
+        "tms_c_brokeros/2026-07-02T12-00_sync.json",
+        "tms_c_brokeros/2026-07-03T00-00_sync.json",
+        "tms_c_brokeros/2026-07-03T12-00_sync.json",
+        "tms_c_brokeros/2026-07-04T00-00_sync.json",
+        "tms_c_brokeros/2026-07-04T12-00_sync.json",
+        "tms_c_brokeros/2026-07-05T00-00_sync.json",
+        "tms_c_brokeros/2026-07-05T12-00_sync.json",
+        "tms_c_brokeros/2026-07-06T00-00_sync.json",
+        "tms_c_brokeros/2026-07-06T12-00_sync.json",
+        "tms_c_brokeros/2026-07-07T00-00_sync.json",
+        "tms_c_brokeros/2026-07-07T12-00_sync.json",
+        "tms_c_brokeros/2026-07-08T00-00_sync.json",
+        "tms_c_brokeros/2026-07-08T12-00_sync.json",
+        "tms_c_brokeros/2026-07-09T00-00_sync.json",
+        "tms_c_brokeros/2026-07-09T12-00_sync.json",
+        "tms_c_brokeros/2026-07-10T00-00_sync.json",
+        "tms_c_brokeros/2026-07-10T12-00_sync.json"
+      ],
+      "source_systems": [
+        "BROKEROS"
+      ],
+      "tenant_ids": [
+        "bo-broker"
+      ],
+      "verification_test": "test_sc21_unknown_equipment_remains_unknown"
+    },
+    {
+      "description": "Duplicate-file ingestion operation.",
+      "entity_ids": {
+        "carrier_ids": [],
+        "customer_ids": [
+          "FF-CUST-101"
+        ],
+        "load_ids": [
+          "FF-1201"
+        ]
+      },
+      "expected_effect": "Second ingest is no-op.",
+      "expected_warnings": [],
+      "scenario_id": "SC-22",
+      "source_files": [
+        "tms_a_freightflow/2026-07-01T06-00_sync.json",
+        "tms_a_freightflow/2026-07-02T12-00_sync.json",
+        "tms_a_freightflow/2026-07-03T18-00_sync.json",
+        "tms_a_freightflow/2026-07-05T00-00_sync.json",
+        "tms_a_freightflow/2026-07-06T06-00_sync.json",
+        "tms_a_freightflow/2026-07-07T12-00_sync.json",
+        "tms_a_freightflow/2026-07-08T18-00_sync.json",
+        "tms_a_freightflow/2026-07-10T00-00_sync.json"
+      ],
+      "source_systems": [
+        "FREIGHTFLOW"
+      ],
+      "tenant_ids": [
+        "ff-broker"
+      ],
+      "verification_test": "test_sc22_duplicate_file_is_noop"
+    },
+    {
+      "description": "Same authority across tenants.",
+      "entity_ids": {
+        "carrier_ids": [
+          "FF-C-206",
+          "HD-C-206"
+        ],
+        "customer_ids": [],
+        "load_ids": []
+      },
+      "expected_effect": "Carrier records remain tenant-local.",
+      "expected_warnings": [],
+      "scenario_id": "SC-23",
+      "source_files": [
+        "tms_a_freightflow/2026-07-01T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-01T00-00_sync.json",
+        "tms_a_freightflow/2026-07-01T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-01T06-00_sync.json",
+        "tms_a_freightflow/2026-07-01T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-01T12-00_sync.json",
+        "tms_a_freightflow/2026-07-01T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-01T18-00_sync.json",
+        "tms_a_freightflow/2026-07-02T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T00-00_sync.json",
+        "tms_a_freightflow/2026-07-02T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T06-00_sync.json",
+        "tms_a_freightflow/2026-07-02T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T12-00_sync.json",
+        "tms_a_freightflow/2026-07-02T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T18-00_sync.json",
+        "tms_a_freightflow/2026-07-03T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T00-00_sync.json",
+        "tms_a_freightflow/2026-07-03T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T06-00_sync.json",
+        "tms_a_freightflow/2026-07-03T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T12-00_sync.json",
+        "tms_a_freightflow/2026-07-03T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T18-00_sync.json",
+        "tms_a_freightflow/2026-07-04T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T00-00_sync.json",
+        "tms_a_freightflow/2026-07-04T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T06-00_sync.json",
+        "tms_a_freightflow/2026-07-04T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T12-00_sync.json",
+        "tms_a_freightflow/2026-07-04T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-04T18-00_sync.json",
+        "tms_a_freightflow/2026-07-05T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T00-00_sync.json",
+        "tms_a_freightflow/2026-07-05T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T06-00_sync.json",
+        "tms_a_freightflow/2026-07-05T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T12-00_sync.json",
+        "tms_a_freightflow/2026-07-05T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T18-00_sync.json",
+        "tms_a_freightflow/2026-07-06T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T00-00_sync.json",
+        "tms_a_freightflow/2026-07-06T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T06-00_sync.json",
+        "tms_a_freightflow/2026-07-06T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T12-00_sync.json",
+        "tms_a_freightflow/2026-07-06T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T18-00_sync.json",
+        "tms_a_freightflow/2026-07-07T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T00-00_sync.json",
+        "tms_a_freightflow/2026-07-07T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T06-00_sync.json",
+        "tms_a_freightflow/2026-07-07T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T12-00_sync.json",
+        "tms_a_freightflow/2026-07-07T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T18-00_sync.json",
+        "tms_a_freightflow/2026-07-08T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T00-00_sync.json",
+        "tms_a_freightflow/2026-07-08T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T06-00_sync.json",
+        "tms_a_freightflow/2026-07-08T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T12-00_sync.json",
+        "tms_a_freightflow/2026-07-08T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T18-00_sync.json",
+        "tms_a_freightflow/2026-07-09T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T00-00_sync.json",
+        "tms_a_freightflow/2026-07-09T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T06-00_sync.json",
+        "tms_a_freightflow/2026-07-09T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T12-00_sync.json",
+        "tms_a_freightflow/2026-07-09T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T18-00_sync.json",
+        "tms_a_freightflow/2026-07-10T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T00-00_sync.json",
+        "tms_a_freightflow/2026-07-10T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T06-00_sync.json",
+        "tms_a_freightflow/2026-07-10T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T12-00_sync.json",
+        "tms_a_freightflow/2026-07-10T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-10T18-00_sync.json",
+        "tms_a_freightflow/2026-07-11T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-11T06-00_sync.json"
+      ],
+      "source_systems": [
+        "FREIGHTFLOW",
+        "HAULDESK"
+      ],
+      "tenant_ids": [
+        "ff-broker",
+        "hd-broker"
+      ],
+      "verification_test": "test_sc23_same_mc_dot_does_not_cross_tenant_boundary"
+    },
+    {
+      "description": "Day 11 exact-lane target.",
+      "entity_ids": {
+        "carrier_ids": [],
+        "customer_ids": [
+          "FF-CUST-101"
+        ],
+        "load_ids": [
+          "FF-9001"
+        ]
+      },
+      "expected_effect": "Exact history supports narrowest rate tier.",
+      "expected_warnings": [],
+      "scenario_id": "SC-24",
+      "source_files": [
+        "tms_a_freightflow/2026-07-11T06-00_sync.json"
+      ],
+      "source_systems": [
+        "FREIGHTFLOW"
+      ],
+      "tenant_ids": [
+        "ff-broker"
+      ],
+      "verification_test": "test_sc24_day11_exact_lane_decision"
+    },
+    {
+      "description": "Day 11 geographic-neighbor target.",
+      "entity_ids": {
+        "carrier_ids": [],
+        "customer_ids": [
+          "BO-CUST-501"
+        ],
+        "load_ids": [
+          "BO-9001"
+        ]
+      },
+      "expected_effect": "Neighbor history supports fallback tier.",
+      "expected_warnings": [],
+      "scenario_id": "SC-25",
+      "source_files": [
+        "tms_c_brokeros/2026-07-11T06-00_sync.json"
+      ],
+      "source_systems": [
+        "BROKEROS"
+      ],
+      "tenant_ids": [
+        "bo-broker"
+      ],
+      "verification_test": "test_sc25_day11_geographic_neighbor_decision"
+    },
+    {
+      "description": "Day 11 sparse-fallback target.",
+      "entity_ids": {
+        "carrier_ids": [],
+        "customer_ids": [
+          "HD-CUST-302"
+        ],
+        "load_ids": [
+          "HD-9001"
+        ]
+      },
+      "expected_effect": "Thin history lowers confidence.",
+      "expected_warnings": [],
+      "scenario_id": "SC-26",
+      "source_files": [
+        "tms_b_hauldesk/2026-07-11T06-00_sync.json"
+      ],
+      "source_systems": [
+        "HAULDESK"
+      ],
+      "tenant_ids": [
+        "hd-broker"
+      ],
+      "verification_test": "test_sc26_day11_sparse_fallback_decision"
+    }
+  ]
+}

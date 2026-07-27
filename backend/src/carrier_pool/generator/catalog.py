@@ -1,0 +1,569 @@
+"""Hand-authored deterministic catalogs for the Phase 6 scenarios."""
+
+from datetime import date
+
+from carrier_pool.domain.types import EquipmentType, SourceSystem
+from carrier_pool.generator.models import (
+    CarrierDefinition,
+    CarrierHistoryProfile,
+    CustomerDefinition,
+    GeneratorLoad,
+    GeneratorTenant,
+    LocationDefinition,
+    ScenarioCatalog,
+    ScenarioDefinition,
+    ScenarioStop,
+)
+
+_AUTHORITIES: dict[str, tuple[str, str]] = {
+    "FF-C-201": ("1350201", "3900201"),
+    "FF-C-202": ("1350202", "3900202"),
+    "FF-C-203": ("1350203", "3900203"),
+    "FF-C-204": ("1350204", "3900204"),
+    "FF-C-205": ("1350205", "3900205"),
+    "FF-C-206": ("1350101", "3901001"),
+    "FF-C-207": ("1350207", "3900207"),
+    "FF-C-208": ("1350208", "3900208"),
+    "HD-C-401": ("1350401", "3900401"),
+    "HD-C-402": ("1350402", "3900402"),
+    "HD-C-403": ("1350403", "3900403"),
+    "HD-C-404": ("1350404", "3900404"),
+    "HD-C-405": ("1350405", "3900405"),
+    "HD-C-206": ("1350101", "3901001"),
+    "HD-C-407": ("1350407", "3900407"),
+    "HD-C-408": ("1350408", "3900408"),
+    "BO-C-601": ("1350601", "3900601"),
+    "BO-C-602": ("1350602", "3900602"),
+    "BO-C-603": ("1350603", "3900603"),
+    "BO-C-604": ("1350604", "3900604"),
+    "BO-C-605": ("1350605", "3900605"),
+    "BO-C-606": ("1350606", "3900606"),
+    "BO-C-607": ("1350607", "3900607"),
+    "BO-C-608": ("1350608", "3900608"),
+}
+
+
+def build_catalog() -> ScenarioCatalog:
+    """Return the fixed catalog described in docs/DATA_SCENARIOS.md."""
+    return ScenarioCatalog(
+        tenants=_tenants(),
+        locations=_locations(),
+        customers=_customers(),
+        carriers=_carriers(),
+        loads=_loads(),
+        scenarios=_scenarios(),
+    )
+
+
+def _tenants() -> tuple[GeneratorTenant, ...]:
+    return (
+        GeneratorTenant("ff-broker", "North Star Freight", SourceSystem.FREIGHTFLOW),
+        GeneratorTenant("hd-broker", "Alamo Brokerage", SourceSystem.HAULDESK),
+        GeneratorTenant("bo-broker", "Gulf Bridge Logistics", SourceSystem.BROKEROS),
+    )
+
+
+def _locations() -> tuple[LocationDefinition, ...]:
+    return (
+        LocationDefinition("DFW-GP", "Grand Prairie", "TX", "75050"),
+        LocationDefinition("DFW-IRV", "Irving", "TX", "75039"),
+        LocationDefinition("DFW-DAL", "Dallas", "TX", "75201"),
+        LocationDefinition("DFW-FTW", "Fort Worth", "TX", "76102"),
+        LocationDefinition("DFW-ARL", "Arlington", "TX", "76010"),
+        LocationDefinition("DFW-PLN", "Plano", "TX", "75024"),
+        LocationDefinition("HOU-KAT", "Katy", "TX", "77449"),
+        LocationDefinition("HOU-SUG", "Sugar Land", "TX", "77478"),
+        LocationDefinition("HOU-HOU", "Houston", "TX", "77002"),
+        LocationDefinition("HOU-PAS", "Pasadena", "TX", "77502"),
+        LocationDefinition("HOU-BAY", "Baytown", "TX", "77520"),
+        LocationDefinition("SAT-NBR", "New Braunfels", "TX", "78130"),
+        LocationDefinition("SAT-SCH", "Schertz", "TX", "78154"),
+        LocationDefinition("SAT-SAT", "San Antonio", "TX", "78205"),
+        LocationDefinition("SAT-SEG", "Seguin", "TX", "78155"),
+    )
+
+
+def _customers() -> tuple[CustomerDefinition, ...]:
+    return (
+        CustomerDefinition("FF-CUST-101", "ff-broker", "Lone Star Beverages"),
+        CustomerDefinition("FF-CUST-102", "ff-broker", "Metro Retail"),
+        CustomerDefinition("FF-CUST-103", "ff-broker", "Prairie Foods"),
+        CustomerDefinition("HD-CUST-301", "hd-broker", "Alamo Building Supply"),
+        CustomerDefinition("HD-CUST-302", "hd-broker", "Hill Country Produce"),
+        CustomerDefinition("HD-CUST-303", "hd-broker", "Mission Foods"),
+        CustomerDefinition("BO-CUST-501", "bo-broker", "Gulf Coast Foods"),
+        CustomerDefinition("BO-CUST-502", "bo-broker", "Bayou Retail"),
+        CustomerDefinition("BO-CUST-503", "bo-broker", "South Texas Cold Chain"),
+    )
+
+
+def _carrier(
+    carrier_id: str,
+    tenant_id: str,
+    name: str,
+    equipment_history: tuple[EquipmentType, ...],
+    *,
+    profile: CarrierHistoryProfile = CarrierHistoryProfile.STANDARD,
+    mc_number: str | None = None,
+    dot_number: str | None = None,
+    last_delivery_location_id: str | None = None,
+    last_delivery_date: date | None = None,
+) -> CarrierDefinition:
+    default_mc_number, default_dot_number = _AUTHORITIES[carrier_id]
+    return CarrierDefinition(
+        carrier_id=carrier_id,
+        tenant_id=tenant_id,
+        name=name,
+        mc_number=mc_number or default_mc_number,
+        dot_number=dot_number or default_dot_number,
+        equipment_history=equipment_history,
+        history_profile=profile,
+        last_delivery_location_id=last_delivery_location_id,
+        last_delivery_date=last_delivery_date,
+    )
+
+
+def _carriers() -> tuple[CarrierDefinition, ...]:
+    dry_van = (EquipmentType.DRY_VAN,)
+    reefer = (EquipmentType.REEFER,)
+    all_equipment = (EquipmentType.DRY_VAN, EquipmentType.REEFER, EquipmentType.FLATBED)
+    return (
+        _carrier(
+            "FF-C-201",
+            "ff-broker",
+            "Lone Star Van",
+            dry_van,
+            profile=CarrierHistoryProfile.RICH_LANE,
+        ),
+        _carrier(
+            "FF-C-202",
+            "ff-broker",
+            "Cedar Express",
+            dry_van,
+            profile=CarrierHistoryProfile.LOW_HISTORY,
+        ),
+        _carrier(
+            "FF-C-203",
+            "ff-broker",
+            "Texas General",
+            all_equipment,
+            profile=CarrierHistoryProfile.BROAD_EQUIPMENT_POOR_LANE,
+        ),
+        _carrier(
+            "FF-C-204",
+            "ff-broker",
+            "Metro Haul",
+            dry_van,
+            profile=CarrierHistoryProfile.RECENT_DELIVERY,
+            last_delivery_location_id="DFW-GP",
+            last_delivery_date=date(2026, 7, 10),
+        ),
+        _carrier(
+            "FF-C-205",
+            "ff-broker",
+            "Heritage Trucking",
+            dry_van,
+            profile=CarrierHistoryProfile.STALE_DELIVERY,
+            last_delivery_location_id="DFW-GP",
+            last_delivery_date=date(2026, 7, 1),
+        ),
+        _carrier(
+            "FF-C-206",
+            "ff-broker",
+            "Crossroads Carrier",
+            dry_van,
+            mc_number="1350101",
+            dot_number="3901001",
+        ),
+        _carrier("FF-C-207", "ff-broker", "Gulf Dry", dry_van),
+        _carrier("FF-C-208", "ff-broker", "Trinity Logistics", (EquipmentType.FLATBED,)),
+        _carrier(
+            "HD-C-401", "hd-broker", "Delta Prime", dry_van, profile=CarrierHistoryProfile.RICH_LANE
+        ),
+        _carrier("HD-C-402", "hd-broker", "Central Haul", reefer),
+        _carrier("HD-C-403", "hd-broker", "Alamo Refrigerated", reefer),
+        _carrier(
+            "HD-C-404",
+            "hd-broker",
+            "Guadalupe Transport",
+            dry_van,
+            profile=CarrierHistoryProfile.LOW_HISTORY,
+        ),
+        _carrier("HD-C-405", "hd-broker", "Mission Van", dry_van),
+        _carrier(
+            "HD-C-206",
+            "hd-broker",
+            "Crossroads Carrier",
+            dry_van,
+            mc_number="1350101",
+            dot_number="3901001",
+        ),
+        _carrier("HD-C-407", "hd-broker", "Bexar Logistics", (EquipmentType.FLATBED,)),
+        _carrier("HD-C-408", "hd-broker", "River City Freight", dry_van),
+        _carrier(
+            "BO-C-601", "bo-broker", "Gulf Reefers", reefer, profile=CarrierHistoryProfile.RICH_LANE
+        ),
+        _carrier("BO-C-602", "bo-broker", "Port City Transport", reefer),
+        _carrier("BO-C-603", "bo-broker", "Lone Oak Logistics", reefer),
+        _carrier("BO-C-604", "bo-broker", "Texas Triangle Freight", dry_van),
+        _carrier("BO-C-605", "bo-broker", "Cypress Carrier", all_equipment),
+        _carrier("BO-C-606", "bo-broker", "Coastal Van", dry_van),
+        _carrier("BO-C-607", "bo-broker", "Alamo Route", reefer),
+        _carrier("BO-C-608", "bo-broker", "Brazos Trucking", dry_van),
+    )
+
+
+def _route(*location_ids: str, pickup_date: date) -> tuple[ScenarioStop, ...]:
+    return tuple(
+        ScenarioStop(
+            sequence=index,
+            is_pickup=index == 1,
+            is_dropoff=index == len(location_ids),
+            location_id=location_id,
+            planned_date=pickup_date,
+        )
+        for index, location_id in enumerate(location_ids, start=1)
+    )
+
+
+def _load(
+    logical_id: str,
+    tenant_id: str,
+    source_system: SourceSystem,
+    customer_id: str,
+    equipment: EquipmentType,
+    *location_ids: str,
+    day11_target: bool = False,
+) -> GeneratorLoad:
+    return GeneratorLoad(
+        logical_id=logical_id,
+        tenant_id=tenant_id,
+        source_system=source_system,
+        customer_id=customer_id,
+        stops=_route(*location_ids, pickup_date=date(2026, 7, 11 if day11_target else 7)),
+        equipment=equipment,
+        day11_target=day11_target,
+    )
+
+
+def _loads() -> tuple[GeneratorLoad, ...]:
+    return (
+        _load(
+            "FF-1101",
+            "ff-broker",
+            SourceSystem.FREIGHTFLOW,
+            "FF-CUST-101",
+            EquipmentType.DRY_VAN,
+            "DFW-GP",
+            "HOU-KAT",
+        ),
+        _load(
+            "FF-1201",
+            "ff-broker",
+            SourceSystem.FREIGHTFLOW,
+            "FF-CUST-101",
+            EquipmentType.DRY_VAN,
+            "DFW-GP",
+            "HOU-KAT",
+        ),
+        _load(
+            "FF-1301",
+            "ff-broker",
+            SourceSystem.FREIGHTFLOW,
+            "FF-CUST-102",
+            EquipmentType.REEFER,
+            "HOU-HOU",
+            "SAT-SAT",
+        ),
+        _load(
+            "FF-1401",
+            "ff-broker",
+            SourceSystem.FREIGHTFLOW,
+            "FF-CUST-103",
+            EquipmentType.DRY_VAN,
+            "HOU-PAS",
+            "DFW-GP",
+        ),
+        _load(
+            "FF-1402",
+            "ff-broker",
+            SourceSystem.FREIGHTFLOW,
+            "FF-CUST-103",
+            EquipmentType.DRY_VAN,
+            "HOU-HOU",
+            "DFW-GP",
+        ),
+        _load(
+            "HD-2101",
+            "hd-broker",
+            SourceSystem.HAULDESK,
+            "HD-CUST-302",
+            EquipmentType.DRY_VAN,
+            "DFW-PLN",
+            "HOU-BAY",
+        ),
+        _load(
+            "BO-3101",
+            "bo-broker",
+            SourceSystem.BROKEROS,
+            "BO-CUST-501",
+            EquipmentType.REEFER,
+            "HOU-SUG",
+            "SAT-SCH",
+        ),
+        _load(
+            "BO-3004",
+            "bo-broker",
+            SourceSystem.BROKEROS,
+            "BO-CUST-501",
+            EquipmentType.REEFER,
+            "HOU-SUG",
+            "HOU-HOU",
+            "SAT-SCH",
+        ),
+        _load(
+            "FF-9001",
+            "ff-broker",
+            SourceSystem.FREIGHTFLOW,
+            "FF-CUST-101",
+            EquipmentType.DRY_VAN,
+            "DFW-GP",
+            "HOU-KAT",
+            day11_target=True,
+        ),
+        _load(
+            "BO-9001",
+            "bo-broker",
+            SourceSystem.BROKEROS,
+            "BO-CUST-501",
+            EquipmentType.REEFER,
+            "HOU-KAT",
+            "SAT-SAT",
+            day11_target=True,
+        ),
+        _load(
+            "HD-9001",
+            "hd-broker",
+            SourceSystem.HAULDESK,
+            "HD-CUST-302",
+            EquipmentType.DRY_VAN,
+            "DFW-PLN",
+            "HOU-BAY",
+            day11_target=True,
+        ),
+    )
+
+
+def _scenarios() -> tuple[ScenarioDefinition, ...]:
+    """Return required Section 9 scenarios; output files are derived later from these IDs."""
+    rows = (
+        (
+            "SC-01",
+            ("FF-1101",),
+            ("FF-C-201",),
+            "FreightFlow full lifecycle.",
+            "Completed exact-lane history.",
+            "test_sc01_freightflow_full_lifecycle",
+        ),
+        (
+            "SC-02",
+            ("HD-2101",),
+            ("HD-C-401",),
+            "HaulDesk full lifecycle.",
+            "Ledger-backed completed load.",
+            "test_sc02_hauldesk_full_lifecycle",
+        ),
+        (
+            "SC-03",
+            ("BO-3101",),
+            ("BO-C-601",),
+            "BrokerOS full lifecycle.",
+            "Directional reefer evidence.",
+            "test_sc03_brokeros_full_lifecycle",
+        ),
+        (
+            "SC-04",
+            ("FF-1201",),
+            ("FF-C-207",),
+            "Booking-time carrier pay.",
+            "Pay appears only after booking.",
+            "test_sc04_carrier_rate_appears_at_booking",
+        ),
+        (
+            "SC-05",
+            ("FF-1101",),
+            (),
+            "Final amount correction.",
+            "Later as-of sees final pay.",
+            "test_sc05_final_amount_changes_after_delivery",
+        ),
+        (
+            "SC-06",
+            ("FF-1301",),
+            ("FF-C-208",),
+            "Customer-rate correction.",
+            "Corrected sell total preserves history.",
+            "test_sc06_customer_rate_correction_preserves_history",
+        ),
+        (
+            "SC-07",
+            ("FF-1101",),
+            ("FF-C-201",),
+            "Pickup ZIP correction.",
+            "Later evidence uses corrected lane.",
+            "test_sc07_pickup_zip_correction_changes_lane_evidence",
+        ),
+        (
+            "SC-08",
+            ("BO-3101",),
+            ("BO-C-606",),
+            "Equipment correction.",
+            "Unknown equipment remains historical fact.",
+            "test_sc08_equipment_correction_preserves_unknown_history",
+        ),
+        (
+            "SC-09",
+            ("HD-2101",),
+            ("HD-C-402",),
+            "HaulDesk fuel surcharge.",
+            "Pay increases exactly once.",
+            "test_sc09_hauldesk_fuel_surcharge_applies_once",
+        ),
+        (
+            "SC-10",
+            ("HD-2101",),
+            ("HD-C-402",),
+            "HaulDesk negative adjustment.",
+            "Pay falls exactly once.",
+            "test_sc10_hauldesk_negative_adjustment_applies_once",
+        ),
+        (
+            "SC-11",
+            ("BO-3101",),
+            ("BO-C-602",),
+            "BrokerOS carrier-rate restatement.",
+            "Latest replacement rate wins.",
+            "test_sc11_brokeros_rate_restatement",
+        ),
+        (
+            "SC-12",
+            ("FF-1101",),
+            ("FF-C-201",),
+            "Rich DFW to Houston history.",
+            "Private exact-lane evidence.",
+            "test_sc12_rich_dfw_hou_history",
+        ),
+        (
+            "SC-13",
+            ("BO-3101",),
+            ("BO-C-601",),
+            "Rich Houston to San Antonio reefer history.",
+            "Neighbor-lane evidence.",
+            "test_sc13_rich_hou_sat_reefer_history",
+        ),
+        (
+            "SC-14",
+            ("HD-2101",),
+            ("HD-C-404",),
+            "Thin suburb lane.",
+            "Sparse fallback evidence.",
+            "test_sc14_thin_suburb_lane",
+        ),
+        (
+            "SC-15",
+            ("FF-1101",),
+            ("FF-C-201",),
+            "Many similar-load carrier.",
+            "Strong historical-fit candidate.",
+            "test_sc15_many_similar_loads",
+        ),
+        (
+            "SC-16",
+            ("FF-1201",),
+            ("FF-C-202",),
+            "One highly similar carrier.",
+            "Evidence shrinks for low sample size.",
+            "test_sc16_one_similar_load_is_shrunk",
+        ),
+        (
+            "SC-17",
+            ("FF-1301",),
+            ("FF-C-203",),
+            "Broad equipment, poor lane fit.",
+            "Lane fit outweighs equipment breadth.",
+            "test_sc17_broad_equipment_poor_lane_fit",
+        ),
+        (
+            "SC-18",
+            ("FF-1401",),
+            ("FF-C-204",),
+            "Recent delivery evidence.",
+            "Recent location evidence helps Day 11.",
+            "test_sc18_recent_delivery_location_evidence",
+        ),
+        (
+            "SC-19",
+            ("FF-1402",),
+            ("FF-C-205",),
+            "Stale delivery evidence.",
+            "Old location evidence decays.",
+            "test_sc19_old_delivery_evidence_decays",
+        ),
+        (
+            "SC-20",
+            ("BO-3004",),
+            ("BO-C-603",),
+            "Ordered multi-stop BrokerOS load.",
+            "Stop order remains intact.",
+            "test_sc20_brokeros_multistop_order",
+        ),
+        (
+            "SC-21",
+            ("BO-3101",),
+            (),
+            "Unknown-equipment load.",
+            "Unknown remains first class.",
+            "test_sc21_unknown_equipment_remains_unknown",
+        ),
+        (
+            "SC-22",
+            ("FF-1201",),
+            (),
+            "Duplicate-file ingestion operation.",
+            "Second ingest is no-op.",
+            "test_sc22_duplicate_file_is_noop",
+        ),
+        (
+            "SC-23",
+            (),
+            ("FF-C-206", "HD-C-206"),
+            "Same authority across tenants.",
+            "Carrier records remain tenant-local.",
+            "test_sc23_same_mc_dot_does_not_cross_tenant_boundary",
+        ),
+        (
+            "SC-24",
+            ("FF-9001",),
+            (),
+            "Day 11 exact-lane target.",
+            "Exact history supports narrowest rate tier.",
+            "test_sc24_day11_exact_lane_decision",
+        ),
+        (
+            "SC-25",
+            ("BO-9001",),
+            (),
+            "Day 11 geographic-neighbor target.",
+            "Neighbor history supports fallback tier.",
+            "test_sc25_day11_geographic_neighbor_decision",
+        ),
+        (
+            "SC-26",
+            ("HD-9001",),
+            (),
+            "Day 11 sparse-fallback target.",
+            "Thin history lowers confidence.",
+            "test_sc26_day11_sparse_fallback_decision",
+        ),
+    )
+    return tuple(ScenarioDefinition(*row) for row in rows)

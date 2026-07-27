@@ -1,0 +1,65 @@
+{
+  "records": [
+    {
+      "CreatedDate": "2026-07-11T06:00:00.000+0000",
+      "Id": "a0j74071B1BAC8EBB5",
+      "LastModifiedDate": "2026-07-11T06:00:00.000+0000",
+      "Name": "BO-9001",
+      "bos__Carrier_Rate__c": null,
+      "bos__Carrier__c": null,
+      "bos__Customer_Rate__c": null,
+      "bos__Customer__c": "0014DD806107C8FF73",
+      "bos__Distance_Miles__c": 242.1,
+      "bos__Equipment_Type__c": "Reefer",
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "General freight",
+          "bos__Pallet_Count__c": 18,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Weight__c": 24000
+        }
+      ],
+      "bos__Load_Status__c": "Ready to Book",
+      "bos__Stops__r": [
+        {
+          "bos__Arrival_Time__c": null,
+          "bos__Is_Dropoff__c": false,
+          "bos__Is_Pickup__c": true,
+          "bos__Location__c": "001CB9C8C891F1A584",
+          "bos__Number__c": 1,
+          "bos__Scheduled_Date__c": "2026-07-11"
+        },
+        {
+          "bos__Arrival_Time__c": null,
+          "bos__Is_Dropoff__c": true,
+          "bos__Is_Pickup__c": false,
+          "bos__Location__c": "001AE19313D2600FCA",
+          "bos__Number__c": 2,
+          "bos__Scheduled_Date__c": "2026-07-11"
+        }
+      ]
+    }
+  ],
+  "referenced_records": {
+    "0014DD806107C8FF73": {
+      "Name": "Gulf Coast Foods",
+      "record_type": "Customer",
+      "type": "Account"
+    },
+    "001AE19313D2600FCA": {
+      "Name": "San Antonio Facility",
+      "bos__City__c": "San Antonio",
+      "bos__Postal_Code__c": "78205",
+      "bos__State__c": "TX",
+      "type": "Location"
+    },
+    "001CB9C8C891F1A584": {
+      "Name": "Katy Facility",
+      "bos__City__c": "Katy",
+      "bos__Postal_Code__c": "77449",
+      "bos__State__c": "TX",
+      "type": "Location"
+    }
+  },
+  "synced_at": "2026-07-11T06:00:00.000+0000"
+}

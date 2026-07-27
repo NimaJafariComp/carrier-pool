@@ -1,8 +1,14 @@
-.PHONY: setup format format-check lint typecheck test-unit test-integration build db-up down check
+.PHONY: setup generate validate format format-check lint typecheck test-unit test-integration build db-up down check
 
 setup:
 	cd backend && uv sync --all-groups
 	cd frontend && pnpm install --frozen-lockfile
+
+generate:
+	cd backend && uv run carrier-pool generate --data-root ../data
+
+validate:
+	cd backend && uv run carrier-pool validate-data --data-root ../data
 
 format:
 	cd backend && uv run ruff format .

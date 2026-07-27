@@ -1,0 +1,29 @@
+{
+  "carriers": [],
+  "loads": [
+    {
+      "carrier_ref": null,
+      "customer_code": "HD-CUST-302",
+      "customer_name": "Hill Country Produce",
+      "del_arrived_at": null,
+      "del_city": "Baytown",
+      "del_date": "2026-07-07",
+      "del_state": "TX",
+      "del_zip": "77520",
+      "dist_km": 389.62218242340975,
+      "entered_at": "2026-06-30 19:00:00",
+      "equip": "V",
+      "load_num": "HD-2101",
+      "pu_city": "Plano",
+      "pu_date": "2026-07-07",
+      "pu_departed_at": null,
+      "pu_state": "TX",
+      "pu_zip": "75024",
+      "status_code": 10,
+      "updated_at": "2026-06-30 19:00:00",
+      "weight_kg": 10886.21688024085
+    }
+  ],
+  "rates": [],
+  "synced_at": "2026-06-30 19:00:00"
+}

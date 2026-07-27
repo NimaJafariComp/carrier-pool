@@ -264,7 +264,42 @@ acceptance evidence has not yet been recorded.
   explanations, and confirms sparse scores carry neutral-prior shrinkage while
   explanation templates avoid availability/acceptance claims.
 
-## Phases 11–16 — Not started
+## Phase 11 — Persist decisions and finish API — Complete
+
+- `DecisionRunService` resolves an exact tenant-local ACTIVE `LoadVersion` at
+  explicit `as_of`, runs pricing and historical-fit ranking, and persists immutable
+  `DecisionRun` plus rank-ordered `CarrierRecommendation` rows.
+- Persisted snapshots include model versions/parameters, pricing confidence and
+  warnings, structured reason codes, tenant-local evidence IDs, and a stored
+  identity hash. Reuse is limited to identical tenant, load, input version,
+  `as_of`, model versions, and parameters; output equality alone never reuses.
+- Smoke coverage proves reproducibility/reuse, ordered immutable recommendations,
+  inactive-load rejection, and a historical decision remaining unchanged despite
+  later immutable load observations.
+- FastAPI now exposes safe demo tenant selection, tenant-scoped active-load list
+  and load detail, and persisted-decision retrieval. Decision responses include
+  input/load summary, timestamps/model versions, pricing/range/confidence,
+  fallback/evidence counts, ranked carriers with component scores and fixed
+  explanation bullets, comparable summaries, and warnings. Cross-tenant or absent
+  loads share generic `404`; inactive, not-computed, and insufficient-evidence
+  states are stable `409`/`422` responses.
+- `backend/scripts/export_openapi.py` exports the FastAPI contract to
+  `frontend/openapi.json`; `openapi-typescript` generates
+  `frontend/src/api/generated.ts`. The frontend now consumes generated
+  `LoadResponse` types instead of a handwritten API interface. `make api-types`
+  regenerates artifacts; `make api-types-check` rejects stale artifacts and runs
+  in CI before frontend lint/type/test/build.
+- Black-box API contracts ingest deterministic data and call real HTTP routes.
+  They prove ACTIVE filtering, complete OpenAPI-backed decision payloads,
+  same-tenant access, identical absent/cross-tenant `404`s, USD Decimal-string
+  serialization, tenant-local evidence IDs, low-confidence rendering, and stable
+  inactive/insufficient-data responses.
+- **Gate evidence:** a persisted decision retains its exact input version, `as_of`,
+  model versions, parameters, evidence, and ordered recommendations; the same
+  identity reuses that immutable run, while later source observations do not mutate
+  it. Generated OpenAPI schema/types are fresh and API requests remain tenant-safe.
+
+## Phases 12–16 — Not started
 
 - Phase 11: persisted decisions and complete API.
 - Phase 12: final frontend.
@@ -282,5 +317,14 @@ acceptance evidence has not yet been recorded.
   boundaries for baseline-regression outputs, generated schedule loads, and
   canonical JSON stop parsing.
 - Phase 10 Day 11 ranking gate smoke: `1 passed` against local Compose PostgreSQL.
+- Phase 11 decision-run persistence smoke: `1 passed`; decision identity/scoring
+  tests: `4 passed`; full backend Pyright: `0 errors, 0 warnings, 0 informations`.
+- Phase 11 API contracts: `6 passed`; generated-data decision smoke: `2 passed`.
+- OpenAPI type generation/staleness check: pass; frontend typecheck, tests, lint,
+  and production build: pass.
+- Phase 11 real API contracts: `3 passed` (`8` API tests including unit contracts);
+  full backend Pyright: `0 errors, 0 warnings, 0 informations`.
+- Phase 11 gate suite: `10 passed`; OpenAPI freshness, frontend typecheck/tests/lint,
+  production build, and `git diff --check`: pass.
 - Prior baseline verification: `make test-integration`: `7 passed`; full backend
   suite with `DATABASE_URL`: `182 passed` (before Phase 10 additions).

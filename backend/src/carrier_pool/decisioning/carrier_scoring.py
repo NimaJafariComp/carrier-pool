@@ -21,6 +21,7 @@ _TIER = {
 @dataclass(frozen=True, slots=True)
 class CarrierHistoricalFit:
     carrier_external_id: str
+    raw_score: Decimal
     adjusted_score: Decimal
     confidence_score: Decimal
     confidence: str
@@ -109,6 +110,7 @@ class CarrierHistoricalFitScorer:
         warnings = ("SPARSE_HISTORY_SHRINKAGE",) if ess < 4 else ()
         return CarrierHistoricalFit(
             item.carrier_external_id,
+            raw,
             adjusted,
             confidence_score,
             confidence,

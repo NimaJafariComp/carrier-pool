@@ -1,4 +1,4 @@
-.PHONY: setup generate validate ingest rebuild-projections backtest format format-check lint typecheck test-unit test-integration build db-up down check
+.PHONY: setup generate validate ingest rebuild-projections backtest api-types api-types-check format format-check lint typecheck test-unit test-integration build db-up down check
 
 setup:
 	cd backend && uv sync --all-groups
@@ -20,6 +20,13 @@ rebuild-projections:
 
 backtest: db-up
 	cd backend && DATABASE_URL=postgresql+psycopg://carrier_pool:carrier_pool@localhost:5432/carrier_pool uv run carrier-pool rate-backtest --artifacts-dir ../artifacts
+
+api-types:
+	cd backend && uv run python scripts/export_openapi.py ../frontend/openapi.json
+	cd frontend && pnpm exec openapi-typescript openapi.json -o src/api/generated.ts
+
+api-types-check: api-types
+	git diff --exit-code -- frontend/openapi.json frontend/src/api/generated.ts
 
 format:
 	cd backend && uv run ruff format .

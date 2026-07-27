@@ -69,6 +69,18 @@ jobs:
       - name: Install locked dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Set up Python for OpenAPI export
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Set up uv for OpenAPI export
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+
+      - name: Verify generated API types are current
+        working-directory: .
+        run: make api-types-check
+
       - name: Lint
         run: pnpm lint
 

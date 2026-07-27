@@ -12,14 +12,25 @@ import pytest
 from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import Session
 
-from carrier_pool.db.models import IngestionFile, Load, LoadVersion, SourceRateEntry, Stop, Tenant
+from carrier_pool.db.models import (
+    CarrierRecommendation,
+    DecisionRun,
+    IngestionFile,
+    Load,
+    LoadVersion,
+    SourceRateEntry,
+    Stop,
+    Tenant,
+)
+from carrier_pool.db.tenant import set_tenant_context
 from carrier_pool.decisioning.backtest import RateBacktestHarness
 from carrier_pool.decisioning.carrier_explanations import explain_rankings
 from carrier_pool.decisioning.carrier_features import CarrierFeatureService
 from carrier_pool.decisioning.carrier_scoring import CarrierHistoricalFitScorer
+from carrier_pool.decisioning.decision_runs import DecisionRunService
 from carrier_pool.decisioning.pricing import HierarchicalRateEstimator
 from carrier_pool.decisioning.ranking_evaluation import RankingBacktestHarness
-from carrier_pool.domain.types import SourceSystem
+from carrier_pool.domain.types import LoadStatus, SourceSystem
 from carrier_pool.generator.manifest import write_scenarios_manifest
 from carrier_pool.generator.scheduler import DAY11_SYNC_AT, write_sync_files
 from carrier_pool.generator.validator import validate_generated_data
@@ -213,6 +224,7 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
             )
 
             estimator = HierarchicalRateEstimator()
+            decision_service = DecisionRunService()
             for source_system, tenant_id in tenant_ids.items():
                 target = session.scalar(
                     select(Load).where(
@@ -247,6 +259,90 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
                 assert CarrierHistoricalFitScorer().score(candidate_features) == ranking
                 explanations = explain_rankings(ranking, candidate_features)
                 assert all(item.supporting_load_ids for item in explanations)
+                first_decision = decision_service.run(
+                    session, target.tenant_id, target.id, target.observed_at
+                )
+                reused_decision = decision_service.run(
+                    session, target.tenant_id, target.id, target.observed_at
+                )
+                assert first_decision.reused is False
+                assert reused_decision.reused is True
+                assert reused_decision.run.id == first_decision.run.id
+                assert first_decision.run.input_version_id == target.current_version_id
+                assert first_decision.run.price_estimate["point_estimate_usd"] is not None
+                assert first_decision.recommendations
+                assert all(row.evidence_ids for row in first_decision.recommendations)
+                assert all(row.explanation_reason_codes for row in first_decision.recommendations)
+                assert (
+                    session.scalar(
+                        select(func.count())
+                        .select_from(DecisionRun)
+                        .where(
+                            DecisionRun.tenant_id == target.tenant_id,
+                            DecisionRun.load_id == target.id,
+                        )
+                    )
+                    == 1
+                )
+                assert session.scalar(
+                    select(func.count())
+                    .select_from(CarrierRecommendation)
+                    .where(CarrierRecommendation.decision_run_id == first_decision.run.id)
+                ) == len(first_decision.recommendations)
+
+            set_tenant_context(session, tenant_ids[SourceSystem.FREIGHTFLOW])
+            inactive_load = session.scalar(
+                select(Load).where(
+                    Load.tenant_id == tenant_ids[SourceSystem.FREIGHTFLOW],
+                    Load.status != LoadStatus.ACTIVE,
+                )
+            )
+            assert inactive_load is not None
+            with pytest.raises(ValueError, match="ACTIVE"):
+                decision_service.run(
+                    session,
+                    inactive_load.tenant_id,
+                    inactive_load.id,
+                    inactive_load.observed_at,
+                )
+            correction_load = inactive_load
+            active_version = session.scalar(
+                select(LoadVersion)
+                .where(
+                    LoadVersion.load_id == correction_load.id,
+                    LoadVersion.status == LoadStatus.ACTIVE,
+                )
+                .order_by(LoadVersion.observed_at)
+            )
+            assert active_version is not None
+            assert (
+                session.scalar(
+                    select(func.count())
+                    .select_from(LoadVersion)
+                    .where(
+                        LoadVersion.load_id == correction_load.id,
+                        LoadVersion.observed_at > active_version.observed_at,
+                    )
+                )
+                > 0
+            )
+            historical_decision = decision_service.run(
+                session,
+                correction_load.tenant_id,
+                correction_load.id,
+                active_version.observed_at,
+            )
+            historical_snapshot = (
+                historical_decision.run.input_version_id,
+                dict(historical_decision.run.price_estimate),
+                tuple(row.adjusted_score for row in historical_decision.recommendations),
+            )
+            session.refresh(historical_decision.run)
+            assert historical_snapshot == (
+                historical_decision.run.input_version_id,
+                historical_decision.run.price_estimate,
+                tuple(row.adjusted_score for row in historical_decision.recommendations),
+            )
 
             report = RateBacktestHarness().run(session, tuple(tenant_ids.values()))
             assert report.scored_case_count > 0

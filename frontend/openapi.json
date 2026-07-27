@@ -1,0 +1,708 @@
+{
+  "components": {
+    "schemas": {
+      "ConfidenceResponse": {
+        "properties": {
+          "components": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Components",
+            "type": "object"
+          },
+          "level": {
+            "title": "Level",
+            "type": "string"
+          },
+          "score": {
+            "title": "Score",
+            "type": "string"
+          }
+        },
+        "required": [
+          "level",
+          "score",
+          "components"
+        ],
+        "title": "ConfidenceResponse",
+        "type": "object"
+      },
+      "DecisionResponse": {
+        "properties": {
+          "as_of": {
+            "title": "As Of",
+            "type": "string"
+          },
+          "comparable_loads": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Comparable Loads",
+            "type": "array"
+          },
+          "confidence": {
+            "$ref": "#/components/schemas/ConfidenceResponse"
+          },
+          "load": {
+            "$ref": "#/components/schemas/LoadResponse"
+          },
+          "model_parameters": {
+            "additionalProperties": true,
+            "title": "Model Parameters",
+            "type": "object"
+          },
+          "pricing": {
+            "$ref": "#/components/schemas/PricingResponse"
+          },
+          "pricing_model_version": {
+            "title": "Pricing Model Version",
+            "type": "string"
+          },
+          "ranked_carriers": {
+            "items": {
+              "$ref": "#/components/schemas/RankedCarrierResponse"
+            },
+            "title": "Ranked Carriers",
+            "type": "array"
+          },
+          "ranking_model_version": {
+            "title": "Ranking Model Version",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "load",
+          "as_of",
+          "ranking_model_version",
+          "pricing_model_version",
+          "model_parameters",
+          "pricing",
+          "confidence",
+          "ranked_carriers",
+          "comparable_loads",
+          "warnings"
+        ],
+        "title": "DecisionResponse",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "LoadResponse": {
+        "properties": {
+          "distance_miles": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance Miles"
+          },
+          "equipment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Equipment"
+          },
+          "external_id": {
+            "title": "External Id",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "observed_at": {
+            "title": "Observed At",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "stops": {
+            "items": {
+              "$ref": "#/components/schemas/StopResponse"
+            },
+            "title": "Stops",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "external_id",
+          "status",
+          "equipment",
+          "distance_miles",
+          "observed_at",
+          "stops"
+        ],
+        "title": "LoadResponse",
+        "type": "object"
+      },
+      "LoadStatus": {
+        "description": "Canonical lifecycle states for a freight load.",
+        "enum": [
+          "PLANNED",
+          "ACTIVE",
+          "COVERED",
+          "IN_TRANSIT",
+          "DELIVERED",
+          "COMPLETED"
+        ],
+        "title": "LoadStatus",
+        "type": "string"
+      },
+      "PricingResponse": {
+        "properties": {
+          "blend_local_weight": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blend Local Weight"
+          },
+          "broader_tier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Broader Tier"
+          },
+          "currency": {
+            "title": "Currency",
+            "type": "string"
+          },
+          "effective_evidence_count": {
+            "title": "Effective Evidence Count",
+            "type": "string"
+          },
+          "historical_comparison_lower_usd": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Historical Comparison Lower Usd"
+          },
+          "historical_comparison_upper_usd": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Historical Comparison Upper Usd"
+          },
+          "local_tier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Local Tier"
+          },
+          "point_estimate_usd": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Point Estimate Usd"
+          },
+          "raw_evidence_count": {
+            "title": "Raw Evidence Count",
+            "type": "integer"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "currency",
+          "point_estimate_usd",
+          "historical_comparison_lower_usd",
+          "historical_comparison_upper_usd",
+          "local_tier",
+          "broader_tier",
+          "blend_local_weight",
+          "raw_evidence_count",
+          "effective_evidence_count",
+          "warnings"
+        ],
+        "title": "PricingResponse",
+        "type": "object"
+      },
+      "RankedCarrierResponse": {
+        "properties": {
+          "adjusted_score": {
+            "title": "Adjusted Score",
+            "type": "string"
+          },
+          "carrier_id": {
+            "title": "Carrier Id",
+            "type": "string"
+          },
+          "carrier_name": {
+            "title": "Carrier Name",
+            "type": "string"
+          },
+          "component_scores": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Component Scores",
+            "type": "object"
+          },
+          "confidence_score": {
+            "title": "Confidence Score",
+            "type": "string"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Ids",
+            "type": "array"
+          },
+          "explanation_bullets": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Explanation Bullets",
+            "type": "array"
+          },
+          "rank": {
+            "title": "Rank",
+            "type": "integer"
+          },
+          "reason_codes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Reason Codes",
+            "type": "array"
+          }
+        },
+        "required": [
+          "rank",
+          "carrier_id",
+          "carrier_name",
+          "adjusted_score",
+          "confidence_score",
+          "component_scores",
+          "reason_codes",
+          "explanation_bullets",
+          "evidence_ids"
+        ],
+        "title": "RankedCarrierResponse",
+        "type": "object"
+      },
+      "StopResponse": {
+        "properties": {
+          "city": {
+            "title": "City",
+            "type": "string"
+          },
+          "is_dropoff": {
+            "title": "Is Dropoff",
+            "type": "boolean"
+          },
+          "is_pickup": {
+            "title": "Is Pickup",
+            "type": "boolean"
+          },
+          "postal_code": {
+            "title": "Postal Code",
+            "type": "string"
+          },
+          "sequence": {
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "state": {
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sequence",
+          "is_pickup",
+          "is_dropoff",
+          "city",
+          "state",
+          "postal_code"
+        ],
+        "title": "StopResponse",
+        "type": "object"
+      },
+      "TenantResponse": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "slug": {
+            "title": "Slug",
+            "type": "string"
+          },
+          "source_system": {
+            "title": "Source System",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "source_system"
+        ],
+        "title": "TenantResponse",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "Carrier Pool API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/loads": {
+      "get": {
+        "description": "List only caller-tenant current load projections, ACTIVE by default.",
+        "operationId": "list_loads_api_v1_loads_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/LoadStatus",
+              "default": "ACTIVE"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-tenant-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/LoadResponse"
+                  },
+                  "title": "Response List Loads Api V1 Loads Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Loads",
+        "tags": [
+          "loads"
+        ]
+      }
+    },
+    "/api/v1/loads/{load_id}": {
+      "get": {
+        "description": "Return current tenant-owned load; hide cross-tenant existence.",
+        "operationId": "get_load_api_v1_loads__load_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "load_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Load Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-tenant-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoadResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Load",
+        "tags": [
+          "loads"
+        ]
+      }
+    },
+    "/api/v1/loads/{load_id}/decision": {
+      "get": {
+        "description": "Return latest persisted decision for current ACTIVE input, never recompute implicitly.",
+        "operationId": "get_decision_api_v1_loads__load_id__decision_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "load_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Load Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-tenant-id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Tenant-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Decision",
+        "tags": [
+          "decisions"
+        ]
+      }
+    },
+    "/api/v1/tenants": {
+      "get": {
+        "description": "Return safe public fictional-broker fields for demo selection.",
+        "operationId": "list_tenants_api_v1_tenants_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TenantResponse"
+                  },
+                  "title": "Response List Tenants Api V1 Tenants Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Tenants",
+        "tags": [
+          "tenants"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "health"
+        ]
+      }
+    }
+  }
+}

@@ -2,12 +2,13 @@
 
 import json
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict, ValidationError, field_validator
 
 from carrier_pool.domain.models import (
+    CanonicalCargoItem,
     CanonicalCarrierSnapshot,
     CanonicalCustomerSnapshot,
     CanonicalLoadSnapshot,
@@ -51,7 +52,7 @@ class BrokerOSStopDto(BrokerOSDto):
     bos__Is_Pickup__c: bool
     bos__Is_Dropoff__c: bool
     bos__Location__c: str
-    bos__Scheduled_Date__c: str
+    bos__Scheduled_Date__c: date
     bos__Arrival_Time__c: datetime | None
 
     @field_validator("bos__Number__c")
@@ -238,9 +239,7 @@ def _resolve_load(
     accounts: dict[str, BrokerOSAccountDto],
     locations: dict[str, BrokerOSLocationDto],
 ) -> BrokerOSResolvedLoad:
-    customer = _required_account(
-        load.bos__Customer__c, accounts, "bos__Customer__c", "Customer"
-    )
+    customer = _required_account(load.bos__Customer__c, accounts, "bos__Customer__c", "Customer")
     carrier = (
         None
         if load.bos__Carrier__c is None
@@ -325,6 +324,7 @@ def normalize_brokeros(
                 state=resolved_stop.location.bos__State__c,
                 postal_code=resolved_stop.location.bos__Postal_Code__c,
                 facility_name=resolved_stop.location.Name,
+                planned_date=resolved_stop.stop.bos__Scheduled_Date__c,
                 actual_arrival_at=resolved_stop.stop.bos__Arrival_Time__c,
             )
             for resolved_stop in resolved.stops
@@ -353,6 +353,9 @@ def normalize_brokeros(
                 ),
                 distance_miles=decimal_from_value(source_load.bos__Distance_Miles__c),
                 load_number=source_load.Name,
+                cargo_items=tuple(
+                    _canonical_cargo_item(item) for item in source_load.bos__Line_Items__r
+                ),
             )
         )
         customers.append(customer)
@@ -360,9 +363,7 @@ def normalize_brokeros(
             carriers.append(carrier)
     sync_at = assembly.sync.synced_at
     return NormalizedSync(
-        metadata=SyncMetadata(
-            tenant_id, SourceSystem.BROKEROS, source_file_name, sync_at, sync_at
-        ),
+        metadata=SyncMetadata(tenant_id, SourceSystem.BROKEROS, source_file_name, sync_at, sync_at),
         loads=tuple(loads),
         customers=tuple(customers),
         carriers=tuple(carriers),
@@ -380,3 +381,13 @@ def _line_item_weight_lbs(item: BrokerOSLineItemDto) -> Decimal:
     if unit in {"kg", "kgs", "kilogram", "kilograms"}:
         return kilograms_to_pounds(weight)
     raise ValueError(f"Unsupported BrokerOS weight unit: {item.bos__Weight_Units__c!r}.")
+
+
+def _canonical_cargo_item(item: BrokerOSLineItemDto) -> CanonicalCargoItem:
+    return CanonicalCargoItem(
+        commodity=item.bos__Commodity__c,
+        weight_lbs=_line_item_weight_lbs(item),
+        declared_weight=decimal_from_value(item.bos__Weight__c),
+        declared_weight_unit=item.bos__Weight_Units__c,
+        pallet_count=decimal_from_value(item.bos__Pallet_Count__c),
+    )

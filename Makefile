@@ -25,7 +25,7 @@ test-unit:
 	cd frontend && pnpm test
 
 test-integration: db-up
-	cd backend && DATABASE_URL=postgresql+psycopg://carrier_pool:carrier_pool@localhost:5432/carrier_pool uv run pytest tests/db/test_persistence_integration.py tests/ingestion/test_hauldesk_persistence_integration.py tests/ingestion/test_brokeros_persistence_integration.py
+	cd backend && DATABASE_URL=postgresql+psycopg://carrier_pool:carrier_pool@localhost:5432/carrier_pool uv run pytest tests/db/test_persistence_integration.py tests/db/test_rls_direct_sql_integration.py tests/ingestion/test_freightflow_persistence_integration.py tests/ingestion/test_hauldesk_persistence_integration.py tests/ingestion/test_brokeros_persistence_integration.py
 
 build:
 	cd backend && uv build

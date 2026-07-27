@@ -86,7 +86,16 @@ def test_brokeros_restated_rate_creates_new_version_and_replaces_projection(
         .select_from(SourceRateEntry)
         .where(SourceRateEntry.tenant_id == tenant.id)
     )
+    canonical_snapshot = session.scalar(
+        select(LoadVersion.canonical_snapshot)
+        .where(LoadVersion.tenant_id == tenant.id)
+        .order_by(LoadVersion.observed_at.desc())
+    )
 
     assert versions == [Decimal("1400.00"), Decimal("1450.00")]
     assert current_rate == Decimal("1450.00")
     assert ledger_rows == 0
+    assert canonical_snapshot is not None
+    assert canonical_snapshot["stops"][0]["planned_date"] == "2026-07-07"
+    assert canonical_snapshot["cargo_items"][0]["commodity"] == "Packaged foods"
+    assert canonical_snapshot["cargo_items"][0]["declared_weight_unit"] == "lbs"

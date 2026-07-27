@@ -1,7 +1,7 @@
 """Immutable source-independent snapshots produced by normalization."""
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from decimal import Decimal
 
 from carrier_pool.domain.types import (
@@ -76,6 +76,7 @@ class CanonicalStop:
     state: str
     postal_code: str
     facility_name: str | None = None
+    planned_date: date | None = None
     scheduled_start_at: datetime | None = None
     scheduled_end_at: datetime | None = None
     actual_arrival_at: datetime | None = None
@@ -103,6 +104,23 @@ class CanonicalStop:
             and self.scheduled_end_at < self.scheduled_start_at
         ):
             raise ValueError("scheduled_end_at must not be before scheduled_start_at.")
+
+
+@dataclass(frozen=True, slots=True)
+class CanonicalCargoItem:
+    """Canonical cargo detail with original declared units retained for audit."""
+
+    commodity: str
+    weight_lbs: Decimal
+    declared_weight: Decimal
+    declared_weight_unit: str
+    pallet_count: Decimal
+
+    def __post_init__(self) -> None:
+        if not self.commodity.strip() or not self.declared_weight_unit.strip():
+            raise ValueError("Cargo commodity and declared_weight_unit must not be empty.")
+        if self.weight_lbs < 0 or self.declared_weight < 0 or self.pallet_count < 0:
+            raise ValueError("Cargo weights and pallet_count must not be negative.")
 
 
 @dataclass(frozen=True, slots=True)
@@ -141,6 +159,7 @@ class CanonicalLoadSnapshot:
     weight_lbs: Decimal | None = None
     distance_miles: Decimal | None = None
     load_number: str | None = None
+    cargo_items: tuple[CanonicalCargoItem, ...] = field(default_factory=tuple)
 
     def __post_init__(self) -> None:
         _require_utc_datetime(self.source_created_at, "source_created_at")

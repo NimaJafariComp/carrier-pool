@@ -3,7 +3,7 @@
 import hashlib
 import json
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 from typing import cast
 
@@ -810,11 +810,11 @@ def _uuid(value: str):
 
 
 def _canonical(value: CanonicalLoadSnapshot) -> dict[str, object]:
-    return {
+    return _json_safe_snapshot({
         "external_id": str(value.identity.external_id),
         "status": value.status.value,
         "stops": [asdict(stop) for stop in value.stops],
-    }
+    })
 
 
 def _hauldesk_canonical(
@@ -877,6 +877,7 @@ def _brokeros_canonical(value: CanonicalLoadSnapshot) -> dict[str, object]:
         "carrier_rate_amount": None
         if value.carrier_rate is None
         else str(value.carrier_rate.amount),
+        "cargo_items": [asdict(item) for item in value.cargo_items],
     })
 
 
@@ -887,7 +888,7 @@ def _json_safe_snapshot(snapshot: dict[str, object]) -> dict[str, object]:
 def _json_safe_value(value: object) -> object:
     if isinstance(value, Decimal):
         return str(value)
-    if isinstance(value, datetime):
+    if isinstance(value, (date, datetime)):
         return value.isoformat()
     if isinstance(value, dict):
         dictionary = cast(dict[object, object], value)
@@ -902,7 +903,7 @@ def _snapshot_hash(snapshot: dict[str, object]) -> str:
     def default(value: object) -> str:
         if isinstance(value, Decimal):
             return str(value)
-        if isinstance(value, datetime):
+        if isinstance(value, (date, datetime)):
             return value.isoformat()
         raise TypeError(f"Unsupported canonical snapshot value: {type(value)!r}")
 

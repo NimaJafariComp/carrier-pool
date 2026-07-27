@@ -29,4 +29,8 @@ def test_brokeros_normalizes_resolved_records_and_restated_rates() -> None:
     assert load.weight_lbs is not None and load.weight_lbs > Decimal("14660")
     assert [stop.sequence for stop in load.stops] == [1, 2]
     assert load.stops[0].facility_name == "Sugar Land Cold Storage"
+    assert load.stops[0].planned_date.isoformat() == "2026-07-07"
+    assert load.cargo_items[0].commodity == "Packaged foods"
+    assert load.cargo_items[0].pallet_count == Decimal("18")
+    assert load.cargo_items[1].declared_weight_unit == "kg"
     assert normalized.raw_loads[0]["bos__Line_Items__r"][0]["bos__Weight_Units__c"] == "lbs"

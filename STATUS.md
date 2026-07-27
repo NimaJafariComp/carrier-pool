@@ -31,7 +31,7 @@ acceptance evidence has not yet been recorded.
 - Source status/equipment mappings plus FreightFlow, BrokerOS, and DST-safe
   HaulDesk conversion utilities.
 
-## Phase 3 — Database design and migrations — Implemented; gate evidence pending
+## Phase 3 — Database design and migrations — Implemented; RLS evidence complete
 
 - Database design document, SQLAlchemy models, Alembic migrations, temporal load
   versions/current projections/stops, source ledger entries, and decision tables.
@@ -39,21 +39,23 @@ acceptance evidence has not yet been recorded.
   tenant context helper.
 - PostgreSQL integration tests cover temporal persistence, Decimal round trips,
   immutable versions, and current-version links.
-- Remaining gate evidence: direct-SQL RLS tests must prove tenant A cannot read
-  or mutate tenant B rows under the application role.
+- Direct-SQL RLS integration test connects as `carrier_pool_app`; it verifies
+  missing tenant context exposes no customer rows, tenant A sees only own rows,
+  and tenant A cannot delete tenant B rows.
 
-## Phase 4 — FreightFlow vertical slice — Implemented; gate evidence pending
+## Phase 4 — FreightFlow vertical slice — Complete
 
 - FreightFlow DTO parser, canonical normalizer, database-free adapter, and
   transactional idempotent ingestion coordinator.
 - Tenant-scoped current-load API and minimal React load-detail UI with loading,
   error, and not-found states.
-- Parser/normalizer/API/UI tests exist.
-- Remaining gate evidence: run an end-to-end persistence test using both supplied
-  FreightFlow snapshots, confirm two versions/current projection, and verify
-  duplicate reingestion.
+- Parser/normalizer/API/UI tests exist. Contract tests normalize the supplied
+  comment-stripped schema example through the actual adapter.
+- PostgreSQL integration test ingests both supplied FreightFlow snapshots and
+  verifies two immutable versions, later current projection, and duplicate-file
+  no-op.
 
-## Phase 5 — HaulDesk and BrokerOS adapters — Tasks complete; gate gap recorded
+## Phase 5 — HaulDesk and BrokerOS adapters — Complete
 
 - **5.1–5.3 HaulDesk:** DTO parsing, typed carrier/rate assembly, structured
   missing-carrier warnings, DST-safe normalization, append-only ledger entries,
@@ -65,11 +67,12 @@ acceptance evidence has not yet been recorded.
   deltas.
 - **5.6:** shared FreightFlow/HaulDesk/BrokerOS database-free canonical adapter
   contract tests.
-- PostgreSQL integration suite passes for HaulDesk ledger adjustments and
-  BrokerOS rate restatements.
-- Recorded canonical gap: date-only planned stop dates plus cargo commodity,
-  pallet count, and declared weight unit are retained in raw snapshots but lack
-  first-class canonical fields.
+- PostgreSQL integration tests cover HaulDesk ledger adjustments and BrokerOS
+  restatements.
+- BrokerOS canonical snapshots retain planned stop date plus per-item commodity,
+  canonical and declared weight, declared weight unit, and pallet count.
+- Contract tests normalize every supplied comment-stripped schema example as a
+  file through its source adapter.
 
 ## Phases 6–16 — Not started
 
@@ -85,7 +88,9 @@ acceptance evidence has not yet been recorded.
 - Phase 15: documentation and review preparation.
 - Phase 16: optional shared carrier pool.
 
-## Latest verification
+## Latest verification — 2026-07-27
 
-- Full backend suite with PostgreSQL: `105 passed`.
-- Ruff and Pyright: pass.
+- Backend suite with PostgreSQL: `110 passed`.
+- PostgreSQL integration target: `7 passed` (temporal persistence, direct-SQL
+  RLS, FreightFlow replacement/idempotency, HaulDesk ledger, BrokerOS restatement).
+- Ruff: pass. Pyright: `0 errors, 0 warnings, 0 informations`.

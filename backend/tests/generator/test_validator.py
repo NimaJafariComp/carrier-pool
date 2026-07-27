@@ -5,9 +5,14 @@ from pathlib import Path
 
 import pytest
 
+from carrier_pool.generator.catalog import build_catalog
 from carrier_pool.generator.manifest import write_scenarios_manifest
-from carrier_pool.generator.scheduler import write_sync_files
-from carrier_pool.generator.validator import GeneratedDataValidationError, validate_generated_data
+from carrier_pool.generator.scheduler import build_schedule, write_sync_files
+from carrier_pool.generator.validator import (
+    GeneratedDataValidationError,
+    validate_generated_data,
+    validate_schedule_backtest_readiness,
+)
 
 
 def _generated_data(tmp_path: Path) -> Path:
@@ -22,6 +27,18 @@ def test_validator_accepts_complete_generated_dataset(tmp_path: Path) -> None:
 
     assert report.sync_file_count == 123
     assert report.warning_codes == ()
+
+
+def test_schedule_requires_completed_history_for_each_source() -> None:
+    catalog = build_catalog()
+    schedule = tuple(
+        sync
+        for sync in build_schedule(catalog)
+        if not any(event.load_id == "FF-1402" for event in sync.events)
+    )
+
+    with pytest.raises(GeneratedDataValidationError, match="FREIGHTFLOW requires six completed"):
+        validate_schedule_backtest_readiness(catalog, schedule)
 
 
 def test_validator_rejects_malformed_schedule(tmp_path: Path) -> None:

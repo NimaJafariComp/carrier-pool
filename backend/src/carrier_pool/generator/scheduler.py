@@ -1,7 +1,6 @@
 """Deterministic Phase 6 sync schedule and safe plain-JSON file writer."""
 
 import json
-from collections import defaultdict
 from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
@@ -39,14 +38,30 @@ _STATUSES = (
     LoadStatus.COMPLETED,
 )
 _CARRIERS = {
+    "FF-1001": "FF-C-201",
     "FF-1101": "FF-C-201",
     "FF-1201": "FF-C-202",
     "FF-1301": "FF-C-203",
     "FF-1401": "FF-C-204",
     "FF-1402": "FF-C-205",
     "HD-2101": "HD-C-404",
+    "HD-2001": "HD-C-401",
+    "HD-2002": "HD-C-405",
+    "HD-2003": "HD-C-206",
+    "HD-2004": "HD-C-407",
+    "HD-2005": "HD-C-408",
+    "BO-3001": "BO-C-601",
+    "BO-3002": "BO-C-602",
+    "BO-3003": "BO-C-603",
+    "BO-3005": "BO-C-604",
     "BO-3101": "BO-C-601",
     "BO-3004": "BO-C-602",
+}
+
+ANCHOR_LOAD_IDS = {
+    SourceSystem.FREIGHTFLOW: "FF-1001",
+    SourceSystem.HAULDESK: "HD-2001",
+    SourceSystem.BROKEROS: "BO-3001",
 }
 
 
@@ -61,7 +76,6 @@ def build_schedule(catalog: ScenarioCatalog) -> tuple[ScheduledSync, ...]:
     if any(not loads for loads in historical_loads.values()):
         raise ValueError("catalog requires at least one historical load per source.")
 
-    occurrences: defaultdict[str, int] = defaultdict(int)
     schedule: list[ScheduledSync] = []
     for day_offset in range(HISTORICAL_DAYS):
         sync_date = HISTORICAL_START + timedelta(days=day_offset)
@@ -71,9 +85,9 @@ def build_schedule(catalog: ScenarioCatalog) -> tuple[ScheduledSync, ...]:
             )
             slot = day_offset * len(SYNC_HOURS) + SYNC_HOURS.index(hour)
             for source in SourceSystem:
-                load = historical_loads[source][slot % len(historical_loads[source])]
-                occurrence = occurrences[load.logical_id]
-                occurrences[load.logical_id] += 1
+                load, occurrence = _scheduled_historical_load(
+                    source, historical_loads[source], slot
+                )
                 schedule.append(
                     _historical_sync(catalog, source, load.logical_id, sync_at, occurrence)
                 )
@@ -95,6 +109,25 @@ def build_schedule(catalog: ScenarioCatalog) -> tuple[ScheduledSync, ...]:
     return tuple(
         sorted(schedule, key=lambda sync: (sync.sync_at, sync.source_system, sync.sync_id))
     )
+
+
+def _scheduled_historical_load(
+    source: SourceSystem, loads: tuple, slot: int
+):
+    """Return a six-stage lifecycle block; anchor block always runs first."""
+    ordered = tuple(
+        sorted(
+            loads,
+            key=lambda load: (load.logical_id != ANCHOR_LOAD_IDS[source], load.logical_id),
+        )
+    )
+    if len(ordered) != 6:
+        raise ValueError(f"{source.value} requires exactly six historical loads.")
+    lifecycle_slots = len(ordered) * len(_STATUSES)
+    if slot < lifecycle_slots:
+        return ordered[slot // len(_STATUSES)], slot % len(_STATUSES)
+    tail_slot = slot - lifecycle_slots
+    return ordered[tail_slot % len(ordered)], len(_STATUSES) + tail_slot // len(ordered)
 
 
 def write_sync_files(data_root: Path, catalog: ScenarioCatalog | None = None) -> tuple[Path, ...]:
@@ -141,7 +174,7 @@ def _historical_sync(
         carrier_rate=rate if occurrence >= 2 else None,
     )
     events: tuple[LifecycleEvent | FinancialEvent, ...] = (event,)
-    if source is SourceSystem.HAULDESK and occurrence >= 2:
+    if source is SourceSystem.HAULDESK and occurrence == 2:
         events = (
             event,
             FinancialEvent(
@@ -149,7 +182,7 @@ def _historical_sync(
                 occurred_at=sync_at,
                 entry_id=f"HD-RATE-{sync_at:%Y%m%d%H%M}-{occurrence}",
                 side=FinancialSide.PAY,
-                code="LINEHAUL" if occurrence == 2 else "ADJUSTMENT",
+                code="LINEHAUL",
                 amount=rate,
             ),
         )

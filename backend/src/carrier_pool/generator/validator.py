@@ -2,6 +2,7 @@
 
 import json
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from re import compile as re_compile
 from typing import cast
@@ -10,8 +11,13 @@ from carrier_pool.domain.models import NormalizedSync
 from carrier_pool.domain.types import LoadStatus, SourceSystem
 from carrier_pool.generator.catalog import build_catalog
 from carrier_pool.generator.manifest import REQUIRED_SCENARIO_IDS
-from carrier_pool.generator.models import ScenarioCatalog, ScheduledSync
-from carrier_pool.generator.scheduler import DAY11_SYNC_AT, build_schedule, sync_relative_path
+from carrier_pool.generator.models import LifecycleEvent, ScenarioCatalog, ScheduledSync
+from carrier_pool.generator.scheduler import (
+    ANCHOR_LOAD_IDS,
+    DAY11_SYNC_AT,
+    build_schedule,
+    sync_relative_path,
+)
 from carrier_pool.ingestion.base import SourceFile, TenantContext
 from carrier_pool.ingestion.brokeros import BrokerOSAdapter
 from carrier_pool.ingestion.freightflow import FreightFlowAdapter
@@ -28,6 +34,7 @@ _ADAPTERS = {
     SourceSystem.HAULDESK: HaulDeskAdapter(),
     SourceSystem.BROKEROS: BrokerOSAdapter(),
 }
+MINIMUM_COMPLETED_HISTORY_LOADS_PER_SOURCE = 6
 
 
 class GeneratedDataValidationError(ValueError):
@@ -47,6 +54,10 @@ def validate_generated_data(
     catalog = catalog or build_catalog()
     errors: list[str] = []
     expected_syncs = build_schedule(catalog)
+    try:
+        validate_schedule_backtest_readiness(catalog, expected_syncs)
+    except GeneratedDataValidationError as error:
+        errors.append(str(error))
     expected_by_path = {str(sync_relative_path(sync)): sync for sync in expected_syncs}
     actual_paths = _actual_sync_paths(data_root, errors)
     expected_paths = set(expected_by_path)
@@ -86,6 +97,48 @@ def validate_generated_data(
     if errors:
         raise GeneratedDataValidationError("\n".join(errors))
     return ValidationReport(len(actual_path_set), tuple(sorted(warning_codes)))
+
+
+def validate_schedule_backtest_readiness(
+    catalog: ScenarioCatalog, schedule: tuple[ScheduledSync, ...]
+) -> None:
+    """Require completed source-local history before rolling backtest targets."""
+    errors: list[str] = []
+    for source in SourceSystem:
+        historical_ids = {
+            load.logical_id
+            for load in catalog.loads
+            if load.source_system is source and not load.day11_target
+        }
+        lifecycle_events = tuple(
+            (sync.sync_at, event)
+            for sync in schedule
+            if sync.source_system is source
+            for event in sync.events
+            if isinstance(event, LifecycleEvent) and event.load_id in historical_ids
+        )
+        completed_at: dict[str, datetime] = {}
+        for sync_at, event in lifecycle_events:
+            if event.status is LoadStatus.COMPLETED:
+                completed_at.setdefault(event.load_id, sync_at)
+        if len(completed_at) < MINIMUM_COMPLETED_HISTORY_LOADS_PER_SOURCE:
+            errors.append(
+                f"{source.value} requires six completed historical loads for rolling backtests"
+            )
+            continue
+        anchor_id = ANCHOR_LOAD_IDS[source]
+        anchor_completed_at = completed_at.get(anchor_id)
+        if anchor_completed_at is None:
+            errors.append(f"{source.value} anchor {anchor_id} must complete")
+            continue
+        first_active_at: dict[str, datetime] = {}
+        for sync_at, event in lifecycle_events:
+            if event.status is LoadStatus.ACTIVE and event.load_id != anchor_id:
+                first_active_at.setdefault(event.load_id, sync_at)
+        if any(anchor_completed_at >= active_at for active_at in first_active_at.values()):
+            errors.append(f"{source.value} anchor must complete before later loads become ACTIVE")
+    if errors:
+        raise GeneratedDataValidationError("\n".join(errors))
 
 
 def _actual_sync_paths(data_root: Path, errors: list[str]) -> set[str]:

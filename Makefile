@@ -1,4 +1,4 @@
-.PHONY: setup generate validate ingest rebuild-projections format format-check lint typecheck test-unit test-integration build db-up down check
+.PHONY: setup generate validate ingest rebuild-projections backtest format format-check lint typecheck test-unit test-integration build db-up down check
 
 setup:
 	cd backend && uv sync --all-groups
@@ -17,6 +17,9 @@ ingest:
 rebuild-projections:
 	test -n "$(TENANT_ID)"
 	cd backend && uv run carrier-pool rebuild-projections --tenant-id "$(TENANT_ID)"
+
+backtest: db-up
+	cd backend && DATABASE_URL=postgresql+psycopg://carrier_pool:carrier_pool@localhost:5432/carrier_pool uv run carrier-pool rate-backtest --artifacts-dir ../artifacts
 
 format:
 	cd backend && uv run ruff format .

@@ -73,6 +73,28 @@ class ComparableLoadRepository:
             set_tenant_context(session, tenant_id)
             return self._retrieve(session, tenant_id, target_load_id, target_version_id, as_of)
 
+    def retrieve_by_tier(
+        self,
+        session: Session,
+        tenant_id: UUID,
+        target_load_id: UUID,
+        target_version_id: UUID,
+        as_of: datetime,
+    ) -> dict[LaneTier, tuple[ComparableLoadEvidence, ...]]:
+        """Return tenant-local as-of evidence grouped by its narrowest matching tier."""
+        if as_of.tzinfo is None or as_of.utcoffset() is None:
+            raise ValueError("as_of must be timezone-aware.")
+        if session.in_transaction():
+            set_tenant_context(session, tenant_id)
+            return self._retrieve_by_tier(
+                session, tenant_id, target_load_id, target_version_id, as_of
+            )
+        with session.begin():
+            set_tenant_context(session, tenant_id)
+            return self._retrieve_by_tier(
+                session, tenant_id, target_load_id, target_version_id, as_of
+            )
+
     def _retrieve(
         self,
         session: Session,
@@ -81,6 +103,22 @@ class ComparableLoadRepository:
         target_version_id: UUID,
         as_of: datetime,
     ) -> tuple[ComparableLoadEvidence, ...]:
+        buckets = self._retrieve_by_tier(
+            session, tenant_id, target_load_id, target_version_id, as_of
+        )
+        for tier in LaneTier:
+            if buckets[tier]:
+                return buckets[tier]
+        return ()
+
+    def _retrieve_by_tier(
+        self,
+        session: Session,
+        tenant_id: UUID,
+        target_load_id: UUID,
+        target_version_id: UUID,
+        as_of: datetime,
+    ) -> dict[LaneTier, tuple[ComparableLoadEvidence, ...]]:
         target = session.scalar(
             select(LoadVersion).where(
                 LoadVersion.tenant_id == tenant_id,
@@ -115,10 +153,9 @@ class ComparableLoadRepository:
             tier = _tier(target, target_route, version, has_exact_equipment)
             if tier is not None:
                 buckets[tier].append(_evidence(target, target_route, version, tier, as_of))
-        for tier in LaneTier:
-            if buckets[tier]:
-                return tuple(sorted(buckets[tier], key=_evidence_sort_key))
-        return ()
+        return {
+            tier: tuple(sorted(buckets[tier], key=_evidence_sort_key)) for tier in LaneTier
+        }
 
 
 def _tier(

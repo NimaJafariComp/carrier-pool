@@ -87,7 +87,7 @@ acceptance evidence has not yet been recorded.
 - Focused tests cover lifecycle sequencing including status regression, correction
   application, append-only ledger entries, Day 11 target protection, and seeded
   determinism.
-- Hand-authored catalog factory provides three source-bound tenants, 15 Texas
+- Hand-authored catalog factory provides three source-bound tenants, 16 Texas
   Triangle locations, nine customers, and eight carriers per tenant. Every
   carrier has stable MC/DOT values; one authority is intentionally shared across
   two tenant-local carrier records. Profiles cover rich/thin lanes, low/high
@@ -102,6 +102,17 @@ acceptance evidence has not yet been recorded.
   per day for ten days across all sources) plus three Day 11 active-load files.
   `carrier-pool generate` and `make generate` write only known plain-JSON paths,
   preserve JSONC schema examples, and rerun byte-for-byte identically.
+- Each source starts with a hand-authored anchor full lifecycle (`FF-1001`,
+  `HD-2001`, `BO-3001`) and completes it before any later source load first
+  becomes ACTIVE. Six historical loads per tenant now provide same-tenant
+  near-exact/rich, regional, metro-corridor, thin/sparse, and
+  distance/equipment fallback evidence while Day 11 target loads remain
+  unchanged.
+- HaulDesk lifecycle snapshots no longer manufacture ledger adjustments: a
+  generated load emits its single linehaul row at booking unless an explicit
+  financial scenario adds another row. Generated ingestion verifies `HD-2101`
+  has a final PAY ledger total of `$1,150` and that Day 11 displays that same
+  comparable rate for `HD-9001`.
 - `data/scenarios.json` is deterministically derived from canonical typed scenario
   definitions and schedule paths. It contains all 26 required scenario IDs,
   tenant/source bindings, valid entity IDs, source files, descriptions, expected
@@ -111,6 +122,12 @@ acceptance evidence has not yet been recorded.
   units, ZIP catalog coverage, lifecycle/money timing, Day 11 protection, required
   scenario coverage, and declared normalization warnings. Focused negative tests
   reject missing schedule files, broken BrokerOS references, and undeclared warnings.
+- Generated-data validation also requires six completed historical loads per source
+  and verifies the source anchor completes before any later load first becomes
+  ACTIVE. The generated ingestion smoke requires at least five scored rolling
+  cases per tenant/source (15 total), at least one rich and one sparse case, and
+  confirms every comparable immutable version is observed at or before its target
+  case's first-ACTIVE cutoff.
 
 ## Phase 7 — Complete ingestion and rebuild logic — Complete
 
@@ -166,10 +183,65 @@ acceptance evidence has not yet been recorded.
   Integration tests cover suburb history, reverse-lane separation, metro fallback,
   exact-lane precedence, future-version exclusion, and tenant isolation.
 
-## Phases 9–16 — Not started
+## Phase 9 — Rate estimation and backtesting — Complete
 
-- Phase 9: rate estimation and leakage-free backtesting.
-- Phase 10: carrier historical-fit ranking.
+- **9.1:** `docs/architecture/rate-estimation.md` specifies eligible completed
+  history, replacement/ledger rate targets, as-of correction rules, weights,
+  quantiles, ESS, shrinkage, ranges, confidence, evidence, and rolling backtests.
+- **9.2:** pure typed `Decimal` weighted-statistics primitives implement median,
+  quantiles, weight normalization, Kish ESS, and hierarchical blending. Focused
+  tests cover empty/zero/single/duplicate values, float rejection, scale
+  invariance, and exact normalized sums.
+- **9.3:** `HierarchicalRateEstimator` consumes immutable comparable tiers and
+  source-aware carrier totals at `as_of`. It uses replacement snapshots for
+  FreightFlow/BrokerOS and append-only HaulDesk PAY ledger entries, includes
+  sparse fallback, confidence diagnostics, structured comparable evidence, and
+  explicit no-data/unknown-equipment/geography warnings. Unit tests cover exact,
+  regional, metro sparse fallback, rich-tier threshold, unknown equipment,
+  no-data, and timezone validation.
+- **9.4:** `RateBacktestHarness` selects each load's first immutable `ACTIVE`
+  observation as cutoff, calls the estimator only at that cutoff, and compares
+  it with eventual corrected replacement/ledger carrier totals. `rate-backtest`
+  and `make backtest` write `artifacts/backtest_metrics.json` and
+  `artifacts/backtest_cases.csv`, including MAE, median error, WAPE, historical
+  range coverage, and tier/equipment/rich-versus-sparse breakdowns. Focused tests
+  prove a future correction is label-only and cannot alter the earlier estimator
+  input; artifact and aggregate-metric tests pass.
+- **9.5:** analysis-only tenant-wide, equipment/distance-band, unshrunk lane,
+  Huber, and quantile-regression baselines run at every case's same immutable
+  `as_of` cutoff against tenant-local completed observations only. Artifacts expose
+  each model's explicit case count, MAE, median error, WAPE, and range coverage;
+  models without enough observations show zero eligible cases rather than sharing
+  another model's population. pandas/scikit-learn live only in backend's `analysis`
+  dependency group. The production estimator remains `pricing-hierarchical-v1`;
+  `DECISIONS.md` records no promotion without material leakage-safe improvement.
+- **Gate evidence:** each generated Day 11 target produces a Decimal point estimate,
+  historical range, confidence, fallback/warnings, and immutable comparable evidence
+  in a database smoke check. After the Phase 6 anchor schedule repair, fresh
+  generated smoke tenants yield 18 eligible labels and 15 scored predictions across
+  NEAR_EXACT, REGIONAL, METRO_CORRIDOR, DISTANCE_EQUIPMENT, and
+  TENANT_ALL_EQUIPMENT. `make backtest` writes aligned, model-specific metrics and
+  displayed case counts (current local populated DB: 314 eligible labels and 195
+  production-scored cases); the smoke test verifies baseline populations never
+  exceed available rolling cases and all comparable evidence is at or before each
+  target cutoff. Phase 9 gate passed after `make generate`, `make validate`,
+  generated-data ingestion, backtest artifact review, and the isolated gate smoke.
+- The generated-data gate test asserts every Day 11 target has a Decimal point
+  estimate, ordered historical range, confidence, and immutable comparable
+  evidence; rolling scoring is nonzero; production and every eligible baseline
+  expose metric rows; and the separate correction contract keeps future corrected
+  totals label-only while estimator inputs remain bounded by the first-ACTIVE
+  cutoff.
+
+## Phase 10 — Carrier historical-fit ranking — Task 10.1 complete
+
+- `docs/architecture/carrier-ranking.md` defines tenant-local historical-fit
+  eligibility, components, weights, ESS/shrinkage, confidence, tie-breaking,
+  structured explanations, strict deadhead wording, temporal/tenant boundaries,
+  and leakage-safe proxy evaluation. No ranking code has been implemented.
+
+## Phases 11–16 — Not started
+
 - Phase 11: persisted decisions and complete API.
 - Phase 12: final frontend.
 - Phase 13: tenancy/correction/historical hardening.
@@ -179,7 +251,6 @@ acceptance evidence has not yet been recorded.
 
 ## Latest verification — 2026-07-27
 
-- Backend suite with PostgreSQL: `141 passed`.
-- PostgreSQL integration target: `7 passed` (temporal persistence, direct-SQL
-  RLS, FreightFlow replacement/idempotency, HaulDesk ledger, BrokerOS restatement).
+- `make test-integration`: `7 passed` against local Compose PostgreSQL.
+- Full backend suite with `DATABASE_URL`: `182 passed`.
 - Ruff: pass. Pyright: `0 errors, 0 warnings, 0 informations`.

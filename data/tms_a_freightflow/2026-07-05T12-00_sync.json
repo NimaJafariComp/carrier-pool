@@ -1,45 +1,39 @@
 {
   "loads": [
     {
-      "carrier": {
-        "carrierMasterId": 860367,
-        "dotNumber": "3900204",
-        "mcNumber": "1350204",
-        "name": "Metro Haul",
-        "phoneNumber": "+12145550101"
-      },
+      "carrier": null,
       "createdDate": "2026-07-05T07:00:00-05:00",
       "customer": {
-        "customerId": 149401,
-        "name": "Prairie Foods"
+        "customerId": 907640,
+        "name": "Metro Retail"
       },
-      "equipment": "53 ft Van | Dry",
+      "equipment": "53 ft Van | Reefer",
       "lastModifiedDate": "2026-07-05T07:00:00-05:00",
       "mileage": 242.1,
-      "shipmentId": 751335,
-      "status": "En Route",
+      "shipmentId": 351331,
+      "status": "Quoting",
       "stops": [
         {
           "actualDepartureDateTime": null,
-          "city": "PASADENA",
+          "city": "HOUSTON",
           "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
           "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
           "state": "TX",
           "stopType": "First Pickup",
-          "zipCode": "77502"
+          "zipCode": "77002"
         },
         {
           "actualDepartureDateTime": null,
-          "city": "GRAND PRAIRIE",
+          "city": "SAN ANTONIO",
           "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
           "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
           "state": "TX",
           "stopType": "Last Drop",
-          "zipCode": "75050"
+          "zipCode": "78205"
         }
       ],
-      "totalBuy": 1175,
-      "totalSell": 1455,
+      "totalBuy": null,
+      "totalSell": 1450,
       "weightTotal": 24000
     }
   ],

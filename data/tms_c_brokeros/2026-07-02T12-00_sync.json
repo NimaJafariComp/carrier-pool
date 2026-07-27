@@ -2,12 +2,12 @@
   "records": [
     {
       "CreatedDate": "2026-07-02T12:00:00.000+0000",
-      "Id": "a0jFB388F4DF5D2288",
+      "Id": "a0j317680A2F29EF30",
       "LastModifiedDate": "2026-07-02T12:00:00.000+0000",
-      "Name": "BO-3101",
-      "bos__Carrier_Rate__c": 1175,
-      "bos__Carrier__c": "00190FB4F1C847097A",
-      "bos__Customer_Rate__c": 1455,
+      "Name": "BO-3002",
+      "bos__Carrier_Rate__c": null,
+      "bos__Carrier__c": null,
+      "bos__Customer_Rate__c": null,
       "bos__Customer__c": "0014DD806107C8FF73",
       "bos__Distance_Miles__c": 242.1,
       "bos__Equipment_Type__c": "Reefer",
@@ -19,7 +19,7 @@
           "bos__Weight__c": 24000
         }
       ],
-      "bos__Load_Status__c": "In Transit",
+      "bos__Load_Status__c": "Quotes Requested",
       "bos__Stops__r": [
         {
           "bos__Arrival_Time__c": null,
@@ -44,11 +44,6 @@
     "0014DD806107C8FF73": {
       "Name": "Gulf Coast Foods",
       "record_type": "Customer",
-      "type": "Account"
-    },
-    "00190FB4F1C847097A": {
-      "Name": "Gulf Reefers",
-      "record_type": "Carrier",
       "type": "Account"
     },
     "001A06FC7BDA751406": {

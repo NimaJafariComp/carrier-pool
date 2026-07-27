@@ -17,7 +17,7 @@
       "lastModifiedDate": "2026-07-07T19:00:00-05:00",
       "mileage": 242.1,
       "shipmentId": 751335,
-      "status": "Completed",
+      "status": "Delivered",
       "stops": [
         {
           "actualDepartureDateTime": null,
@@ -38,8 +38,8 @@
           "zipCode": "75050"
         }
       ],
-      "totalBuy": 1225,
-      "totalSell": 1505,
+      "totalBuy": 1200,
+      "totalSell": 1480,
       "weightTotal": 24000
     }
   ],

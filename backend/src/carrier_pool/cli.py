@@ -10,6 +10,7 @@ import typer
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
+from carrier_pool.decisioning.backtest import RateBacktestHarness, write_backtest_artifacts
 from carrier_pool.domain.types import SourceSystem
 from carrier_pool.generator.manifest import write_scenarios_manifest
 from carrier_pool.generator.scheduler import write_sync_files
@@ -123,6 +124,36 @@ def show_ingestion_summary(
     finally:
         engine.dispose()
     typer.echo(json.dumps(summary, sort_keys=True))
+
+
+@app.command("rate-backtest")
+def rate_backtest(
+    artifacts_dir: Annotated[Path, typer.Option("--artifacts-dir", file_okay=False)] = Path(
+        "../artifacts"
+    ),
+) -> None:
+    """Run leakage-safe historical rate evaluation and write review artifacts."""
+    database_url = os.environ.get("DATABASE_URL")
+    if database_url is None:
+        raise typer.BadParameter("DATABASE_URL is required for rate backtesting.")
+    engine = create_engine(database_url)
+    try:
+        with Session(engine) as session:
+            report = RateBacktestHarness().run(session)
+    finally:
+        engine.dispose()
+    metrics_path, cases_path = write_backtest_artifacts(report, artifacts_dir)
+    typer.echo(
+        json.dumps(
+            {
+                "case_count": report.case_count,
+                "scored_case_count": report.scored_case_count,
+                "metrics_path": str(metrics_path),
+                "cases_path": str(cases_path),
+            },
+            sort_keys=True,
+        )
+    )
 
 
 def _ingest_discovered(sync: DiscoveredSync) -> IngestionResult:

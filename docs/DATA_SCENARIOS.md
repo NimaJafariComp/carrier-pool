@@ -9,9 +9,12 @@ The generator will create plain JSON sync files for 2026-07-01 through
 Schema examples remain JSONC documentation and are never overwritten.
 
 All source files below are relative to `data/`. `D<n>` means
-`2026-07-<nn>`. Important events are hand-authored. Deterministic background
-loads only fill otherwise-empty files and use the same catalog, lifecycle, and
-one-to-three-load rules; they never change a named scenario's expected result.
+`2026-07-<nn>`. Important events are hand-authored. The canonical catalog and
+generated `data/scenarios.json` are authoritative for exact event-file
+membership; the anchor schedule below supersedes illustrative per-row date grids
+if they differ. Deterministic background loads only fill otherwise-empty files
+and use the same catalog, lifecycle, and one-to-three-load rules; they never
+change a named scenario's expected result.
 
 ## Tenants and source bindings
 
@@ -36,6 +39,7 @@ one-to-three-load rules; they never change a named scenario's expected result.
 | `HOU-HOU` | Houston, TX | 77002 | Houston |
 | `HOU-PAS` | Pasadena, TX | 77502 | Houston |
 | `HOU-BAY` | Baytown, TX | 77520 | Houston |
+| `HOU-GLV` | Galveston, TX | 77550 | Houston |
 | `SAT-NBR` | New Braunfels, TX | 78130 | San Antonio |
 | `SAT-SCH` | Schertz, TX | 78154 | San Antonio |
 | `SAT-SAT` | San Antonio, TX | 78205 | San Antonio |
@@ -67,7 +71,7 @@ Dates in route columns are planned pickup → delivery. `FF`, `HD`, and `BO`
 abbreviate the source directory. A listed file is an exact event location;
 intervening appearances repeat only the source's normal changed-load snapshot.
 
-| ID | Purpose and entities | Tenant / route / equipment / dates | Exact lifecycle updates and source files | Correction or financial event | Expected final state and Day 11 effect | Verification test |
+| ID | Purpose and entities | Tenant / route / equipment / dates | Representative lifecycle updates and source files | Correction or financial event | Expected final state and Day 11 effect | Verification test |
 |---|---|---|---|---|---|---|
 | `SC-01` | FreightFlow full lifecycle; `FF-1001`, `FF-CUST-101`, `FF-C-201` | `ff-broker`; `DFW-GP→HOU-KAT`; dry van; D1→D2 | `D1 00` QUOTING; `D1 06` BOOKING; `D1 12` DISPATCHED; `D2 00` EN_ROUTE; `D2 12` DELIVERED; `D2 18` COMPLETED in `tms_a_freightflow/{timestamp}_sync.json` | Carrier rate appears at `D1 12`; final pay changes at `D2 18` | Completed, final carrier pay $1,200. Historic exact-lane evidence for `SC-24`. | `test_sc01_freightflow_full_lifecycle` |
 | `SC-02` | HaulDesk full lifecycle; `HD-2001`, `HD-CUST-301`, `HD-C-401` | `hd-broker`; `SAT-NBR→HOU-PAS`; dry van; D1→D2 | `D1 00` 10; `D1 06` 20; `D1 12` 30; `D2 00` 40; `D2 12` 50; `D2 18` 90 | Bill/pay ledger rows first appear at 30. | Completed ledger-backed load; validates source status mapping. | `test_sc02_hauldesk_full_lifecycle` |
@@ -98,19 +102,29 @@ intervening appearances repeat only the source's normal changed-load snapshot.
 
 ## Schedule and conflict rules
 
-1. Historical files use the literal name `{YYYY-MM-DD}T{HH-MM}_sync.json`.
+1. Each source begins with one early anchor load: `FF-1001`, `HD-2001`, and
+   `BO-3001`. Its six lifecycle observations occupy that source's first six
+   historical slots (`PLANNED`, `ACTIVE`, `COVERED`, `IN_TRANSIT`, `DELIVERED`,
+   `COMPLETED`). Every other historical load first becomes `ACTIVE` only after
+   its source anchor is completed.
+2. Each source has six historical loads. The first 36 source slots run their
+   ordered six-stage lifecycle blocks; the final four slots emit deterministic
+   completed snapshots. The catalog supplies same-tenant near-exact/rich,
+   regional, metro-corridor, thin/sparse, and distance/equipment fallback
+   evidence. Day 11 targets are unchanged.
+3. Historical files use the literal name `{YYYY-MM-DD}T{HH-MM}_sync.json`.
    Event timestamps fall at or before the file timestamp; all source-specific
    modified timestamps advance with that event.
-2. A single source file may carry up to three compatible scenario events. Its
+4. A single source file may carry up to three compatible scenario events. Its
    scenario membership is derived from scheduled events, not manually listed.
-3. Source semantics win when scenarios overlap: FreightFlow/BrokerOS emit the
+5. Source semantics win when scenarios overlap: FreightFlow/BrokerOS emit the
    entire changed load; HaulDesk emits changed load rows plus only new rate rows.
-4. `SC-05` is the final update of `SC-01`; `SC-09` and `SC-10` are sequential
+6. `SC-05` is the final update of `SC-01`; `SC-09` and `SC-10` are sequential
    financial updates of `SC-02`'s separate load `HD-2002`; `SC-15` describes
    the aggregate history created by the named FreightFlow loads.
-5. Day 11 targets never receive a booking, completed rate, correction, or
+7. Day 11 targets never receive a booking, completed rate, correction, or
    delivery event. They are decision inputs, not evaluation labels.
-6. Background loads cannot use `FF-1001…FF-1402`, `HD-2001…HD-2101`,
+8. Background loads cannot use `FF-1001…FF-1402`, `HD-2001…HD-2101`,
    `BO-3001…BO-3105`, or Day 11 target IDs. They must be listed in the derived
    manifest with `background: true`.
 

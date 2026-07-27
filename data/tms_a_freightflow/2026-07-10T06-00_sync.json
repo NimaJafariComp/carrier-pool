@@ -2,44 +2,44 @@
   "loads": [
     {
       "carrier": {
-        "carrierMasterId": 250037,
-        "dotNumber": "3900203",
-        "mcNumber": "1350203",
-        "name": "Texas General",
+        "carrierMasterId": 169083,
+        "dotNumber": "3900201",
+        "mcNumber": "1350201",
+        "name": "Lone Star Van",
         "phoneNumber": "+12145550101"
       },
       "createdDate": "2026-07-10T01:00:00-05:00",
       "customer": {
-        "customerId": 907640,
-        "name": "Metro Retail"
+        "customerId": 493634,
+        "name": "Lone Star Beverages"
       },
-      "equipment": "53 ft Van | Reefer",
+      "equipment": "53 ft Van | Dry",
       "lastModifiedDate": "2026-07-10T01:00:00-05:00",
       "mileage": 242.1,
-      "shipmentId": 351331,
+      "shipmentId": 352333,
       "status": "Completed",
       "stops": [
         {
           "actualDepartureDateTime": null,
-          "city": "HOUSTON",
+          "city": "GRAND PRAIRIE",
           "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
           "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
           "state": "TX",
           "stopType": "First Pickup",
-          "zipCode": "77002"
+          "zipCode": "75050"
         },
         {
           "actualDepartureDateTime": null,
-          "city": "SAN ANTONIO",
+          "city": "KATY",
           "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
           "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
           "state": "TX",
           "stopType": "Last Drop",
-          "zipCode": "78205"
+          "zipCode": "77449"
         }
       ],
-      "totalBuy": 1275,
-      "totalSell": 1555,
+      "totalBuy": 1250,
+      "totalSell": 1530,
       "weightTotal": 24000
     }
   ],

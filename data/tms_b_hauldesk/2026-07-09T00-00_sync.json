@@ -29,18 +29,18 @@
       "pu_departed_at": null,
       "pu_state": "TX",
       "pu_zip": "75024",
-      "status_code": 90,
+      "status_code": 30,
       "updated_at": "2026-07-08 19:00:00",
       "weight_kg": 10886.21688024085
     }
   ],
   "rates": [
     {
-      "amount_usd": 1900,
-      "code": "ADJUSTMENT",
+      "amount_usd": 1150,
+      "code": "LINEHAUL",
       "created_at": "2026-07-08 19:00:00",
       "load_num": "HD-2101",
-      "rate_id": 220964,
+      "rate_id": 935316,
       "side": "pay"
     }
   ],

@@ -10,8 +10,8 @@
       "equipment": "53 ft Van | Dry",
       "lastModifiedDate": "2026-07-02T07:00:00-05:00",
       "mileage": 242.1,
-      "shipmentId": 135569,
-      "status": "Booking",
+      "shipmentId": 352333,
+      "status": "Quoting",
       "stops": [
         {
           "actualDepartureDateTime": null,
@@ -33,7 +33,7 @@
         }
       ],
       "totalBuy": null,
-      "totalSell": 1405,
+      "totalSell": 1450,
       "weightTotal": 24000
     }
   ],

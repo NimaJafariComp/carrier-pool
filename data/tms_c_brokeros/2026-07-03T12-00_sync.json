@@ -2,12 +2,12 @@
   "records": [
     {
       "CreatedDate": "2026-07-03T12:00:00.000+0000",
-      "Id": "a0jFB388F4DF5D2288",
+      "Id": "a0j317680A2F29EF30",
       "LastModifiedDate": "2026-07-03T12:00:00.000+0000",
-      "Name": "BO-3101",
-      "bos__Carrier_Rate__c": 1225,
-      "bos__Carrier__c": "00190FB4F1C847097A",
-      "bos__Customer_Rate__c": 1505,
+      "Name": "BO-3002",
+      "bos__Carrier_Rate__c": 1200,
+      "bos__Carrier__c": "001F20F3DAA4B0297A",
+      "bos__Customer_Rate__c": 1480,
       "bos__Customer__c": "0014DD806107C8FF73",
       "bos__Distance_Miles__c": 242.1,
       "bos__Equipment_Type__c": "Reefer",
@@ -19,7 +19,7 @@
           "bos__Weight__c": 24000
         }
       ],
-      "bos__Load_Status__c": "Paid",
+      "bos__Load_Status__c": "Delivered",
       "bos__Stops__r": [
         {
           "bos__Arrival_Time__c": null,
@@ -46,11 +46,6 @@
       "record_type": "Customer",
       "type": "Account"
     },
-    "00190FB4F1C847097A": {
-      "Name": "Gulf Reefers",
-      "record_type": "Carrier",
-      "type": "Account"
-    },
     "001A06FC7BDA751406": {
       "Name": "Schertz Facility",
       "bos__City__c": "Schertz",
@@ -64,6 +59,11 @@
       "bos__Postal_Code__c": "77478",
       "bos__State__c": "TX",
       "type": "Location"
+    },
+    "001F20F3DAA4B0297A": {
+      "Name": "Port City Transport",
+      "record_type": "Carrier",
+      "type": "Account"
     }
   },
   "synced_at": "2026-07-03T12:00:00.000+0000"

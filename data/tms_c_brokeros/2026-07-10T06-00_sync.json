@@ -2,12 +2,12 @@
   "records": [
     {
       "CreatedDate": "2026-07-10T06:00:00.000+0000",
-      "Id": "a0j71905B1A95DF4B0",
+      "Id": "a0j317680A2F29EF30",
       "LastModifiedDate": "2026-07-10T06:00:00.000+0000",
-      "Name": "BO-3004",
-      "bos__Carrier_Rate__c": 1550,
+      "Name": "BO-3002",
+      "bos__Carrier_Rate__c": 1250,
       "bos__Carrier__c": "001F20F3DAA4B0297A",
-      "bos__Customer_Rate__c": 1830,
+      "bos__Customer_Rate__c": 1530,
       "bos__Customer__c": "0014DD806107C8FF73",
       "bos__Distance_Miles__c": 242.1,
       "bos__Equipment_Type__c": "Reefer",
@@ -31,31 +31,16 @@
         },
         {
           "bos__Arrival_Time__c": null,
-          "bos__Is_Dropoff__c": false,
-          "bos__Is_Pickup__c": false,
-          "bos__Location__c": "0013C3DBA5ED1B5F8C",
-          "bos__Number__c": 2,
-          "bos__Scheduled_Date__c": "2026-07-07"
-        },
-        {
-          "bos__Arrival_Time__c": null,
           "bos__Is_Dropoff__c": true,
           "bos__Is_Pickup__c": false,
           "bos__Location__c": "001A06FC7BDA751406",
-          "bos__Number__c": 3,
+          "bos__Number__c": 2,
           "bos__Scheduled_Date__c": "2026-07-07"
         }
       ]
     }
   ],
   "referenced_records": {
-    "0013C3DBA5ED1B5F8C": {
-      "Name": "Houston Facility",
-      "bos__City__c": "Houston",
-      "bos__Postal_Code__c": "77002",
-      "bos__State__c": "TX",
-      "type": "Location"
-    },
     "0014DD806107C8FF73": {
       "Name": "Gulf Coast Foods",
       "record_type": "Customer",

@@ -60,6 +60,20 @@ Rejected: opaque ML as default (including neural/boosted models). Revisit a more
 complex model only if leakage-free backtesting materially improves results, remains
 explainable, and sufficient real-world training labels exist.
 
+### Baseline comparison policy
+
+Backtesting includes analysis-only tenant-wide median, equipment-plus-distance-band
+median, unshrunk nearest-lane weighted median, robust Huber regression, and quantile
+regression baselines. pandas and scikit-learn remain in the `analysis` dependency
+group, not serving runtime dependencies. Huber requires at least eight observations;
+quantile regression requires at least twenty.
+
+The production choice remains `pricing-hierarchical-v1`. Do not promote a regression
+baseline from synthetic data unless rolling as-of results materially improve both MAE
+and median absolute error without worsening sparse-history WAPE or range coverage.
+Current local generated-fixture backtests contain no scored estimates, so they do not
+provide evidence to promote any baseline.
+
 ## Shared carrier pool
 
 Shared-pool functionality is optional and deferred. It may begin only after all
@@ -110,4 +124,3 @@ justify it without weakening temporal correctness or tenant isolation.
   drivers; sparse lanes require broad fallbacks and lower confidence.
 - Demo tenant selection is not production authentication, even though application
   and database tenant isolation are required.
-

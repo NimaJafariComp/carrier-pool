@@ -1,48 +1,39 @@
 {
   "carriers": [
     {
-      "carrier_id": 927919,
-      "carrier_name": "Guadalupe Transport",
-      "dot_no": "3900404",
+      "carrier_id": 393580,
+      "carrier_name": "Bexar Logistics",
+      "dot_no": "3900407",
       "home_city": "Dallas",
       "home_state": "TX",
-      "mc_no": "1350404",
+      "mc_no": "1350407",
       "phone": "(214) 555-0101"
     }
   ],
   "loads": [
     {
-      "carrier_ref": 927919,
-      "customer_code": "HD-CUST-302",
-      "customer_name": "Hill Country Produce",
+      "carrier_ref": 393580,
+      "customer_code": "HD-CUST-303",
+      "customer_name": "Mission Foods",
       "del_arrived_at": null,
-      "del_city": "Baytown",
+      "del_city": "Fort Worth",
       "del_date": "2026-07-07",
       "del_state": "TX",
-      "del_zip": "77520",
+      "del_zip": "76102",
       "dist_km": 389.62218242340975,
       "entered_at": "2026-07-06 01:00:00",
-      "equip": "V",
-      "load_num": "HD-2101",
-      "pu_city": "Plano",
+      "equip": "F",
+      "load_num": "HD-2004",
+      "pu_city": "San Antonio",
       "pu_date": "2026-07-07",
       "pu_departed_at": null,
       "pu_state": "TX",
-      "pu_zip": "75024",
-      "status_code": 90,
+      "pu_zip": "78205",
+      "status_code": 40,
       "updated_at": "2026-07-06 01:00:00",
       "weight_kg": 10886.21688024085
     }
   ],
-  "rates": [
-    {
-      "amount_usd": 1625,
-      "code": "ADJUSTMENT",
-      "created_at": "2026-07-06 01:00:00",
-      "load_num": "HD-2101",
-      "rate_id": 640407,
-      "side": "pay"
-    }
-  ],
+  "rates": [],
   "synced_at": "2026-07-06 01:00:00"
 }

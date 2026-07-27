@@ -1,7 +1,13 @@
 {
   "loads": [
     {
-      "carrier": null,
+      "carrier": {
+        "carrierMasterId": 169083,
+        "dotNumber": "3900201",
+        "mcNumber": "1350201",
+        "name": "Lone Star Van",
+        "phoneNumber": "+12145550101"
+      },
       "createdDate": "2026-07-02T01:00:00-05:00",
       "customer": {
         "customerId": 493634,
@@ -10,8 +16,8 @@
       "equipment": "53 ft Van | Dry",
       "lastModifiedDate": "2026-07-02T01:00:00-05:00",
       "mileage": 242.1,
-      "shipmentId": 352333,
-      "status": "Booking",
+      "shipmentId": 654838,
+      "status": "Completed",
       "stops": [
         {
           "actualDepartureDateTime": null,
@@ -32,8 +38,8 @@
           "zipCode": "77449"
         }
       ],
-      "totalBuy": null,
-      "totalSell": 1405,
+      "totalBuy": 1225,
+      "totalSell": 1505,
       "weightTotal": 24000
     }
   ],

@@ -17,7 +17,7 @@
       "lastModifiedDate": "2026-07-03T07:00:00-05:00",
       "mileage": 242.1,
       "shipmentId": 352333,
-      "status": "Dispatched",
+      "status": "Delivered",
       "stops": [
         {
           "actualDepartureDateTime": null,
@@ -38,8 +38,8 @@
           "zipCode": "77449"
         }
       ],
-      "totalBuy": 1150,
-      "totalSell": 1430,
+      "totalBuy": 1200,
+      "totalSell": 1480,
       "weightTotal": 24000
     }
   ],

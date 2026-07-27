@@ -34,15 +34,6 @@
       "weight_kg": 10886.21688024085
     }
   ],
-  "rates": [
-    {
-      "amount_usd": 1975,
-      "code": "ADJUSTMENT",
-      "created_at": "2026-07-09 13:00:00",
-      "load_num": "HD-2101",
-      "rate_id": 138083,
-      "side": "pay"
-    }
-  ],
+  "rates": [],
   "synced_at": "2026-07-09 13:00:00"
 }

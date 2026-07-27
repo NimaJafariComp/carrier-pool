@@ -3,6 +3,8 @@
 import hashlib
 import json
 import os
+from datetime import datetime
+from decimal import Decimal
 from pathlib import Path
 from uuid import UUID, uuid4
 
@@ -10,11 +12,15 @@ import pytest
 from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import Session
 
-from carrier_pool.db.models import IngestionFile, Load, Stop, Tenant
+from carrier_pool.db.models import IngestionFile, Load, LoadVersion, SourceRateEntry, Stop, Tenant
+from carrier_pool.decisioning.backtest import RateBacktestHarness
+from carrier_pool.decisioning.carrier_features import CarrierFeatureService
+from carrier_pool.decisioning.pricing import HierarchicalRateEstimator
 from carrier_pool.domain.types import SourceSystem
 from carrier_pool.generator.manifest import write_scenarios_manifest
-from carrier_pool.generator.scheduler import write_sync_files
+from carrier_pool.generator.scheduler import DAY11_SYNC_AT, write_sync_files
 from carrier_pool.generator.validator import validate_generated_data
+from carrier_pool.geography.comparables import ComparableLoadRepository, LaneTier
 from carrier_pool.ingestion.base import SourceFile, TenantContext
 from carrier_pool.ingestion.coordinator import (
     BrokerOSIngestionCoordinator,
@@ -23,7 +29,6 @@ from carrier_pool.ingestion.coordinator import (
 )
 from carrier_pool.ingestion.discovery import FileIngestionOrchestrator, SourceBinding
 from carrier_pool.ingestion.rebuild import rebuild_current_projections
-from carrier_pool.geography.comparables import ComparableLoadRepository, LaneTier
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 pytestmark = pytest.mark.skipif(
@@ -126,6 +131,129 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
             )
             assert any(item.load_external_id == "HD-2101" for item in day11_evidence)
             assert all(item.tier is not LaneTier.TENANT_ALL_EQUIPMENT for item in day11_evidence)
+            hd2101 = session.scalar(
+                select(Load).where(
+                    Load.tenant_id == tenant_ids[SourceSystem.HAULDESK],
+                    Load.external_id == "HD-2101",
+                )
+            )
+            assert hd2101 is not None
+            hd2101_entries = session.scalars(
+                select(SourceRateEntry).where(
+                    SourceRateEntry.tenant_id == hd2101.tenant_id,
+                    SourceRateEntry.load_id == hd2101.id,
+                )
+            ).all()
+            assert [entry.amount for entry in hd2101_entries] == [Decimal("1150")]
+            day11_estimate = HierarchicalRateEstimator().estimate(
+                session,
+                tenant_ids[SourceSystem.HAULDESK],
+                day11_target.id,
+                day11_target.observed_at,
+            )
+            displayed_hd2101_rate = next(
+                comparable.carrier_rate_usd
+                for comparable in day11_estimate.comparables
+                if comparable.load_external_id == "HD-2101"
+            )
+            assert displayed_hd2101_rate == Decimal("1150")
+
+            ff_day11_target = session.scalar(
+                select(Load).where(
+                    Load.tenant_id == tenant_ids[SourceSystem.FREIGHTFLOW],
+                    Load.observed_at == DAY11_SYNC_AT,
+                )
+            )
+            assert ff_day11_target is not None
+            ff_features = CarrierFeatureService().retrieve(
+                session,
+                ff_day11_target.tenant_id,
+                ff_day11_target.id,
+                ff_day11_target.current_version_id,
+                ff_day11_target.observed_at,
+            )
+            by_carrier = {item.carrier_external_id: item for item in ff_features}
+            assert by_carrier["FF-C-204"].last_delivery_observed_at is not None
+            assert by_carrier["FF-C-205"].last_delivery_observed_at is not None
+            assert (
+                by_carrier["FF-C-204"].last_delivery_observed_at
+                > by_carrier["FF-C-205"].last_delivery_observed_at
+            )
+            assert all(item.target_equipment_unknown is False for item in ff_features)
+
+            estimator = HierarchicalRateEstimator()
+            for source_system, tenant_id in tenant_ids.items():
+                target = session.scalar(
+                    select(Load).where(
+                        Load.tenant_id == tenant_id,
+                        Load.source_system == source_system,
+                        Load.observed_at == DAY11_SYNC_AT,
+                    )
+                )
+                assert target is not None
+                estimate = estimator.estimate(
+                    session,
+                    target.tenant_id,
+                    target.id,
+                    target.observed_at,
+                )
+                assert estimate.point_estimate_usd is not None
+                assert estimate.historical_comparison_lower_usd is not None
+                assert estimate.historical_comparison_upper_usd is not None
+                assert estimate.historical_comparison_lower_usd <= estimate.point_estimate_usd
+                assert estimate.point_estimate_usd <= estimate.historical_comparison_upper_usd
+                assert estimate.confidence.level is not None
+                assert estimate.comparables
+
+            report = RateBacktestHarness().run(session, tuple(tenant_ids.values()))
+            assert report.scored_case_count > 0
+            assert report.metrics.mae_usd is not None
+            assert report.metrics.median_absolute_error_usd is not None
+            assert report.metrics.wape is not None
+            for tenant_id in tenant_ids.values():
+                assert sum(
+                    result.case.tenant_id == tenant_id and result.absolute_error_usd is not None
+                    for result in report.cases
+                ) >= 5
+            assert report.by_history_depth["RICH"].case_count >= 1
+            assert report.by_history_depth["SPARSE"].case_count >= 1
+            assert set(report.baseline_models) == {
+                "tenant_wide_median",
+                "equipment_distance_band_median",
+                "unshrunk_nearest_lane_weighted_median",
+                "robust_huber_regression",
+                "quantile_regression",
+            }
+            assert (
+                report.baseline_models["tenant_wide_median"].case_count
+                == report.scored_case_count
+            )
+            assert all(
+                model.case_count <= report.case_count for model in report.baseline_models.values()
+            )
+            for model in report.baseline_models.values():
+                if model.case_count:
+                    assert model.metrics.mae_usd is not None
+                    assert model.metrics.median_absolute_error_usd is not None
+                    assert model.metrics.wape is not None
+            evidence_version_ids = {
+                comparable.load_version_id
+                for result in report.cases
+                for comparable in result.estimate.comparables
+            }
+            evidence_observed_at: dict[UUID, datetime] = {}
+            for version_id, observed_at in session.execute(
+                select(LoadVersion.id, LoadVersion.observed_at).where(
+                    LoadVersion.id.in_(evidence_version_ids)
+                )
+            ).tuples():
+                evidence_observed_at[version_id] = observed_at
+            for result in report.cases:
+                assert all(
+                    evidence_observed_at[comparable.load_version_id]
+                    <= result.case.first_active_at
+                    for comparable in result.estimate.comparables
+                )
             before = {
                 tenant_id: _state_hash(session, tenant_id) for tenant_id in tenant_ids.values()
             }

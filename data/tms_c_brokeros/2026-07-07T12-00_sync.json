@@ -2,15 +2,15 @@
   "records": [
     {
       "CreatedDate": "2026-07-07T12:00:00.000+0000",
-      "Id": "a0jFB388F4DF5D2288",
+      "Id": "a0jCEB268FEE99A517",
       "LastModifiedDate": "2026-07-07T12:00:00.000+0000",
-      "Name": "BO-3101",
-      "bos__Carrier_Rate__c": 1425,
-      "bos__Carrier__c": "00190FB4F1C847097A",
-      "bos__Customer_Rate__c": 1705,
-      "bos__Customer__c": "0014DD806107C8FF73",
+      "Name": "BO-3005",
+      "bos__Carrier_Rate__c": 1150,
+      "bos__Carrier__c": "0015FB49EB1E232B6A",
+      "bos__Customer_Rate__c": 1430,
+      "bos__Customer__c": "0017F25C12B6C0E60C",
       "bos__Distance_Miles__c": 242.1,
-      "bos__Equipment_Type__c": "Reefer",
+      "bos__Equipment_Type__c": "Dry Van",
       "bos__Line_Items__r": [
         {
           "bos__Commodity__c": "General freight",
@@ -19,13 +19,13 @@
           "bos__Weight__c": 24000
         }
       ],
-      "bos__Load_Status__c": "Paid",
+      "bos__Load_Status__c": "Booked",
       "bos__Stops__r": [
         {
           "bos__Arrival_Time__c": null,
           "bos__Is_Dropoff__c": false,
           "bos__Is_Pickup__c": true,
-          "bos__Location__c": "001F04A07EF8DE704D",
+          "bos__Location__c": "001AE19313D2600FCA",
           "bos__Number__c": 1,
           "bos__Scheduled_Date__c": "2026-07-07"
         },
@@ -33,7 +33,7 @@
           "bos__Arrival_Time__c": null,
           "bos__Is_Dropoff__c": true,
           "bos__Is_Pickup__c": false,
-          "bos__Location__c": "001A06FC7BDA751406",
+          "bos__Location__c": "001599B950DA4A43ED",
           "bos__Number__c": 2,
           "bos__Scheduled_Date__c": "2026-07-07"
         }
@@ -41,27 +41,27 @@
     }
   ],
   "referenced_records": {
-    "0014DD806107C8FF73": {
-      "Name": "Gulf Coast Foods",
-      "record_type": "Customer",
-      "type": "Account"
-    },
-    "00190FB4F1C847097A": {
-      "Name": "Gulf Reefers",
-      "record_type": "Carrier",
-      "type": "Account"
-    },
-    "001A06FC7BDA751406": {
-      "Name": "Schertz Facility",
-      "bos__City__c": "Schertz",
-      "bos__Postal_Code__c": "78154",
+    "001599B950DA4A43ED": {
+      "Name": "Dallas Facility",
+      "bos__City__c": "Dallas",
+      "bos__Postal_Code__c": "75201",
       "bos__State__c": "TX",
       "type": "Location"
     },
-    "001F04A07EF8DE704D": {
-      "Name": "Sugar Land Facility",
-      "bos__City__c": "Sugar Land",
-      "bos__Postal_Code__c": "77478",
+    "0015FB49EB1E232B6A": {
+      "Name": "Texas Triangle Freight",
+      "record_type": "Carrier",
+      "type": "Account"
+    },
+    "0017F25C12B6C0E60C": {
+      "Name": "Bayou Retail",
+      "record_type": "Customer",
+      "type": "Account"
+    },
+    "001AE19313D2600FCA": {
+      "Name": "San Antonio Facility",
+      "bos__City__c": "San Antonio",
+      "bos__Postal_Code__c": "78205",
       "bos__State__c": "TX",
       "type": "Location"
     }

@@ -17,7 +17,7 @@
       "lastModifiedDate": "2026-07-04T19:00:00-05:00",
       "mileage": 242.1,
       "shipmentId": 135569,
-      "status": "En Route",
+      "status": "Delivered",
       "stops": [
         {
           "actualDepartureDateTime": null,
@@ -38,8 +38,8 @@
           "zipCode": "77449"
         }
       ],
-      "totalBuy": 1175,
-      "totalSell": 1455,
+      "totalBuy": 1200,
+      "totalSell": 1480,
       "weightTotal": 24000
     }
   ],

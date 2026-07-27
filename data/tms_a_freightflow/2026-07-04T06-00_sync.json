@@ -1,45 +1,39 @@
 {
   "loads": [
     {
-      "carrier": {
-        "carrierMasterId": 860367,
-        "dotNumber": "3900204",
-        "mcNumber": "1350204",
-        "name": "Metro Haul",
-        "phoneNumber": "+12145550101"
-      },
+      "carrier": null,
       "createdDate": "2026-07-04T01:00:00-05:00",
       "customer": {
-        "customerId": 149401,
-        "name": "Prairie Foods"
+        "customerId": 493634,
+        "name": "Lone Star Beverages"
       },
       "equipment": "53 ft Van | Dry",
       "lastModifiedDate": "2026-07-04T01:00:00-05:00",
       "mileage": 242.1,
-      "shipmentId": 751335,
-      "status": "Dispatched",
+      "shipmentId": 135569,
+      "status": "Booking",
       "stops": [
-        {
-          "actualDepartureDateTime": null,
-          "city": "PASADENA",
-          "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
-          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
-          "state": "TX",
-          "stopType": "First Pickup",
-          "zipCode": "77502"
-        },
         {
           "actualDepartureDateTime": null,
           "city": "GRAND PRAIRIE",
           "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
           "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
           "state": "TX",
-          "stopType": "Last Drop",
+          "stopType": "First Pickup",
           "zipCode": "75050"
+        },
+        {
+          "actualDepartureDateTime": null,
+          "city": "KATY",
+          "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
+          "state": "TX",
+          "stopType": "Last Drop",
+          "zipCode": "77449"
         }
       ],
-      "totalBuy": 1150,
-      "totalSell": 1430,
+      "totalBuy": null,
+      "totalSell": 1405,
       "weightTotal": 24000
     }
   ],

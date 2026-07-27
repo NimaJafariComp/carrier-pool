@@ -1,48 +1,39 @@
 {
   "carriers": [
     {
-      "carrier_id": 927919,
-      "carrier_name": "Guadalupe Transport",
-      "dot_no": "3900404",
+      "carrier_id": 141389,
+      "carrier_name": "Crossroads Carrier",
+      "dot_no": "3901001",
       "home_city": "Dallas",
       "home_state": "TX",
-      "mc_no": "1350404",
+      "mc_no": "1350101",
       "phone": "(214) 555-0101"
     }
   ],
   "loads": [
     {
-      "carrier_ref": 927919,
-      "customer_code": "HD-CUST-302",
-      "customer_name": "Hill Country Produce",
+      "carrier_ref": 141389,
+      "customer_code": "HD-CUST-301",
+      "customer_name": "Alamo Building Supply",
       "del_arrived_at": null,
-      "del_city": "Baytown",
+      "del_city": "Houston",
       "del_date": "2026-07-07",
       "del_state": "TX",
-      "del_zip": "77520",
+      "del_zip": "77002",
       "dist_km": 389.62218242340975,
       "entered_at": "2026-07-10 07:00:00",
       "equip": "V",
-      "load_num": "HD-2101",
-      "pu_city": "Plano",
+      "load_num": "HD-2003",
+      "pu_city": "Dallas",
       "pu_date": "2026-07-07",
       "pu_departed_at": null,
       "pu_state": "TX",
-      "pu_zip": "75024",
+      "pu_zip": "75201",
       "status_code": 90,
       "updated_at": "2026-07-10 07:00:00",
       "weight_kg": 10886.21688024085
     }
   ],
-  "rates": [
-    {
-      "amount_usd": 2050,
-      "code": "ADJUSTMENT",
-      "created_at": "2026-07-10 07:00:00",
-      "load_num": "HD-2101",
-      "rate_id": 609344,
-      "side": "pay"
-    }
-  ],
+  "rates": [],
   "synced_at": "2026-07-10 07:00:00"
 }

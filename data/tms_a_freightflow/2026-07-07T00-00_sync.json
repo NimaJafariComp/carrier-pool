@@ -1,13 +1,7 @@
 {
   "loads": [
     {
-      "carrier": {
-        "carrierMasterId": 357057,
-        "dotNumber": "3900205",
-        "mcNumber": "1350205",
-        "name": "Heritage Trucking",
-        "phoneNumber": "+12145550101"
-      },
+      "carrier": null,
       "createdDate": "2026-07-06T19:00:00-05:00",
       "customer": {
         "customerId": 149401,
@@ -16,17 +10,17 @@
       "equipment": "53 ft Van | Dry",
       "lastModifiedDate": "2026-07-06T19:00:00-05:00",
       "mileage": 242.1,
-      "shipmentId": 393490,
-      "status": "Delivered",
+      "shipmentId": 751335,
+      "status": "Quoting",
       "stops": [
         {
           "actualDepartureDateTime": null,
-          "city": "HOUSTON",
+          "city": "PASADENA",
           "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
           "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
           "state": "TX",
           "stopType": "First Pickup",
-          "zipCode": "77002"
+          "zipCode": "77502"
         },
         {
           "actualDepartureDateTime": null,
@@ -38,8 +32,8 @@
           "zipCode": "75050"
         }
       ],
-      "totalBuy": 1200,
-      "totalSell": 1480,
+      "totalBuy": null,
+      "totalSell": 1450,
       "weightTotal": 24000
     }
   ],

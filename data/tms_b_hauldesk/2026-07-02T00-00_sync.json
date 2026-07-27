@@ -1,18 +1,18 @@
 {
   "carriers": [
     {
-      "carrier_id": 927919,
-      "carrier_name": "Guadalupe Transport",
-      "dot_no": "3900404",
+      "carrier_id": 884814,
+      "carrier_name": "Delta Prime",
+      "dot_no": "3900401",
       "home_city": "Dallas",
       "home_state": "TX",
-      "mc_no": "1350404",
+      "mc_no": "1350401",
       "phone": "(214) 555-0101"
     }
   ],
   "loads": [
     {
-      "carrier_ref": 927919,
+      "carrier_ref": 884814,
       "customer_code": "HD-CUST-302",
       "customer_name": "Hill Country Produce",
       "del_arrived_at": null,
@@ -23,7 +23,7 @@
       "dist_km": 389.62218242340975,
       "entered_at": "2026-07-01 19:00:00",
       "equip": "V",
-      "load_num": "HD-2101",
+      "load_num": "HD-2001",
       "pu_city": "Plano",
       "pu_date": "2026-07-07",
       "pu_departed_at": null,
@@ -34,15 +34,6 @@
       "weight_kg": 10886.21688024085
     }
   ],
-  "rates": [
-    {
-      "amount_usd": 1200,
-      "code": "ADJUSTMENT",
-      "created_at": "2026-07-01 19:00:00",
-      "load_num": "HD-2101",
-      "rate_id": 173324,
-      "side": "pay"
-    }
-  ],
+  "rates": [],
   "synced_at": "2026-07-01 19:00:00"
 }

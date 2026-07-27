@@ -29,20 +29,11 @@
       "pu_departed_at": null,
       "pu_state": "TX",
       "pu_zip": "75024",
-      "status_code": 90,
+      "status_code": 40,
       "updated_at": "2026-07-09 01:00:00",
       "weight_kg": 10886.21688024085
     }
   ],
-  "rates": [
-    {
-      "amount_usd": 1925,
-      "code": "ADJUSTMENT",
-      "created_at": "2026-07-09 01:00:00",
-      "load_num": "HD-2101",
-      "rate_id": 938495,
-      "side": "pay"
-    }
-  ],
+  "rates": [],
   "synced_at": "2026-07-09 01:00:00"
 }

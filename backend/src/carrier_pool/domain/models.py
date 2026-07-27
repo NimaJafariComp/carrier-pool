@@ -206,3 +206,4 @@ class NormalizedSync:
     carriers: tuple[CanonicalCarrierSnapshot, ...] = field(default_factory=tuple)
     source_financial_entries: tuple[SourceFinancialEntry, ...] = field(default_factory=tuple)
     warnings: tuple[NormalizationWarning, ...] = field(default_factory=tuple)
+    raw_loads: tuple[dict[str, object], ...] = field(default_factory=tuple)

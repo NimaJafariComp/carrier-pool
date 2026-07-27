@@ -8,6 +8,6 @@ describe("App", () => {
     render(<App />);
 
     expect(screen.getByRole("heading", { name: "Carrier Pool" })).toBeInTheDocument();
-    expect(screen.getByRole("status")).toHaveTextContent("Backend health: not checked");
+    expect(screen.getByRole("alert")).toHaveTextContent("No demo load selected.");
   });
 });

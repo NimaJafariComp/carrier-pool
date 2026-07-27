@@ -1,7 +1,9 @@
 """Tenant-local, as-of carrier historical-fit feature retrieval."""
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime
+from typing import cast
 from uuid import UUID
 
 from sqlalchemy import select
@@ -148,16 +150,26 @@ class CarrierFeatureService:
 
 
 def _endpoint(version: LoadVersion, *, pickup: bool) -> Coordinate | None:
-    stops = version.canonical_snapshot.get("stops")
-    if not isinstance(stops, list):
+    raw_stops: object = version.canonical_snapshot.get("stops")
+    if not isinstance(raw_stops, list):
         return None
-    ordered = stops if pickup else reversed(stops)
+    stops = cast(list[object], raw_stops)
+    ordered: Iterable[object] = stops if pickup else reversed(stops)
     flag = "is_pickup" if pickup else "is_dropoff"
-    for stop in ordered:
-        if not isinstance(stop, dict) or not stop.get(flag):
+    for raw_stop in ordered:
+        if not isinstance(raw_stop, dict):
             continue
-        postal_code, city, state = stop.get("postal_code"), stop.get("city"), stop.get("state")
-        if not all(isinstance(value, str) for value in (postal_code, city, state)):
+        stop = cast(dict[str, object], raw_stop)
+        if stop.get(flag) is not True:
+            continue
+        postal_code = stop.get("postal_code")
+        city = stop.get("city")
+        state = stop.get("state")
+        if (
+            not isinstance(postal_code, str)
+            or not isinstance(city, str)
+            or not isinstance(state, str)
+        ):
             continue
         geography = GeographyLookup.default().lookup(postal_code, city, state)
         if geography.latitude is not None and geography.longitude is not None:

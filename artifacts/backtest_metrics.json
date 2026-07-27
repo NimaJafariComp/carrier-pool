@@ -1,36 +1,36 @@
 {
   "by_equipment": {
     "DRY_VAN": {
-      "case_count": 160,
+      "case_count": 184,
       "metrics": {
-        "mae_usd": "115.62500000000000000000000",
+        "mae_usd": "101.3586956521739130434782609",
         "median_absolute_error_usd": "0E-24",
-        "range_coverage": "0.6625",
-        "wape": "0.06477591036414565826330532213"
+        "range_coverage": "0.6739130434782608695652173913",
+        "wape": "0.05930519119166865410604976548"
       }
     },
     "FLATBED": {
-      "case_count": 20,
+      "case_count": 23,
       "metrics": {
-        "mae_usd": "437.50",
+        "mae_usd": "380.4347826086956521739130435",
         "median_absolute_error_usd": "0.00",
-        "range_coverage": "0.65",
-        "wape": "0.1536435469710272168568920105"
+        "range_coverage": "0.6956521739130434782608695652",
+        "wape": "0.1448675496688741721854304636"
       }
     },
     "REEFER": {
-      "case_count": 120,
+      "case_count": 138,
       "metrics": {
         "mae_usd": "16.66666666666666666666666667",
         "median_absolute_error_usd": "25.00",
         "range_coverage": "0.3333333333333333333333333333",
-        "wape": "0.01158077591198610306890561668"
+        "wape": "0.01180546644424483510843064288"
       }
     }
   },
   "by_history_depth": {
     "RICH": {
-      "case_count": 41,
+      "case_count": 47,
       "metrics": {
         "mae_usd": "0.00",
         "median_absolute_error_usd": "0.00",
@@ -39,18 +39,18 @@
       }
     },
     "SPARSE": {
-      "case_count": 259,
+      "case_count": 298,
       "metrics": {
-        "mae_usd": "112.9343629343629343629343629",
+        "mae_usd": "99.66442953020134228187919463",
         "median_absolute_error_usd": "25.00",
-        "range_coverage": "0.4555984555984555984555984556",
-        "wape": "0.06627768651220755678921429785"
+        "range_coverage": "0.4664429530201342281879194631",
+        "wape": "0.06077969917118592039291926737"
       }
     }
   },
   "by_tier": {
     "DISTANCE_EQUIPMENT": {
-      "case_count": 20,
+      "case_count": 23,
       "metrics": {
         "mae_usd": "0.00",
         "median_absolute_error_usd": "0.00",
@@ -59,7 +59,7 @@
       }
     },
     "METRO_CORRIDOR": {
-      "case_count": 19,
+      "case_count": 22,
       "metrics": {
         "mae_usd": "25.00",
         "median_absolute_error_usd": "25.00",
@@ -68,57 +68,57 @@
       }
     },
     "NEAR_EXACT": {
-      "case_count": 161,
+      "case_count": 185,
       "metrics": {
-        "mae_usd": "66.92546583850931677018633540",
+        "mae_usd": "59.86486486486486486486486486",
         "median_absolute_error_usd": "25.00",
-        "range_coverage": "0.4534161490683229813664596273",
-        "wape": "0.04218872357086922474549725920"
+        "range_coverage": "0.4594594594594594594594594595",
+        "wape": "0.03890743017741085543650096610"
       }
     },
     "REGIONAL": {
-      "case_count": 20,
+      "case_count": 23,
       "metrics": {
-        "mae_usd": "437.50",
+        "mae_usd": "380.4347826086956521739130435",
         "median_absolute_error_usd": "0.00",
-        "range_coverage": "0.65",
-        "wape": "0.1536435469710272168568920105"
+        "range_coverage": "0.6956521739130434782608695652",
+        "wape": "0.1448675496688741721854304636"
       }
     },
     "TENANT_ALL_EQUIPMENT": {
-      "case_count": 80,
+      "case_count": 92,
       "metrics": {
-        "mae_usd": "115.625",
+        "mae_usd": "101.3586956521739130434782609",
         "median_absolute_error_usd": "0.00",
-        "range_coverage": "0.6625",
-        "wape": "0.05981247979308115098609763983"
+        "range_coverage": "0.6739130434782608695652173913",
+        "wape": "0.05518567835478621097795531883"
       }
     }
   },
-  "case_count": 440,
+  "case_count": 494,
   "metrics": {
-    "mae_usd": "97.50000000000000000000000",
+    "mae_usd": "86.08695652173913043478260870",
     "median_absolute_error_usd": "0E-24",
-    "range_coverage": "0.53",
-    "wape": "0.05676855895196506550218340611"
+    "range_coverage": "0.5391304347826086956521739130",
+    "wape": "0.05213270142180094786729857820"
   },
   "models": {
     "equipment_distance_band_median": {
-      "case_count": 220,
+      "case_count": 253,
       "metrics": {
-        "mae_usd": "90.90909090909090909090909091",
+        "mae_usd": "80.53359683794466403162055336",
         "median_absolute_error_usd": "25.00",
         "range_coverage": null,
-        "wape": "0.05546311702717692734331669440"
+        "wape": "0.05084534281614573585376505085"
       }
     },
     "pricing-hierarchical-v1": {
-      "case_count": 300,
+      "case_count": 345,
       "metrics": {
-        "mae_usd": "97.50000000000000000000000",
+        "mae_usd": "86.08695652173913043478260870",
         "median_absolute_error_usd": "0E-24",
-        "range_coverage": "0.53",
-        "wape": "0.05676855895196506550218340611"
+        "range_coverage": "0.5391304347826086956521739130",
+        "wape": "0.05213270142180094786729857820"
       }
     },
     "quantile_regression": {
@@ -140,23 +140,23 @@
       }
     },
     "tenant_wide_median": {
-      "case_count": 300,
+      "case_count": 345,
       "metrics": {
-        "mae_usd": "97.50",
+        "mae_usd": "86.08695652173913043478260870",
         "median_absolute_error_usd": "0.00",
         "range_coverage": null,
-        "wape": "0.05676855895196506550218340611"
+        "wape": "0.05213270142180094786729857820"
       }
     },
     "unshrunk_nearest_lane_weighted_median": {
-      "case_count": 300,
+      "case_count": 345,
       "metrics": {
-        "mae_usd": "97.50",
+        "mae_usd": "86.08695652173913043478260870",
         "median_absolute_error_usd": "0.00",
         "range_coverage": null,
-        "wape": "0.05676855895196506550218340611"
+        "wape": "0.05213270142180094786729857820"
       }
     }
   },
-  "scored_case_count": 300
+  "scored_case_count": 345
 }

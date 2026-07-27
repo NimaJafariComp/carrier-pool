@@ -11,6 +11,7 @@ from carrier_pool.generator.catalog import build_catalog
 from carrier_pool.generator.lifecycle import LifecycleEngine
 from carrier_pool.generator.models import (
     FinancialEvent,
+    GeneratorLoad,
     LifecycleEvent,
     ScenarioCatalog,
     ScheduledSync,
@@ -67,7 +68,7 @@ ANCHOR_LOAD_IDS = {
 
 def build_schedule(catalog: ScenarioCatalog) -> tuple[ScheduledSync, ...]:
     """Create all 120 historical slots and three explicit Day 11 active-load slots."""
-    historical_loads = {
+    historical_loads: dict[SourceSystem, tuple[GeneratorLoad, ...]] = {
         source: tuple(
             load for load in catalog.loads if load.source_system is source and not load.day11_target
         )
@@ -112,8 +113,8 @@ def build_schedule(catalog: ScenarioCatalog) -> tuple[ScheduledSync, ...]:
 
 
 def _scheduled_historical_load(
-    source: SourceSystem, loads: tuple, slot: int
-):
+    source: SourceSystem, loads: tuple[GeneratorLoad, ...], slot: int
+) -> tuple[GeneratorLoad, int]:
     """Return a six-stage lifecycle block; anchor block always runs first."""
     ordered = tuple(
         sorted(

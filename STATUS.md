@@ -276,12 +276,11 @@ acceptance evidence has not yet been recorded.
 ## Latest verification — 2026-07-27
 
 - `make backtest`: pass; wrote rate artifacts and `artifacts/ranking_metrics.json`
-  for `440` historical cases (`300` rate-scored).
+  for `494` historical cases (`345` rate-scored).
 - Phase 10 ranking evaluation/scoring tests: `4 passed`. Focused Ruff passes.
-- Full backend Pyright currently reports `51` pre-existing/adjacent unknown-type
-  errors in baseline analysis, generator scheduling, and carrier snapshot parsing;
-  this does not change completed behavioral gate smoke, but type-cleanliness is
-  not yet a repository-wide pass.
+- Full backend Pyright: `0 errors, 0 warnings, 0 informations` after typed
+  boundaries for baseline-regression outputs, generated schedule loads, and
+  canonical JSON stop parsing.
 - Phase 10 Day 11 ranking gate smoke: `1 passed` against local Compose PostgreSQL.
 - Prior baseline verification: `make test-integration`: `7 passed`; full backend
   suite with `DATABASE_URL`: `182 passed` (before Phase 10 additions).

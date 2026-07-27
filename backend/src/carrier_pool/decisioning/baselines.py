@@ -3,6 +3,7 @@
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from decimal import Decimal
+from typing import Protocol, cast
 
 from carrier_pool.domain.types import EquipmentType
 
@@ -46,6 +47,14 @@ class BaselineMetrics:
     mae_usd: Decimal
     median_absolute_error_usd: Decimal
     wape: Decimal | None
+
+
+class _RegressionModel(Protocol):
+    """Small typed boundary around analysis-only sklearn estimators."""
+
+    def fit(self, features: list[list[float]], targets: list[float]) -> "_RegressionModel": ...
+
+    def predict(self, features: list[list[float]]) -> Sequence[float]: ...
 
 
 def tenant_wide_median(observations: Sequence[BaselineObservation]) -> BaselinePrediction | None:
@@ -101,7 +110,7 @@ def robust_huber_regression(
         return None
     from sklearn.linear_model import HuberRegressor
 
-    model = HuberRegressor().fit(_features(usable), _targets(usable))
+    model = cast(_RegressionModel, HuberRegressor()).fit(_features(usable), _targets(usable))
     point = Decimal(str(model.predict([_feature(target.equipment, target.distance_miles)])[0]))
     return BaselinePrediction("robust_huber_regression", point)
 
@@ -118,9 +127,11 @@ def quantile_regression(
     features = _features(usable)
     values = _targets(usable)
     target_feature = [_feature(target.equipment, target.distance_miles)]
-    predictions = []
+    predictions: list[Decimal] = []
     for quantile in (0.25, 0.5, 0.75):
-        model = QuantileRegressor(quantile=quantile, alpha=0).fit(features, values)
+        model = cast(_RegressionModel, QuantileRegressor(quantile=quantile, alpha=0)).fit(
+            features, values
+        )
         predictions.append(Decimal(str(model.predict(target_feature)[0])))
     lower, point, upper = predictions
     return BaselinePrediction(

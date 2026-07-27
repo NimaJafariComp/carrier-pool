@@ -408,6 +408,8 @@ class Stop(Base):
     postal_code: Mapped[str] = mapped_column(String, nullable=False)
     latitude: Mapped[Decimal | None] = mapped_column(Numeric(9, 6, asdecimal=True))
     longitude: Mapped[Decimal | None] = mapped_column(Numeric(9, 6, asdecimal=True))
+    metro_group: Mapped[str | None] = mapped_column(String)
+    geography_quality_flags: Mapped[list[str] | None] = mapped_column(JSONB)
     h3_fine: Mapped[str | None] = mapped_column(String)
     h3_coarse: Mapped[str | None] = mapped_column(String)
     scheduled_start_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

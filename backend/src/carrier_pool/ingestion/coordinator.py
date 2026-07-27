@@ -6,6 +6,7 @@ from dataclasses import asdict, dataclass
 from datetime import UTC, date, datetime
 from decimal import Decimal
 from typing import cast
+from uuid import UUID
 
 from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session
@@ -25,10 +26,12 @@ from carrier_pool.domain.models import (
     CanonicalCarrierSnapshot,
     CanonicalCustomerSnapshot,
     CanonicalLoadSnapshot,
+    CanonicalStop,
     NormalizedSync,
     SourceFinancialEntry,
 )
 from carrier_pool.domain.types import FinancialSide, Money, SourceSystem
+from carrier_pool.geography.enrichment import enrich_stop
 from carrier_pool.ingestion.base import InvalidSourceFileError, SourceFile, TenantContext
 from carrier_pool.ingestion.brokeros import normalize_brokeros, parse_brokeros_file
 from carrier_pool.ingestion.freightflow import FreightFlowAdapter
@@ -198,21 +201,7 @@ class FreightFlowIngestionCoordinator:
                     delete(Stop).where(Stop.tenant_id == tenant.tenant_id, Stop.load_id == load.id)
                 )
                 session.add_all(
-                    Stop(
-                        tenant_id=tenant.tenant_id,
-                        load=load,
-                        sequence=stop.sequence,
-                        is_pickup=stop.is_pickup,
-                        is_dropoff=stop.is_dropoff,
-                        city=stop.city,
-                        state=stop.state,
-                        postal_code=stop.postal_code,
-                        scheduled_start_at=stop.scheduled_start_at,
-                        scheduled_end_at=stop.scheduled_end_at,
-                        actual_arrival_at=stop.actual_arrival_at,
-                        actual_departure_at=stop.actual_departure_at,
-                    )
-                    for stop in snapshot.stops
+                    _current_stop(tenant.tenant_id, load, stop) for stop in snapshot.stops
                 )
                 projections += 1
                 versions += 1
@@ -637,23 +626,7 @@ class HaulDeskIngestionCoordinator(FreightFlowIngestionCoordinator):
         session.execute(
             delete(Stop).where(Stop.tenant_id == load.tenant_id, Stop.load_id == load.id)
         )
-        session.add_all(
-            Stop(
-                tenant_id=load.tenant_id,
-                load=load,
-                sequence=stop.sequence,
-                is_pickup=stop.is_pickup,
-                is_dropoff=stop.is_dropoff,
-                city=stop.city,
-                state=stop.state,
-                postal_code=stop.postal_code,
-                scheduled_start_at=stop.scheduled_start_at,
-                scheduled_end_at=stop.scheduled_end_at,
-                actual_arrival_at=stop.actual_arrival_at,
-                actual_departure_at=stop.actual_departure_at,
-            )
-            for stop in snapshot.stops
-        )
+        session.add_all(_current_stop(load.tenant_id, load, stop) for stop in snapshot.stops)
         return version
 
     def _persist_ledger_only_version(
@@ -859,22 +832,7 @@ class BrokerOSIngestionCoordinator(FreightFlowIngestionCoordinator):
                     delete(Stop).where(Stop.tenant_id == tenant.tenant_id, Stop.load_id == load.id)
                 )
                 session.add_all(
-                    Stop(
-                        tenant_id=tenant.tenant_id,
-                        load=load,
-                        sequence=stop.sequence,
-                        is_pickup=stop.is_pickup,
-                        is_dropoff=stop.is_dropoff,
-                        facility_name=stop.facility_name,
-                        city=stop.city,
-                        state=stop.state,
-                        postal_code=stop.postal_code,
-                        scheduled_start_at=stop.scheduled_start_at,
-                        scheduled_end_at=stop.scheduled_end_at,
-                        actual_arrival_at=stop.actual_arrival_at,
-                        actual_departure_at=stop.actual_departure_at,
-                    )
-                    for stop in snapshot.stops
+                    _current_stop(tenant.tenant_id, load, stop) for stop in snapshot.stops
                 )
                 projections += 1
                 versions += 1
@@ -910,6 +868,29 @@ class BrokerOSIngestionCoordinator(FreightFlowIngestionCoordinator):
 
 def _amount(value: Money | None) -> Decimal | None:
     return None if value is None else value.amount
+
+
+def _current_stop(tenant_id: str | UUID, load: Load, stop: CanonicalStop) -> Stop:
+    geography = enrich_stop(stop.city, stop.state, stop.postal_code)
+    return Stop(
+        tenant_id=tenant_id,
+        load=load,
+        sequence=stop.sequence,
+        is_pickup=stop.is_pickup,
+        is_dropoff=stop.is_dropoff,
+        facility_name=stop.facility_name,
+        city=stop.city,
+        state=stop.state,
+        postal_code=stop.postal_code,
+        latitude=geography.latitude,
+        longitude=geography.longitude,
+        metro_group=geography.metro_group,
+        geography_quality_flags=geography.quality_flags,
+        scheduled_start_at=stop.scheduled_start_at,
+        scheduled_end_at=stop.scheduled_end_at,
+        actual_arrival_at=stop.actual_arrival_at,
+        actual_departure_at=stop.actual_departure_at,
+    )
 
 
 def _result(ingestion: IngestionFile, *, no_op: bool) -> IngestionResult:

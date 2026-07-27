@@ -23,6 +23,7 @@ from carrier_pool.ingestion.coordinator import (
 )
 from carrier_pool.ingestion.discovery import FileIngestionOrchestrator, SourceBinding
 from carrier_pool.ingestion.rebuild import rebuild_current_projections
+from carrier_pool.geography.comparables import ComparableLoadRepository, LaneTier
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 pytestmark = pytest.mark.skipif(
@@ -108,6 +109,23 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
                 )
                 == 123
             )
+            day11_target = session.scalar(
+                select(Load).where(
+                    Load.tenant_id == tenant_ids[SourceSystem.HAULDESK],
+                    Load.external_id == "HD-9001",
+                )
+            )
+            assert day11_target is not None
+            assert day11_target.current_version is not None
+            day11_evidence = ComparableLoadRepository().retrieve(
+                session,
+                tenant_ids[SourceSystem.HAULDESK],
+                day11_target.id,
+                day11_target.current_version.id,
+                day11_target.observed_at,
+            )
+            assert any(item.load_external_id == "HD-2101" for item in day11_evidence)
+            assert all(item.tier is not LaneTier.TENANT_ALL_EQUIPMENT for item in day11_evidence)
             before = {
                 tenant_id: _state_hash(session, tenant_id) for tenant_id in tenant_ids.values()
             }

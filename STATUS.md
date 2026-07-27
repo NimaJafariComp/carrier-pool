@@ -149,9 +149,25 @@ acceptance evidence has not yet been recorded.
   tenant-scoped review-demo totals. Smoke coverage generates and validates all 123
   files, ingests them, verifies no-op replay, and proves rebuild parity.
 
-## Phases 8–16 — Not started
+## Phase 8 — Geography and comparable-lane retrieval — Complete
 
-- Phase 8: geography and comparable-lane retrieval.
+- Approved local geography design lives in `docs/architecture/geography.md`.
+  Packaged GeoNames-attributed Texas Triangle ZIP centroid data normalizes stop
+  ZIP/city/state locally, returns explicit quality flags, and performs no network
+  calls. Current ingestion and rebuild enrich stops with coordinates, metro group,
+  and persisted quality flags. Focused tests cover DFW, Houston, San Antonio,
+  suburbs, missing ZIPs, and invalid ZIPs.
+- Typed Haversine, endpoint-pair, ordered metro/route identity, and optional H3
+  candidate-cell utilities preserve exact distance as the business explanation.
+  Unit properties cover symmetry, bounds, and approximate Texas baselines.
+- Comparable retrieval is tenant-scoped and `as_of`-bounded over immutable load
+  versions. It selects the narrowest eligible documented lane tier and returns
+  endpoint distances, route-mile delta, recency, tier, and immutable evidence IDs.
+  Integration tests cover suburb history, reverse-lane separation, metro fallback,
+  exact-lane precedence, future-version exclusion, and tenant isolation.
+
+## Phases 9–16 — Not started
+
 - Phase 9: rate estimation and leakage-free backtesting.
 - Phase 10: carrier historical-fit ranking.
 - Phase 11: persisted decisions and complete API.

@@ -101,6 +101,10 @@ def _state_hash(session: Session, tenant_id: UUID) -> str:
                         stop.city,
                         stop.state,
                         stop.postal_code,
+                        str(stop.latitude),
+                        str(stop.longitude),
+                        stop.metro_group,
+                        stop.geography_quality_flags,
                         stop.is_pickup,
                         stop.is_dropoff,
                     )
@@ -148,6 +152,14 @@ def test_rebuild_matches_incremental_projection_state() -> None:
                 ),
                 context,
             )
+            pickup = session.scalar(
+                select(Stop).where(Stop.tenant_id == tenant_id, Stop.postal_code == "75201")
+            )
+            assert pickup is not None
+            assert pickup.latitude == Decimal("32.787000")
+            assert pickup.longitude == Decimal("-96.799000")
+            assert pickup.metro_group == "DFW"
+            assert pickup.geography_quality_flags == []
             expected = _state_hash(session, tenant_id)
             assert session.scalar(
                 select(SourceRateEntry.amount).where(

@@ -20,6 +20,7 @@ from carrier_pool.db.models import (
 )
 from carrier_pool.db.tenant import set_tenant_context
 from carrier_pool.domain.types import FinancialSide, SourceSystem
+from carrier_pool.geography.enrichment import enrich_stop
 from carrier_pool.ingestion.precedence import VersionTiming, choose_current_version
 
 
@@ -156,6 +157,7 @@ def _add_stops(session: Session, load: Load, version: LoadVersion) -> int:
         stop = _object(value)
         if stop is None:
             raise ValueError(f"Load version {version.id} has invalid stop value.")
+        geography = enrich_stop(str(stop["city"]), str(stop["state"]), str(stop["postal_code"]))
         session.add(
             Stop(
                 tenant_id=load.tenant_id,
@@ -167,6 +169,10 @@ def _add_stops(session: Session, load: Load, version: LoadVersion) -> int:
                 city=str(stop["city"]),
                 state=str(stop["state"]),
                 postal_code=str(stop["postal_code"]),
+                latitude=geography.latitude,
+                longitude=geography.longitude,
+                metro_group=geography.metro_group,
+                geography_quality_flags=geography.quality_flags,
                 scheduled_start_at=_timestamp(stop.get("scheduled_start_at")),
                 scheduled_end_at=_timestamp(stop.get("scheduled_end_at")),
                 actual_arrival_at=_timestamp(stop.get("actual_arrival_at")),

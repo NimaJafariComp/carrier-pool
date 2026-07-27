@@ -5,8 +5,9 @@ import json
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from decimal import Decimal
+from typing import cast
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session
 
 from carrier_pool.db.models import (
@@ -16,6 +17,7 @@ from carrier_pool.db.models import (
     IngestionStatus,
     Load,
     LoadVersion,
+    SourceRateEntry,
     Stop,
 )
 from carrier_pool.db.tenant import set_tenant_context
@@ -23,10 +25,18 @@ from carrier_pool.domain.models import (
     CanonicalCarrierSnapshot,
     CanonicalCustomerSnapshot,
     CanonicalLoadSnapshot,
+    NormalizedSync,
+    SourceFinancialEntry,
 )
-from carrier_pool.domain.types import Money
-from carrier_pool.ingestion.base import SourceFile, TenantContext
+from carrier_pool.domain.types import FinancialSide, Money, SourceSystem
+from carrier_pool.ingestion.base import InvalidSourceFileError, SourceFile, TenantContext
+from carrier_pool.ingestion.brokeros import normalize_brokeros, parse_brokeros_file
 from carrier_pool.ingestion.freightflow import FreightFlowAdapter
+from carrier_pool.ingestion.hauldesk import (
+    HaulDeskAssembly,
+    normalize_hauldesk,
+    parse_hauldesk_file,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -242,6 +252,553 @@ class FreightFlowIngestionCoordinator:
         return result
 
 
+class HaulDeskIngestionCoordinator(FreightFlowIngestionCoordinator):
+    """Persist HaulDesk snapshots and append-only financial ledger rows."""
+
+    def ingest(
+        self, session: Session, source_file: SourceFile, tenant: TenantContext
+    ) -> IngestionResult:
+        checksum = hashlib.sha256(source_file.content).hexdigest()
+        raw_payload = json.loads(source_file.content)
+        tenant_id = _uuid(tenant.tenant_id)
+
+        with session.begin():
+            set_tenant_context(session, tenant_id)
+            existing = session.scalar(
+                select(IngestionFile).where(
+                    IngestionFile.tenant_id == tenant.tenant_id, IngestionFile.sha256 == checksum
+                )
+            )
+            if existing is not None and existing.status is IngestionStatus.COMPLETED:
+                return IngestionResult(True, 0)
+
+            known_carrier_ids = {
+                int(external_id)
+                for external_id in session.scalars(
+                    select(Carrier.external_id).where(
+                        Carrier.tenant_id == tenant.tenant_id,
+                        Carrier.source_system == SourceSystem.HAULDESK,
+                    )
+                )
+                if external_id.isdigit()
+            }
+            assembly = parse_hauldesk_file(source_file, known_carrier_ids)
+            normalized = normalize_hauldesk(assembly, tenant.tenant_id, source_file.path.name)
+            ingestion = IngestionFile(
+                tenant_id=tenant.tenant_id,
+                source_system=SourceSystem.HAULDESK,
+                relative_path=str(source_file.path.parent),
+                file_name=source_file.path.name,
+                sha256=checksum,
+                raw_payload=raw_payload,
+                sync_at=normalized.metadata.sync_at,
+                observed_at=normalized.metadata.observed_at,
+                status=IngestionStatus.PROCESSING,
+                started_at=normalized.metadata.observed_at,
+                loads_seen=len(normalized.loads),
+                warnings_count=len(normalized.warnings),
+            )
+            session.add(ingestion)
+            session.flush()
+
+            raw_loads = {
+                str(load["load_num"]): load for load in raw_payload.get("loads", [])
+            }
+            raw_rates = {
+                str(rate["rate_id"]): rate for rate in raw_payload.get("rates", [])
+            }
+            snapshots_by_external_id = {
+                str(snapshot.identity.external_id): snapshot for snapshot in normalized.loads
+            }
+            loads_by_external_id: dict[str, Load] = {}
+            for snapshot in normalized.loads:
+                load = self._upsert_hauldesk_load(session, snapshot, assembly, normalized)
+                loads_by_external_id[str(snapshot.identity.external_id)] = load
+
+            affected_loads = dict(loads_by_external_id)
+            for entry in normalized.source_financial_entries:
+                external_load_id = str(entry.load_identity.external_id)
+                load = affected_loads.get(external_load_id)
+                if load is None:
+                    load = session.scalar(
+                        select(Load).where(
+                            Load.tenant_id == tenant.tenant_id,
+                            Load.source_system == SourceSystem.HAULDESK,
+                            Load.external_id == external_load_id,
+                        )
+                    )
+                    if load is None:
+                        raise InvalidSourceFileError(
+                            source_file.path,
+                            f"Rate {entry.identity.external_id!s} references unknown load "
+                            f"{external_load_id!r}.",
+                        )
+                    affected_loads[external_load_id] = load
+                self._insert_rate_entry(
+                    session,
+                    ingestion,
+                    load,
+                    entry,
+                    raw_rates[str(entry.identity.external_id)],
+                    normalized.metadata.observed_at,
+                )
+            session.flush()
+
+            versions = 0
+            projections = 0
+            for external_load_id, load in affected_loads.items():
+                bill_total, pay_total = self._ledger_totals(
+                    session, load, normalized.metadata.observed_at
+                )
+                snapshot = snapshots_by_external_id.get(external_load_id)
+                if snapshot is None:
+                    version = self._persist_ledger_only_version(
+                        session, ingestion, load, bill_total, pay_total, normalized
+                    )
+                else:
+                    version = self._persist_hauldesk_version(
+                        session,
+                        ingestion,
+                        load,
+                        snapshot,
+                        raw_loads[external_load_id],
+                        bill_total,
+                        pay_total,
+                        normalized,
+                        assembly,
+                    )
+                if version is not None:
+                    versions += 1
+                    projections += 1
+
+            ingestion.status = IngestionStatus.COMPLETED
+            ingestion.completed_at = normalized.metadata.observed_at
+            ingestion.versions_created = versions
+            ingestion.projections_updated = projections
+            return IngestionResult(False, versions)
+
+    def _upsert_hauldesk_load(
+        self,
+        session: Session,
+        snapshot: CanonicalLoadSnapshot,
+        assembly: HaulDeskAssembly,
+        normalized: NormalizedSync,
+    ) -> Load:
+        customer = self._customer(session, snapshot.customer, normalized.metadata.observed_at)
+        carrier = self._hauldesk_carrier(
+            session, snapshot, assembly, normalized.metadata.observed_at
+        )
+        load = session.scalar(
+            select(Load).where(
+                Load.tenant_id == snapshot.identity.tenant_id,
+                Load.source_system == SourceSystem.HAULDESK,
+                Load.external_id == snapshot.identity.external_id,
+            )
+        )
+        if load is not None:
+            return load
+        load = Load(
+            tenant_id=snapshot.identity.tenant_id,
+            source_system=SourceSystem.HAULDESK,
+            external_id=snapshot.identity.external_id,
+            load_number=snapshot.load_number,
+            customer=customer,
+            carrier=carrier,
+            status=snapshot.status,
+            equipment=snapshot.equipment,
+            weight_lbs=snapshot.weight_lbs,
+            distance_miles=snapshot.distance_miles,
+            source_created_at=snapshot.source_created_at,
+            source_modified_at=snapshot.source_modified_at,
+            observed_at=normalized.metadata.observed_at,
+        )
+        session.add(load)
+        session.flush()
+        return load
+
+    def _hauldesk_carrier(
+        self,
+        session: Session,
+        snapshot: CanonicalLoadSnapshot,
+        assembly: HaulDeskAssembly,
+        observed_at: datetime,
+    ) -> Carrier | None:
+        if snapshot.carrier is not None:
+            return self._carrier(session, snapshot.carrier, observed_at)
+        source_load = next(
+            load
+            for load in assembly.sync.loads
+            if load.load_num == snapshot.identity.external_id
+        )
+        if source_load.carrier_ref is None:
+            return None
+        return session.scalar(
+            select(Carrier).where(
+                Carrier.tenant_id == snapshot.identity.tenant_id,
+                Carrier.source_system == SourceSystem.HAULDESK,
+                Carrier.external_id == str(source_load.carrier_ref),
+            )
+        )
+
+    def _insert_rate_entry(
+        self,
+        session: Session,
+        ingestion: IngestionFile,
+        load: Load,
+        entry: SourceFinancialEntry,
+        raw_snapshot: dict[str, object],
+        observed_at: datetime,
+    ) -> None:
+        existing = session.scalar(
+            select(SourceRateEntry).where(
+                SourceRateEntry.tenant_id == entry.identity.tenant_id,
+                SourceRateEntry.source_system == SourceSystem.HAULDESK,
+                SourceRateEntry.external_id == entry.identity.external_id,
+            )
+        )
+        if existing is not None:
+            return
+        session.add(
+            SourceRateEntry(
+                tenant_id=entry.identity.tenant_id,
+                load_id=load.id,
+                ingestion_file_id=ingestion.id,
+                source_system=SourceSystem.HAULDESK,
+                external_id=entry.identity.external_id,
+                side=entry.side,
+                code=entry.code,
+                amount=entry.amount.amount,
+                source_created_at=entry.source_created_at,
+                observed_at=observed_at,
+                raw_snapshot=raw_snapshot,
+            )
+        )
+
+    def _ledger_totals(
+        self, session: Session, load: Load, as_of: datetime
+    ) -> tuple[Decimal, Decimal]:
+        rows = session.execute(
+            select(SourceRateEntry.side, func.coalesce(func.sum(SourceRateEntry.amount), 0)).where(
+                SourceRateEntry.tenant_id == load.tenant_id,
+                SourceRateEntry.load_id == load.id,
+                SourceRateEntry.observed_at <= as_of,
+            ).group_by(SourceRateEntry.side)
+        )
+        totals = {side: Decimal(amount) for side, amount in rows}
+        return (
+            totals.get(FinancialSide.BILL, Decimal("0")),
+            totals.get(FinancialSide.PAY, Decimal("0")),
+        )
+
+    def _persist_hauldesk_version(
+        self,
+        session: Session,
+        ingestion: IngestionFile,
+        load: Load,
+        snapshot: CanonicalLoadSnapshot,
+        raw_snapshot: dict[str, object],
+        bill_total: Decimal,
+        pay_total: Decimal,
+        normalized: NormalizedSync,
+        assembly: HaulDeskAssembly,
+    ) -> LoadVersion | None:
+        customer = self._customer(session, snapshot.customer, normalized.metadata.observed_at)
+        carrier = self._hauldesk_carrier(
+            session, snapshot, assembly, normalized.metadata.observed_at
+        )
+        canonical_snapshot = _hauldesk_canonical(snapshot, carrier, bill_total, pay_total)
+        snapshot_hash = _snapshot_hash(canonical_snapshot)
+        if self._version_exists(session, load, snapshot_hash):
+            return None
+        version = LoadVersion(
+            tenant_id=load.tenant_id,
+            load=load,
+            ingestion_file=ingestion,
+            source_modified_at=snapshot.source_modified_at,
+            observed_at=normalized.metadata.observed_at,
+            status=snapshot.status,
+            equipment=snapshot.equipment,
+            customer=customer,
+            carrier=carrier,
+            customer_rate_amount=bill_total,
+            carrier_rate_amount=pay_total,
+            weight_lbs=snapshot.weight_lbs,
+            distance_miles=snapshot.distance_miles,
+            canonical_snapshot=canonical_snapshot,
+            raw_snapshot=raw_snapshot,
+            snapshot_hash=snapshot_hash,
+            supersedes_id=load.current_version_id,
+        )
+        session.add(version)
+        session.flush()
+        self._update_hauldesk_projection(
+            load, version, snapshot, customer, carrier, bill_total, pay_total
+        )
+        session.execute(
+            delete(Stop).where(Stop.tenant_id == load.tenant_id, Stop.load_id == load.id)
+        )
+        session.add_all(
+            Stop(
+                tenant_id=load.tenant_id,
+                load=load,
+                sequence=stop.sequence,
+                is_pickup=stop.is_pickup,
+                is_dropoff=stop.is_dropoff,
+                city=stop.city,
+                state=stop.state,
+                postal_code=stop.postal_code,
+                scheduled_start_at=stop.scheduled_start_at,
+                scheduled_end_at=stop.scheduled_end_at,
+                actual_arrival_at=stop.actual_arrival_at,
+                actual_departure_at=stop.actual_departure_at,
+            )
+            for stop in snapshot.stops
+        )
+        return version
+
+    def _persist_ledger_only_version(
+        self,
+        session: Session,
+        ingestion: IngestionFile,
+        load: Load,
+        bill_total: Decimal,
+        pay_total: Decimal,
+        normalized: NormalizedSync,
+    ) -> LoadVersion | None:
+        previous = load.current_version
+        if previous is None:
+            raise ValueError("HaulDesk rate-only sync requires a prior load version.")
+        canonical_snapshot = dict(previous.canonical_snapshot)
+        canonical_snapshot["customer_rate_amount"] = str(bill_total)
+        canonical_snapshot["carrier_rate_amount"] = str(pay_total)
+        snapshot_hash = _snapshot_hash(canonical_snapshot)
+        if self._version_exists(session, load, snapshot_hash):
+            return None
+        version = LoadVersion(
+            tenant_id=load.tenant_id,
+            load=load,
+            ingestion_file=ingestion,
+            source_modified_at=previous.source_modified_at,
+            observed_at=normalized.metadata.observed_at,
+            status=previous.status,
+            equipment=previous.equipment,
+            customer=previous.customer,
+            carrier=previous.carrier,
+            customer_rate_amount=bill_total,
+            carrier_rate_amount=pay_total,
+            weight_lbs=previous.weight_lbs,
+            distance_miles=previous.distance_miles,
+            canonical_snapshot=canonical_snapshot,
+            raw_snapshot=previous.raw_snapshot,
+            snapshot_hash=snapshot_hash,
+            supersedes_id=previous.id,
+        )
+        session.add(version)
+        session.flush()
+        load.customer_rate_amount = bill_total
+        load.carrier_rate_amount = pay_total
+        load.observed_at = normalized.metadata.observed_at
+        load.current_version = version
+        return version
+
+    def _version_exists(self, session: Session, load: Load, snapshot_hash: str) -> bool:
+        return (
+            session.scalar(
+                select(LoadVersion.id).where(
+                    LoadVersion.tenant_id == load.tenant_id,
+                    LoadVersion.load_id == load.id,
+                    LoadVersion.snapshot_hash == snapshot_hash,
+                )
+            )
+            is not None
+        )
+
+    def _update_hauldesk_projection(
+        self,
+        load: Load,
+        version: LoadVersion,
+        snapshot: CanonicalLoadSnapshot,
+        customer: Customer,
+        carrier: Carrier | None,
+        bill_total: Decimal,
+        pay_total: Decimal,
+    ) -> None:
+        load.load_number = snapshot.load_number
+        load.customer = customer
+        load.carrier = carrier
+        load.status = snapshot.status
+        load.equipment = snapshot.equipment
+        load.customer_rate_amount = bill_total
+        load.carrier_rate_amount = pay_total
+        load.weight_lbs = snapshot.weight_lbs
+        load.distance_miles = snapshot.distance_miles
+        load.source_created_at = snapshot.source_created_at
+        load.source_modified_at = snapshot.source_modified_at
+        load.observed_at = version.observed_at
+        load.current_version = version
+
+
+class BrokerOSIngestionCoordinator(FreightFlowIngestionCoordinator):
+    """Persist BrokerOS snapshots, treating rates as restated totals."""
+
+    def ingest(
+        self, session: Session, source_file: SourceFile, tenant: TenantContext
+    ) -> IngestionResult:
+        checksum = hashlib.sha256(source_file.content).hexdigest()
+        raw_payload = json.loads(source_file.content)
+        with session.begin():
+            set_tenant_context(session, _uuid(tenant.tenant_id))
+            existing = session.scalar(
+                select(IngestionFile).where(
+                    IngestionFile.tenant_id == tenant.tenant_id, IngestionFile.sha256 == checksum
+                )
+            )
+            if existing is not None and existing.status is IngestionStatus.COMPLETED:
+                return IngestionResult(True, 0)
+
+            normalized = normalize_brokeros(
+                parse_brokeros_file(source_file), tenant.tenant_id, source_file.path.name
+            )
+            ingestion = IngestionFile(
+                tenant_id=tenant.tenant_id,
+                source_system=SourceSystem.BROKEROS,
+                relative_path=str(source_file.path.parent),
+                file_name=source_file.path.name,
+                sha256=checksum,
+                raw_payload=raw_payload,
+                sync_at=normalized.metadata.sync_at,
+                observed_at=normalized.metadata.observed_at,
+                status=IngestionStatus.PROCESSING,
+                started_at=normalized.metadata.observed_at,
+                loads_seen=len(normalized.loads),
+            )
+            session.add(ingestion)
+            session.flush()
+            raw_loads = {str(record["Id"]): record for record in raw_payload.get("records", [])}
+
+            versions = 0
+            for snapshot in normalized.loads:
+                customer = self._customer(
+                    session, snapshot.customer, normalized.metadata.observed_at
+                )
+                carrier = (
+                    None
+                    if snapshot.carrier is None
+                    else self._carrier(session, snapshot.carrier, normalized.metadata.observed_at)
+                )
+                load = session.scalar(
+                    select(Load).where(
+                        Load.tenant_id == tenant.tenant_id,
+                        Load.source_system == SourceSystem.BROKEROS,
+                        Load.external_id == snapshot.identity.external_id,
+                    )
+                )
+                if load is None:
+                    load = Load(
+                        tenant_id=tenant.tenant_id,
+                        source_system=SourceSystem.BROKEROS,
+                        external_id=snapshot.identity.external_id,
+                        load_number=snapshot.load_number,
+                        customer=customer,
+                        carrier=carrier,
+                        status=snapshot.status,
+                        equipment=snapshot.equipment,
+                        customer_rate_amount=_amount(snapshot.customer_rate),
+                        carrier_rate_amount=_amount(snapshot.carrier_rate),
+                        weight_lbs=snapshot.weight_lbs,
+                        distance_miles=snapshot.distance_miles,
+                        source_created_at=snapshot.source_created_at,
+                        source_modified_at=snapshot.source_modified_at,
+                        observed_at=normalized.metadata.observed_at,
+                    )
+                    session.add(load)
+                    session.flush()
+
+                canonical_snapshot = _brokeros_canonical(snapshot)
+                snapshot_hash = _snapshot_hash(canonical_snapshot)
+                existing_version = session.scalar(
+                    select(LoadVersion.id).where(
+                        LoadVersion.tenant_id == tenant.tenant_id,
+                        LoadVersion.load_id == load.id,
+                        LoadVersion.snapshot_hash == snapshot_hash,
+                    )
+                )
+                if existing_version is not None:
+                    continue
+                version = LoadVersion(
+                    tenant_id=tenant.tenant_id,
+                    load=load,
+                    ingestion_file=ingestion,
+                    source_modified_at=snapshot.source_modified_at,
+                    observed_at=normalized.metadata.observed_at,
+                    status=snapshot.status,
+                    equipment=snapshot.equipment,
+                    customer=customer,
+                    carrier=carrier,
+                    customer_rate_amount=_amount(snapshot.customer_rate),
+                    carrier_rate_amount=_amount(snapshot.carrier_rate),
+                    weight_lbs=snapshot.weight_lbs,
+                    distance_miles=snapshot.distance_miles,
+                    canonical_snapshot=canonical_snapshot,
+                    raw_snapshot=raw_loads[str(snapshot.identity.external_id)],
+                    snapshot_hash=snapshot_hash,
+                    supersedes_id=load.current_version_id,
+                )
+                session.add(version)
+                session.flush()
+                self._update_brokeros_projection(load, version, snapshot, customer, carrier)
+                session.execute(
+                    delete(Stop).where(Stop.tenant_id == tenant.tenant_id, Stop.load_id == load.id)
+                )
+                session.add_all(
+                    Stop(
+                        tenant_id=tenant.tenant_id,
+                        load=load,
+                        sequence=stop.sequence,
+                        is_pickup=stop.is_pickup,
+                        is_dropoff=stop.is_dropoff,
+                        facility_name=stop.facility_name,
+                        city=stop.city,
+                        state=stop.state,
+                        postal_code=stop.postal_code,
+                        scheduled_start_at=stop.scheduled_start_at,
+                        scheduled_end_at=stop.scheduled_end_at,
+                        actual_arrival_at=stop.actual_arrival_at,
+                        actual_departure_at=stop.actual_departure_at,
+                    )
+                    for stop in snapshot.stops
+                )
+                versions += 1
+
+            ingestion.status = IngestionStatus.COMPLETED
+            ingestion.completed_at = normalized.metadata.observed_at
+            ingestion.versions_created = versions
+            ingestion.projections_updated = versions
+            return IngestionResult(False, versions)
+
+    def _update_brokeros_projection(
+        self,
+        load: Load,
+        version: LoadVersion,
+        snapshot: CanonicalLoadSnapshot,
+        customer: Customer,
+        carrier: Carrier | None,
+    ) -> None:
+        load.load_number = snapshot.load_number
+        load.customer = customer
+        load.carrier = carrier
+        load.status = snapshot.status
+        load.equipment = snapshot.equipment
+        load.customer_rate_amount = _amount(snapshot.customer_rate)
+        load.carrier_rate_amount = _amount(snapshot.carrier_rate)
+        load.weight_lbs = snapshot.weight_lbs
+        load.distance_miles = snapshot.distance_miles
+        load.source_created_at = snapshot.source_created_at
+        load.source_modified_at = snapshot.source_modified_at
+        load.observed_at = version.observed_at
+        load.current_version = version
+
+
 def _amount(value: Money | None) -> Decimal | None:
     return None if value is None else value.amount
 
@@ -258,3 +815,96 @@ def _canonical(value: CanonicalLoadSnapshot) -> dict[str, object]:
         "status": value.status.value,
         "stops": [asdict(stop) for stop in value.stops],
     }
+
+
+def _hauldesk_canonical(
+    value: CanonicalLoadSnapshot,
+    carrier: Carrier | None,
+    bill_total: Decimal,
+    pay_total: Decimal,
+) -> dict[str, object]:
+    return _json_safe_snapshot({
+        "external_id": str(value.identity.external_id),
+        "load_number": value.load_number,
+        "status": value.status.value,
+        "equipment": None if value.equipment is None else value.equipment.value,
+        "customer": {
+            "external_id": str(value.customer.identity.external_id),
+            "name": value.customer.name,
+        },
+        "carrier": None
+        if carrier is None
+        else {
+            "external_id": carrier.external_id,
+            "name": carrier.name,
+            "mc_number": carrier.mc_number,
+            "dot_number": carrier.dot_number,
+        },
+        "stops": [asdict(stop) for stop in value.stops],
+        "source_created_at": value.source_created_at,
+        "source_modified_at": value.source_modified_at,
+        "weight_lbs": value.weight_lbs,
+        "distance_miles": value.distance_miles,
+        "customer_rate_amount": str(bill_total),
+        "carrier_rate_amount": str(pay_total),
+    })
+
+
+def _brokeros_canonical(value: CanonicalLoadSnapshot) -> dict[str, object]:
+    return _json_safe_snapshot({
+        "external_id": str(value.identity.external_id),
+        "load_number": value.load_number,
+        "status": value.status.value,
+        "equipment": None if value.equipment is None else value.equipment.value,
+        "customer": {
+            "external_id": str(value.customer.identity.external_id),
+            "name": value.customer.name,
+        },
+        "carrier": None
+        if value.carrier is None
+        else {
+            "external_id": str(value.carrier.identity.external_id),
+            "name": value.carrier.name,
+        },
+        "stops": [asdict(stop) for stop in value.stops],
+        "source_created_at": value.source_created_at,
+        "source_modified_at": value.source_modified_at,
+        "weight_lbs": value.weight_lbs,
+        "distance_miles": value.distance_miles,
+        "customer_rate_amount": None
+        if value.customer_rate is None
+        else str(value.customer_rate.amount),
+        "carrier_rate_amount": None
+        if value.carrier_rate is None
+        else str(value.carrier_rate.amount),
+    })
+
+
+def _json_safe_snapshot(snapshot: dict[str, object]) -> dict[str, object]:
+    return {key: _json_safe_value(value) for key, value in snapshot.items()}
+
+
+def _json_safe_value(value: object) -> object:
+    if isinstance(value, Decimal):
+        return str(value)
+    if isinstance(value, datetime):
+        return value.isoformat()
+    if isinstance(value, dict):
+        dictionary = cast(dict[object, object], value)
+        return {str(key): _json_safe_value(item) for key, item in dictionary.items()}
+    if isinstance(value, (list, tuple)):
+        sequence = cast(list[object] | tuple[object, ...], value)
+        return [_json_safe_value(item) for item in sequence]
+    return value
+
+
+def _snapshot_hash(snapshot: dict[str, object]) -> str:
+    def default(value: object) -> str:
+        if isinstance(value, Decimal):
+            return str(value)
+        if isinstance(value, datetime):
+            return value.isoformat()
+        raise TypeError(f"Unsupported canonical snapshot value: {type(value)!r}")
+
+    serialized = json.dumps(snapshot, default=default, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(serialized.encode()).hexdigest()

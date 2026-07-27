@@ -25,7 +25,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-carrier_pool}:${POSTGRES_PASSWORD:-carrier_pool}@db:5432/${POSTGRES_DB:-carrier_pool}
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_APP_USER:-carrier_pool_app}:${POSTGRES_APP_PASSWORD:-carrier_pool_app}@db:5432/${POSTGRES_DB:-carrier_pool}
     healthcheck:
       test:
         [

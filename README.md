@@ -75,6 +75,22 @@ data/
 
 The `example_sync.jsonc` files are the schema documentation (comments included). The real sync files you generate are plain `.json`, named `{YYYY-MM-DD}T{HH-MM}_sync.json` (ISO-8601-style, so filenames sort chronologically).
 
+## Development
+
+Run commands from repository root:
+
+```bash
+make setup      # install locked backend and frontend dependencies
+make format     # apply backend and frontend formatting
+make db-up      # start local PostgreSQL
+make check      # formatting, lint, type checks, unit tests, and builds
+make down       # stop local Compose services
+```
+
+Use `make build`, `make lint`, `make typecheck`, or `make test-unit` to run one
+verification category. Copy `.env.example` to `.env` only when overriding the safe
+local defaults.
+
 ## Constraints (the few we do impose)
 
 **Starting point**

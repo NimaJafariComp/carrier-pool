@@ -1,0 +1,93 @@
+// ============================================================================
+// TMS C — "BrokerOS" — sync snapshot 2026-07-06 06:00
+// ============================================================================
+// Every TMS is synced every 6 hours (00:00, 06:00, 12:00, 18:00). Each sync
+// produces one self-contained file named with the sync time, containing the
+// 1–3 loads created or changed since the last sync.
+//
+// BrokerOS is built on a CRM platform (think Salesforce), so its export looks
+// like CRM objects: prefixed field names, opaque record IDs, and related
+// records ("Location", "Account") referenced by ID. Every ID used in
+// "records" is resolved in "referenced_records" in the same file.
+//
+// Style: CRM managed package. Field names like bos__Something__c, IDs are
+// 18-char opaque strings, stops are child records with boolean direction
+// flags, cargo details live in line-item child records. US units.
+// ============================================================================
+{
+  "synced_at": "2026-07-06T11:00:00.000+0000",   // UTC
+  "records": [
+    {
+      "Id": "a0jO900000YgsYJIAZ",                // opaque, unique, stable
+      "Name": "SHP6743062",                      // human-readable load number
+      "bos__Load_Status__c": "Ready to Book",    // picklist:
+                                                 //   "Quotes Requested" — pricing the customer
+                                                 //   "Ready to Book"    — searching for a carrier
+                                                 //   "Booked"           — carrier locked in
+                                                 //   "In Transit"       — pickup through delivery
+                                                 //   "Delivered"        — freight delivered
+                                                 //   "Invoiced"         — customer invoiced
+                                                 //   "Paid"             — fully settled
+      "bos__Distance_Miles__c": 197.4,
+      "bos__Customer__c": "0011I00000NMUrPQAX",  // → referenced_records (Account)
+      "bos__Carrier__c": null,                   // → referenced_records (Account); null until "Booked"
+      "bos__Equipment_Type__c": "Reefer",        // picklist: "Dry Van" | "Reefer" | "Flatbed";
+                                                 //   null sometimes — treat as unknown, not Dry Van
+      "bos__Customer_Rate__c": 1720.00,          // single total, USD (what the customer pays)
+      "bos__Carrier_Rate__c": null,              // single total, USD; set at "Booked", may be
+                                                 //   RESTATED later — the value simply changes
+                                                 //   in a later sync, with no marker that it did
+      "bos__Stops__r": [                         // child records; order by bos__Number__c;
+        {                                        //   loads can have MORE than two stops
+          "bos__Number__c": 1.0,
+          "bos__Is_Pickup__c": true,
+          "bos__Is_Dropoff__c": false,
+          "bos__Location__c": "0011I00000HAeJnQAL",   // → referenced_records (Location)
+          "bos__Scheduled_Date__c": "2026-07-07",
+          "bos__Arrival_Time__c": null                // set on actual arrival, ISO datetime
+        },
+        {
+          "bos__Number__c": 2.0,
+          "bos__Is_Pickup__c": false,
+          "bos__Is_Dropoff__c": true,
+          "bos__Location__c": "0011I00000NMha6QAD",
+          "bos__Scheduled_Date__c": "2026-07-08",
+          "bos__Arrival_Time__c": null
+        }
+      ],
+      "bos__Line_Items__r": [                    // cargo detail lives here, not on the load
+        {
+          "bos__Commodity__c": "Packaged foods",
+          "bos__Weight__c": 14440.0,
+          "bos__Weight_Units__c": "lbs",         // usually lbs — but check per record
+          "bos__Pallet_Count__c": 18.0
+        }
+      ],
+      "CreatedDate": "2026-07-06T09:40:02.000+0000",       // UTC
+      "LastModifiedDate": "2026-07-06T09:40:02.000+0000"
+    }
+  ],
+  // Lookup for every Location / Account ID referenced above. Same ID always
+  // resolves to the same record; repeated across syncs for convenience.
+  "referenced_records": {
+    "0011I00000HAeJnQAL": {
+      "type": "Location",
+      "Name": "Sugar Land Cold Storage",
+      "bos__City__c": "Sugar Land",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "77478"
+    },
+    "0011I00000NMha6QAD": {
+      "type": "Location",
+      "Name": "Schertz Distribution Ctr",
+      "bos__City__c": "Schertz",
+      "bos__State__c": "TX",
+      "bos__Postal_Code__c": "78154"
+    },
+    "0011I00000NMUrPQAX": {
+      "type": "Account",
+      "record_type": "Customer",
+      "Name": "Gulf Coast Foods"
+    }
+  }
+}

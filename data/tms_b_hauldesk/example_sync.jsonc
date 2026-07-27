@@ -1,0 +1,86 @@
+// ============================================================================
+// TMS B — "HaulDesk" — sync snapshot 2026-07-06 06:00
+// ============================================================================
+// Every TMS is synced every 6 hours (00:00, 06:00, 12:00, 18:00). Each sync
+// produces one self-contained file named with the sync time, holding whatever
+// rows were created or changed since the last sync (1–3 loads' worth).
+//
+// HaulDesk is an older system: its export looks like database table dumps
+// bundled into one file — "loads", "carriers", "rates" — referencing each
+// other by ID, nothing nested.
+//
+// Style: legacy flat export. snake_case, exactly one pickup and one delivery
+// per load (flattened into the row), METRIC units (kg, km), numeric status
+// codes, money split into line items in the "rates" table. Local naive
+// timestamps ("YYYY-MM-DD HH:MM:SS", US Central time, no offset).
+// ============================================================================
+{
+  "synced_at": "2026-07-06 06:00:00",
+
+  "loads": [
+    {
+      "load_num": "HD-2026-004417",     // HaulDesk's load number — unique and stable
+      "status_code": 30,                // numeric status legend:
+                                        //   10 — Entered        (customer order received)
+                                        //   20 — Open           (looking for a truck)
+                                        //   30 — Truck Assigned (carrier booked)
+                                        //   40 — Rolling        (anywhere between pickup and delivery)
+                                        //   50 — Unloaded       (delivered)
+                                        //   90 — Closed         (all paperwork and money settled)
+      "customer_code": "C-0031",        // no separate customer table; code + name on the load row
+      "customer_name": "Alamo Building Supply",
+      "carrier_ref": 66861,             // → carrier_id in "carriers"; null while status < 30
+      "equip": "V",                     // equipment code: V = dry van, R = reefer, F = flatbed
+      "weight_kg": 10886.2,             // KILOGRAMS
+      "dist_km": 389.6,                 // KILOMETERS
+      "pu_city": "New Braunfels",       // pickup (one per load, flattened)
+      "pu_state": "TX",
+      "pu_zip": "78130",
+      "pu_date": "2026-07-07",          // planned pickup date (date only)
+      "pu_departed_at": null,           // set when the truck leaves the shipper
+      "del_city": "Pasadena",           // delivery (one per load, flattened)
+      "del_state": "TX",
+      "del_zip": "77502",
+      "del_date": "2026-07-08",
+      "del_arrived_at": null,           // set when the truck arrives at the receiver
+      "entered_at": "2026-07-05 14:22:10",
+      "updated_at": "2026-07-06 03:45:33"
+    }
+  ],
+
+  // Carrier rows appear in the sync where they were first seen or last changed.
+  "carriers": [
+    {
+      "carrier_id": 66861,
+      "carrier_name": "DELTA PRIME LLC",
+      "mc_no": "884201",                // same real-world carrier may exist in other TMSs —
+      "dot_no": "2551377",              //   MC/DOT numbers are the cross-system identity
+      "home_city": "Seguin",
+      "home_state": "TX",
+      "phone": "(830) 555-0144"
+    }
+  ],
+
+  // A load's money is the SUM of its line items on each side (bill = customer
+  // side, pay = carrier side). Later syncs can add MORE line items to an old
+  // load (fuel surcharge, detention, or a negative correction row) — rows are
+  // never edited or deleted, only appended.
+  "rates": [
+    {
+      "rate_id": 910233,
+      "load_num": "HD-2026-004417",     // → load
+      "side": "pay",                    // "bill" = customer pays broker; "pay" = broker pays carrier
+      "code": "LINEHAUL",               // LINEHAUL | FUEL | ACCESSORIAL | ADJUSTMENT
+      "amount_usd": 1035.00,            // can be NEGATIVE (correction / credit)
+      "created_at": "2026-07-06 03:45:33"
+    },
+    {
+      "rate_id": 910234,
+      "load_num": "HD-2026-004417",
+      "side": "bill",
+      "code": "LINEHAUL",
+      "amount_usd": 1310.00,
+      "created_at": "2026-07-06 03:45:33"
+    }
+  ]
+}

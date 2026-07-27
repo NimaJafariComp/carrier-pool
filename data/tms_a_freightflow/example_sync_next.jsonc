@@ -1,0 +1,55 @@
+// ============================================================================
+// TMS A — "FreightFlow" — sync snapshot 2026-07-06 12:00
+// ============================================================================
+// Note: shipment 127472397 already appeared in the 06:00 sync. It shows up
+// again here because it changed — a carrier was booked. This file is now the
+// newer truth for that load. This is how ALL updates and corrections arrive:
+// the whole load object again, with new values.
+// ============================================================================
+{
+  "syncedAt": "2026-07-06T12:00:00-05:00",
+  "loads": [
+    {
+      "shipmentId": 127472397,
+      "status": "Dispatched",           // was "Booking" at 06:00
+      "mileage": 242.1,
+      "totalSell": 1450.0,
+      "totalBuy": 1180.0,               // carrier rate now fixed at booking
+      "customer": {
+        "customerId": 889264,
+        "name": "Lone Star Beverages"
+      },
+      "carrier": {
+        "carrierMasterId": 835692,
+        "name": "IBRAHIM TRANSPORT INC",
+        "mcNumber": "1346382",          // federal authority numbers — the same real-world
+        "dotNumber": "3771394",         //   carrier may appear in other TMSs under these numbers
+        "phoneNumber": "+15714906959"
+      },
+      "equipment": "53 ft Van | Dry",
+      "weightTotal": 24000.0,
+      "stops": [
+        {
+          "stopType": "First Pickup",
+          "city": "GRAND PRAIRIE",
+          "state": "TX",
+          "zipCode": "75050",
+          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
+          "actualDepartureDateTime": null
+        },
+        {
+          "stopType": "Last Drop",
+          "city": "KATY",
+          "state": "TX",
+          "zipCode": "77449",
+          "estimatedReadyDateTime": "2026-07-08T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-08T16:00:00-05:00",
+          "actualDepartureDateTime": null
+        }
+      ],
+      "createdDate": "2026-07-06T04:12:44-05:00",
+      "lastModifiedDate": "2026-07-06T10:03:17-05:00"
+    }
+  ]
+}

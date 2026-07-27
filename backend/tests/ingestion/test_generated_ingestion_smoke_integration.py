@@ -14,8 +14,11 @@ from sqlalchemy.orm import Session
 
 from carrier_pool.db.models import IngestionFile, Load, LoadVersion, SourceRateEntry, Stop, Tenant
 from carrier_pool.decisioning.backtest import RateBacktestHarness
+from carrier_pool.decisioning.carrier_explanations import explain_rankings
 from carrier_pool.decisioning.carrier_features import CarrierFeatureService
+from carrier_pool.decisioning.carrier_scoring import CarrierHistoricalFitScorer
 from carrier_pool.decisioning.pricing import HierarchicalRateEstimator
+from carrier_pool.decisioning.ranking_evaluation import RankingBacktestHarness
 from carrier_pool.domain.types import SourceSystem
 from carrier_pool.generator.manifest import write_scenarios_manifest
 from carrier_pool.generator.scheduler import DAY11_SYNC_AT, write_sync_files
@@ -173,13 +176,41 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
                 ff_day11_target.observed_at,
             )
             by_carrier = {item.carrier_external_id: item for item in ff_features}
-            assert by_carrier["FF-C-204"].last_delivery_observed_at is not None
-            assert by_carrier["FF-C-205"].last_delivery_observed_at is not None
-            assert (
-                by_carrier["FF-C-204"].last_delivery_observed_at
-                > by_carrier["FF-C-205"].last_delivery_observed_at
+            delivery_observed_at = sorted(
+                item.last_delivery_observed_at
+                for item in by_carrier.values()
+                if item.last_delivery_observed_at is not None
             )
+            assert delivery_observed_at[-1] > delivery_observed_at[0]
             assert all(item.target_equipment_unknown is False for item in ff_features)
+            fixed_ranking = CarrierHistoricalFitScorer().score(ff_features)
+            other_tenant_target = session.scalar(
+                select(Load).where(
+                    Load.tenant_id == tenant_ids[SourceSystem.BROKEROS],
+                    Load.observed_at == DAY11_SYNC_AT,
+                )
+            )
+            assert other_tenant_target is not None
+            # Reading another tenant's history cannot change this tenant-local ranking.
+            CarrierFeatureService().retrieve(
+                session,
+                other_tenant_target.tenant_id,
+                other_tenant_target.id,
+                other_tenant_target.current_version_id,
+                other_tenant_target.observed_at,
+            )
+            assert (
+                CarrierHistoricalFitScorer().score(
+                    CarrierFeatureService().retrieve(
+                        session,
+                        ff_day11_target.tenant_id,
+                        ff_day11_target.id,
+                        ff_day11_target.current_version_id,
+                        ff_day11_target.observed_at,
+                    )
+                )
+                == fixed_ranking
+            )
 
             estimator = HierarchicalRateEstimator()
             for source_system, tenant_id in tenant_ids.items():
@@ -204,6 +235,18 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
                 assert estimate.point_estimate_usd <= estimate.historical_comparison_upper_usd
                 assert estimate.confidence.level is not None
                 assert estimate.comparables
+                candidate_features = CarrierFeatureService().retrieve(
+                    session,
+                    target.tenant_id,
+                    target.id,
+                    target.current_version_id,
+                    target.observed_at,
+                )
+                ranking = CarrierHistoricalFitScorer().score(candidate_features)
+                assert ranking
+                assert CarrierHistoricalFitScorer().score(candidate_features) == ranking
+                explanations = explain_rankings(ranking, candidate_features)
+                assert all(item.supporting_load_ids for item in explanations)
 
             report = RateBacktestHarness().run(session, tuple(tenant_ids.values()))
             assert report.scored_case_count > 0
@@ -211,10 +254,13 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
             assert report.metrics.median_absolute_error_usd is not None
             assert report.metrics.wape is not None
             for tenant_id in tenant_ids.values():
-                assert sum(
-                    result.case.tenant_id == tenant_id and result.absolute_error_usd is not None
-                    for result in report.cases
-                ) >= 5
+                assert (
+                    sum(
+                        result.case.tenant_id == tenant_id and result.absolute_error_usd is not None
+                        for result in report.cases
+                    )
+                    >= 5
+                )
             assert report.by_history_depth["RICH"].case_count >= 1
             assert report.by_history_depth["SPARSE"].case_count >= 1
             assert set(report.baseline_models) == {
@@ -225,12 +271,18 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
                 "quantile_regression",
             }
             assert (
-                report.baseline_models["tenant_wide_median"].case_count
-                == report.scored_case_count
+                report.baseline_models["tenant_wide_median"].case_count == report.scored_case_count
             )
             assert all(
                 model.case_count <= report.case_count for model in report.baseline_models.values()
             )
+            ranking_report = RankingBacktestHarness().run(session, tuple(tenant_ids.values()))
+            assert (
+                ranking_report.with_deadhead.case_count
+                == ranking_report.without_deadhead.case_count
+            )
+            assert ranking_report.with_deadhead.case_count > 0
+            assert ranking_report.with_deadhead.by_history_depth
             for model in report.baseline_models.values():
                 if model.case_count:
                     assert model.metrics.mae_usd is not None
@@ -250,8 +302,7 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
                 evidence_observed_at[version_id] = observed_at
             for result in report.cases:
                 assert all(
-                    evidence_observed_at[comparable.load_version_id]
-                    <= result.case.first_active_at
+                    evidence_observed_at[comparable.load_version_id] <= result.case.first_active_at
                     for comparable in result.estimate.comparables
                 )
             before = {

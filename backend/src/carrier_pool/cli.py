@@ -11,6 +11,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from carrier_pool.decisioning.backtest import RateBacktestHarness, write_backtest_artifacts
+from carrier_pool.decisioning.ranking_evaluation import (
+    RankingBacktestHarness,
+    write_ranking_artifacts,
+)
 from carrier_pool.domain.types import SourceSystem
 from carrier_pool.generator.manifest import write_scenarios_manifest
 from carrier_pool.generator.scheduler import write_sync_files
@@ -140,9 +144,11 @@ def rate_backtest(
     try:
         with Session(engine) as session:
             report = RateBacktestHarness().run(session)
+            ranking_report = RankingBacktestHarness().run(session)
     finally:
         engine.dispose()
     metrics_path, cases_path = write_backtest_artifacts(report, artifacts_dir)
+    ranking_metrics_path = write_ranking_artifacts(ranking_report, artifacts_dir)
     typer.echo(
         json.dumps(
             {
@@ -150,6 +156,7 @@ def rate_backtest(
                 "scored_case_count": report.scored_case_count,
                 "metrics_path": str(metrics_path),
                 "cases_path": str(cases_path),
+                "ranking_metrics_path": str(ranking_metrics_path),
             },
             sort_keys=True,
         )

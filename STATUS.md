@@ -233,12 +233,36 @@ acceptance evidence has not yet been recorded.
   totals label-only while estimator inputs remain bounded by the first-ACTIVE
   cutoff.
 
-## Phase 10 — Carrier historical-fit ranking — Task 10.1 complete
+## Phase 10 — Carrier historical-fit ranking — Complete
 
 - `docs/architecture/carrier-ranking.md` defines tenant-local historical-fit
   eligibility, components, weights, ESS/shrinkage, confidence, tie-breaking,
   structured explanations, strict deadhead wording, temporal/tenant boundaries,
-  and leakage-safe proxy evaluation. No ranking code has been implemented.
+  and leakage-safe proxy evaluation.
+- `CarrierFeatureService` now reconstructs tenant-local candidate features from
+  immutable completed versions at `as_of`: directional-lane evidence, equipment
+  and completed-history counts, relevant-work recency, last known delivery time,
+  delivery-to-pickup distance/time gap, and immutable evidence IDs. Generated-data
+  ingestion coverage proves recent and stale delivery evidence remain distinct and
+  no live-availability claim is produced.
+- `CarrierHistoricalFitScorer` applies documented lane/equipment/deadhead/recency
+  components, neutral-prior shrinkage, separate confidence, and stable tie-breaking
+  under model version `carrier-ranking-v1`. Focused tests cover exact-lane priority,
+  deadhead rank changes, stale-evidence decay, and sparse one-load shrinkage.
+- Structured ranking explanations use fixed reason templates and include rank,
+  adjusted score, confidence, component values, evidence IDs, warnings, and model
+  version. Explanation tests prohibit unsupported availability, reliability, and
+  acceptance wording.
+- `rate-backtest` now writes `artifacts/ranking_metrics.json` beside the rate
+  artifacts. It evaluates first-ACTIVE, tenant-local rankings using the eventually
+  booked carrier only as a stated weak behavioral proxy; top-1/top-3 recall, MRR,
+  no-rank counts, rich/sparse effective-history breakdowns, and paired
+  no-deadhead ablation results use the same cases. Generated-ingestion coverage
+  proves reading another tenant's history cannot alter a fixed tenant ranking.
+- **Gate evidence:** generated-ingestion smoke scores every Day 11 target twice
+  from identical immutable inputs, requires non-empty evidence-backed rankings and
+  explanations, and confirms sparse scores carry neutral-prior shrinkage while
+  explanation templates avoid availability/acceptance claims.
 
 ## Phases 11–16 — Not started
 
@@ -251,6 +275,13 @@ acceptance evidence has not yet been recorded.
 
 ## Latest verification — 2026-07-27
 
-- `make test-integration`: `7 passed` against local Compose PostgreSQL.
-- Full backend suite with `DATABASE_URL`: `182 passed`.
-- Ruff: pass. Pyright: `0 errors, 0 warnings, 0 informations`.
+- `make backtest`: pass; wrote rate artifacts and `artifacts/ranking_metrics.json`
+  for `440` historical cases (`300` rate-scored).
+- Phase 10 ranking evaluation/scoring tests: `4 passed`. Focused Ruff passes.
+- Full backend Pyright currently reports `51` pre-existing/adjacent unknown-type
+  errors in baseline analysis, generator scheduling, and carrier snapshot parsing;
+  this does not change completed behavioral gate smoke, but type-cleanliness is
+  not yet a repository-wide pass.
+- Phase 10 Day 11 ranking gate smoke: `1 passed` against local Compose PostgreSQL.
+- Prior baseline verification: `make test-integration`: `7 passed`; full backend
+  suite with `DATABASE_URL`: `182 passed` (before Phase 10 additions).

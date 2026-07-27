@@ -1,0 +1,53 @@
+{
+  "caveat": "The eventually booked carrier is only a weak behavioral proxy; it does not prove availability, acceptance probability, reliability, or dispatch quality.",
+  "with_deadhead": {
+    "by_history_depth": {
+      "RICH": {
+        "by_history_depth": {},
+        "case_count": 0,
+        "mean_reciprocal_rank": null,
+        "no_rank_count": 0,
+        "top_1_recall": null,
+        "top_3_recall": null
+      },
+      "SPARSE": {
+        "by_history_depth": {},
+        "case_count": 300,
+        "mean_reciprocal_rank": "0.1644444444444444444444444444",
+        "no_rank_count": 240,
+        "top_1_recall": "0.13",
+        "top_3_recall": "0.2"
+      }
+    },
+    "case_count": 300,
+    "mean_reciprocal_rank": "0.1644444444444444444444444444",
+    "no_rank_count": 240,
+    "top_1_recall": "0.13",
+    "top_3_recall": "0.2"
+  },
+  "without_deadhead": {
+    "by_history_depth": {
+      "RICH": {
+        "by_history_depth": {},
+        "case_count": 0,
+        "mean_reciprocal_rank": null,
+        "no_rank_count": 0,
+        "top_1_recall": null,
+        "top_3_recall": null
+      },
+      "SPARSE": {
+        "by_history_depth": {},
+        "case_count": 300,
+        "mean_reciprocal_rank": "0.1644444444444444444444444444",
+        "no_rank_count": 240,
+        "top_1_recall": "0.13",
+        "top_3_recall": "0.2"
+      }
+    },
+    "case_count": 300,
+    "mean_reciprocal_rank": "0.1644444444444444444444444444",
+    "no_rank_count": 240,
+    "top_1_recall": "0.13",
+    "top_3_recall": "0.2"
+  }
+}

@@ -88,6 +88,10 @@ BASELINE_MODEL_NAMES = (
 )
 
 
+def _empty_baseline_models() -> dict[str, "BaselineModelReport"]:
+    return {}
+
+
 @dataclass(frozen=True, slots=True)
 class BaselineModelReport:
     """Metrics for one baseline on its explicitly displayed eligible population."""
@@ -107,7 +111,7 @@ class BacktestReport:
     by_tier: dict[str, Breakdown]
     by_equipment: dict[str, Breakdown]
     by_history_depth: dict[str, Breakdown]
-    baseline_models: dict[str, BaselineModelReport] = field(default_factory=dict)
+    baseline_models: dict[str, BaselineModelReport] = field(default_factory=_empty_baseline_models)
 
 
 EstimatorCall = Callable[[UUID, UUID, datetime], RateEstimate]
@@ -122,8 +126,10 @@ class RateBacktestHarness:
 
     def run(self, session: Session, tenant_ids: Sequence[UUID] | None = None) -> BacktestReport:
         """Run rolling predictions against eventual corrected carrier-pay totals."""
-        selected_tenants = tuple(tenant_ids) if tenant_ids is not None else tuple(
-            session.scalars(select(Tenant.id).order_by(Tenant.id)).all()
+        selected_tenants = (
+            tuple(tenant_ids)
+            if tenant_ids is not None
+            else tuple(session.scalars(select(Tenant.id).order_by(Tenant.id)).all())
         )
         cases: list[HistoricalRateCase] = []
         for tenant_id in selected_tenants:
@@ -294,7 +300,7 @@ def write_backtest_artifacts(report: BacktestReport, artifacts_dir: Path) -> tup
     cases_path = artifacts_dir / "backtest_cases.csv"
     metrics_path.write_text(json.dumps(_report_json(report), indent=2, sort_keys=True) + "\n")
     with cases_path.open("w", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=_case_fieldnames())
+        writer = csv.DictWriter(handle, fieldnames=_case_fieldnames(), lineterminator="\n")
         writer.writeheader()
         for case in report.cases:
             writer.writerow(_case_row(case))
@@ -369,9 +375,11 @@ def _report(results: tuple[BacktestCaseResult, ...]) -> BacktestReport:
         cases=results,
         by_tier=_breakdown(
             scored,
-            lambda result: "NO_EVIDENCE"
-            if result.estimate.local_tier is None
-            else result.estimate.local_tier.value,
+            lambda result: (
+                "NO_EVIDENCE"
+                if result.estimate.local_tier is None
+                else result.estimate.local_tier.value
+            ),
         ),
         by_equipment=_breakdown(
             scored, lambda result: (result.case.equipment or EquipmentType.UNKNOWN).value

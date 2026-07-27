@@ -74,7 +74,7 @@ acceptance evidence has not yet been recorded.
 - Contract tests normalize every supplied comment-stripped schema example as a
   file through its source adapter.
 
-## Phase 6 — Deterministic data generator — Tasks 6.1–6.7 complete
+## Phase 6 — Deterministic data generator — complete
 
 - `docs/DATA_SCENARIOS.md` defines the three-tenant catalog, 26 required
   scenarios, exact lifecycle/correction events, Day 11 target cases, and later
@@ -112,9 +112,45 @@ acceptance evidence has not yet been recorded.
   scenario coverage, and declared normalization warnings. Focused negative tests
   reject missing schedule files, broken BrokerOS references, and undeclared warnings.
 
-## Phases 7–16 — Not started
+## Phase 7 — Complete ingestion and rebuild logic — Complete
 
-- Phase 7: complete chronological ingestion/rebuild logic.
+- `FileIngestionOrchestrator` binds each generated source directory to an explicit
+  tenant/source pair, ignores JSONC examples, rejects non-generated JSON names,
+  parses filename timestamps, and submits exactly one file at a time in global
+  chronological order.
+- `carrier-pool ingest-file` requires explicit tenant/source binding.
+  `carrier-pool ingest-all` and `make ingest` require one explicit tenant UUID per
+  TMS directory; `make ingest` fails safely when those variables are absent.
+- Focused tests cover ignored JSONC/non-JSON files, invalid names, global ordering,
+  trusted directory binding, and one-at-a-time callback dispatch.
+- Every coordinator now wraps parse, normalization, and persistence in a file-level
+  transaction. Fatal errors roll back all domain facts, then persist a separate
+  tenant-scoped `FAILED` ingestion record with sanitized structured error code/type.
+  A corrected checksum can ingest successfully after a failed attempt.
+- PostgreSQL integration tests force failure after first persisted load, prove all
+  partial facts roll back, verify sanitized failure metadata, and verify parse-failure
+  records carry no raw payload.
+- Current projections use deterministic `(source sync, source modified, observed)`
+  precedence while every distinct immutable version remains stored. Older source
+  snapshots cannot replace current state; later source corrections can regress status
+  and remain current with structured anomaly warnings on the ingestion file.
+- Canonically unchanged snapshots from a different file create no redundant version.
+  Pure and PostgreSQL tests cover out-of-order attempts, late regression corrections,
+  anomaly persistence, and unchanged snapshots.
+
+- `rebuild-projections` reconstructs one tenant's loads, ordered stops, linked customer
+  and carrier projections, and HaulDesk ledger totals exclusively from immutable load
+  versions and source rate entries in one transaction. `make rebuild-projections`
+  requires `TENANT_ID`. The integration test corrupts the mutable state, rebuilds it,
+  and verifies the normalized state hash matches incremental ingestion.
+
+- Per-file JSON CLI/log reports include tenant, source, filename, checksum, record,
+  version, projection, warning, error, and no-op counts. `ingestion-summary` returns
+  tenant-scoped review-demo totals. Smoke coverage generates and validates all 123
+  files, ingests them, verifies no-op replay, and proves rebuild parity.
+
+## Phases 8–16 — Not started
+
 - Phase 8: geography and comparable-lane retrieval.
 - Phase 9: rate estimation and leakage-free backtesting.
 - Phase 10: carrier historical-fit ranking.
@@ -127,7 +163,7 @@ acceptance evidence has not yet been recorded.
 
 ## Latest verification — 2026-07-27
 
-- Backend suite with PostgreSQL: `132 passed`.
+- Backend suite with PostgreSQL: `141 passed`.
 - PostgreSQL integration target: `7 passed` (temporal persistence, direct-SQL
   RLS, FreightFlow replacement/idempotency, HaulDesk ledger, BrokerOS restatement).
 - Ruff: pass. Pyright: `0 errors, 0 warnings, 0 informations`.

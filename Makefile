@@ -1,4 +1,4 @@
-.PHONY: setup generate validate format format-check lint typecheck test-unit test-integration build db-up down check
+.PHONY: setup generate validate ingest rebuild-projections format format-check lint typecheck test-unit test-integration build db-up down check
 
 setup:
 	cd backend && uv sync --all-groups
@@ -9,6 +9,14 @@ generate:
 
 validate:
 	cd backend && uv run carrier-pool validate-data --data-root ../data
+
+ingest:
+	test -n "$(FREIGHTFLOW_TENANT_ID)" && test -n "$(HAULDESK_TENANT_ID)" && test -n "$(BROKEROS_TENANT_ID)"
+	cd backend && uv run carrier-pool ingest-all --data-root ../data --freightflow-tenant-id "$(FREIGHTFLOW_TENANT_ID)" --hauldesk-tenant-id "$(HAULDESK_TENANT_ID)" --brokeros-tenant-id "$(BROKEROS_TENANT_ID)"
+
+rebuild-projections:
+	test -n "$(TENANT_ID)"
+	cd backend && uv run carrier-pool rebuild-projections --tenant-id "$(TENANT_ID)"
 
 format:
 	cd backend && uv run ruff format .

@@ -107,6 +107,7 @@ class IngestionFile(Base):
         Integer, nullable=False, server_default=text("0")
     )
     warnings_count: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
+    warning_details: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     errors_count: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
     error_details: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     created_at: Mapped[datetime] = mapped_column(

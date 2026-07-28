@@ -2,10 +2,10 @@
   "loads": [
     {
       "carrier": {
-        "carrierMasterId": 857186,
-        "dotNumber": "3900202",
-        "mcNumber": "1350202",
-        "name": "Cedar Express",
+        "carrierMasterId": 169083,
+        "dotNumber": "3900201",
+        "mcNumber": "1350201",
+        "name": "Lone Star Van",
         "phoneNumber": "+12145550101"
       },
       "createdDate": "2026-07-05T01:00:00-05:00",
@@ -15,7 +15,7 @@
       },
       "equipment": "53 ft Van | Dry",
       "lastModifiedDate": "2026-07-05T01:00:00-05:00",
-      "mileage": 242.1,
+      "mileage": 239.4,
       "shipmentId": 135569,
       "status": "Completed",
       "stops": [
@@ -31,15 +31,15 @@
         {
           "actualDepartureDateTime": null,
           "city": "KATY",
-          "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
-          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-08T23:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-08T15:00:00-05:00",
           "state": "TX",
           "stopType": "Last Drop",
           "zipCode": "77449"
         }
       ],
-      "totalBuy": 1225,
-      "totalSell": 1505,
+      "totalBuy": 1210,
+      "totalSell": 1490,
       "weightTotal": 24000
     }
   ],

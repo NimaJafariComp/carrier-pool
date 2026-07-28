@@ -21,6 +21,21 @@ def build_scenarios_manifest(catalog: ScenarioCatalog) -> dict[str, object]:
     return {
         "scenario_ids": list(scenario_ids),
         "scenarios": [_manifest_scenario(catalog, schedule, scenario) for scenario in scenarios],
+        "ranking_holdouts": [
+            {
+                "load_id": holdout.load_id,
+                "booked_carrier_id": holdout.booked_carrier_id,
+                "coverage_tags": list(holdout.coverage_tags),
+                "source_files": list(
+                    dict.fromkeys(
+                        str(sync_relative_path(sync))
+                        for sync in schedule
+                        if any(event.load_id == holdout.load_id for event in sync.events)
+                    )
+                ),
+            }
+            for holdout in catalog.ranking_holdouts
+        ],
     }
 
 

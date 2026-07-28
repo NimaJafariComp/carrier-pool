@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from datetime import date, datetime
+from decimal import Decimal
 from enum import StrEnum
 from random import Random
 
@@ -125,7 +126,9 @@ class GeneratorLoad:
     customer_id: str
     stops: tuple[ScenarioStop, ...]
     equipment: EquipmentType
+    distance_miles: Decimal
     day11_target: bool = False
+    evaluation_probe: bool = False
 
     def __post_init__(self) -> None:
         _required(self.logical_id, "logical_id")
@@ -133,6 +136,8 @@ class GeneratorLoad:
         _required(self.customer_id, "customer_id")
         if not self.stops:
             raise ValueError("loads require at least one stop.")
+        if self.distance_miles <= 0:
+            raise ValueError("load distance_miles must be positive.")
         sequences = tuple(stop.sequence for stop in self.stops)
         if sequences != tuple(sorted(sequences)) or len(set(sequences)) != len(sequences):
             raise ValueError("load stops must have unique ordered sequences.")
@@ -236,6 +241,21 @@ class ScenarioDefinition:
 
 
 @dataclass(frozen=True, slots=True)
+class RankingHoldoutDefinition:
+    """Hand-authored later booking label and required evaluation coverage."""
+
+    load_id: str
+    booked_carrier_id: str
+    coverage_tags: tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        _required(self.load_id, "load_id")
+        _required(self.booked_carrier_id, "booked_carrier_id")
+        if not self.coverage_tags:
+            raise ValueError("ranking holdout requires coverage tags.")
+
+
+@dataclass(frozen=True, slots=True)
 class ScenarioCatalog:
     """Hand-authored scenario identities and expected behavior inputs."""
 
@@ -245,6 +265,7 @@ class ScenarioCatalog:
     carriers: tuple[CarrierDefinition, ...]
     loads: tuple[GeneratorLoad, ...]
     scenarios: tuple[ScenarioDefinition, ...] = ()
+    ranking_holdouts: tuple[RankingHoldoutDefinition, ...] = ()
 
     def __post_init__(self) -> None:
         tenant_ids = _unique_ids(self.tenants, "tenant_id", "tenant")
@@ -253,6 +274,7 @@ class ScenarioCatalog:
         _unique_ids(self.carriers, "carrier_id", "carrier")
         _unique_ids(self.loads, "logical_id", "load")
         _unique_ids(self.scenarios, "scenario_id", "scenario")
+        _unique_ids(self.ranking_holdouts, "load_id", "ranking holdout")
         if not tenant_ids:
             raise ValueError("catalog requires a tenant.")
         for customer in self.customers:
@@ -287,6 +309,14 @@ class ScenarioCatalog:
                 raise ValueError(f"scenario {scenario.scenario_id} references an unknown load.")
             if any(carrier_id not in carrier_ids for carrier_id in scenario.carrier_ids):
                 raise ValueError(f"scenario {scenario.scenario_id} references an unknown carrier.")
+        for holdout in self.ranking_holdouts:
+            if holdout.load_id not in load_ids or holdout.booked_carrier_id not in carrier_ids:
+                raise ValueError("ranking holdout references an unknown load or carrier.")
+            if (
+                self.load(holdout.load_id).tenant_id
+                != self.carrier(holdout.booked_carrier_id).tenant_id
+            ):
+                raise ValueError("ranking holdout carrier must belong to the load tenant.")
 
     def load(self, logical_id: str) -> GeneratorLoad:
         return next(load for load in self.loads if load.logical_id == logical_id)

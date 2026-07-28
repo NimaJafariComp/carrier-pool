@@ -86,6 +86,8 @@ BASELINE_MODEL_NAMES = (
     "robust_huber_regression",
     "quantile_regression",
 )
+MIN_SAME_POPULATION_CASES_FOR_PROMOTION = 30
+MIN_RELATIVE_MAE_IMPROVEMENT_FOR_PROMOTION = Decimal("0.05")
 
 
 def _empty_baseline_models() -> dict[str, "BaselineModelReport"]:
@@ -101,6 +103,34 @@ class BaselineModelReport:
 
 
 @dataclass(frozen=True, slots=True)
+class BaselineCaseResult:
+    """One baseline outcome tied to its exact historical target case."""
+
+    case: HistoricalRateCase
+    prediction: BaselinePrediction
+
+
+@dataclass(frozen=True, slots=True)
+class ComparisonBreakdown:
+    """Production and challenger metrics over one identical case population."""
+
+    case_count: int
+    production_metrics: ErrorMetrics
+    baseline_metrics: ErrorMetrics
+
+
+@dataclass(frozen=True, slots=True)
+class SamePopulationComparison:
+    """A challenger comparison that never mixes denominator populations."""
+
+    case_count: int
+    production_metrics: ErrorMetrics
+    baseline_metrics: ErrorMetrics
+    by_tier: dict[str, ComparisonBreakdown]
+    by_history_depth: dict[str, ComparisonBreakdown]
+
+
+@dataclass(frozen=True, slots=True)
 class BacktestReport:
     """Backtest summary plus individual auditable case outcomes."""
 
@@ -112,6 +142,9 @@ class BacktestReport:
     by_equipment: dict[str, Breakdown]
     by_history_depth: dict[str, Breakdown]
     baseline_models: dict[str, BaselineModelReport] = field(default_factory=_empty_baseline_models)
+    same_population_comparisons: dict[str, SamePopulationComparison] = field(
+        default_factory=lambda: dict[str, SamePopulationComparison]()
+    )
 
 
 EstimatorCall = Callable[[UUID, UUID, datetime], RateEstimate]
@@ -141,7 +174,12 @@ class RateBacktestHarness:
                 session, tenant_id, load_id, as_of
             ),
         )
-        return replace(report, baseline_models=self._baseline_reports(session, ordered_cases))
+        baseline_cases = self._baseline_cases(session, ordered_cases)
+        return replace(
+            report,
+            baseline_models=_baseline_reports(baseline_cases),
+            same_population_comparisons=_same_population_comparisons(report.cases, baseline_cases),
+        )
 
     def _cases_for_tenant(
         self, session: Session, tenant_id: UUID
@@ -178,13 +216,11 @@ class RateBacktestHarness:
             )
         return tuple(cases)
 
-    def _baseline_reports(
+    def _baseline_cases(
         self, session: Session, cases: Sequence[HistoricalRateCase]
-    ) -> dict[str, BaselineModelReport]:
+    ) -> dict[str, tuple[BaselineCaseResult, ...]]:
         """Run every baseline against tenant-local observations known at each cutoff."""
-        outcomes: dict[str, list[tuple[Decimal, BaselinePrediction]]] = {
-            name: [] for name in BASELINE_MODEL_NAMES
-        }
+        outcomes: dict[str, list[BaselineCaseResult]] = {name: [] for name in BASELINE_MODEL_NAMES}
         for case in cases:
             target, observations, nearest_lane = self._baseline_inputs(session, case)
             predictions = (
@@ -196,13 +232,8 @@ class RateBacktestHarness:
             )
             for prediction in predictions:
                 if prediction is not None:
-                    outcomes[prediction.model_name].append(
-                        (case.final_carrier_rate_usd, prediction)
-                    )
-        return {
-            name: BaselineModelReport(len(values), _baseline_metrics(values))
-            for name, values in outcomes.items()
-        }
+                    outcomes[prediction.model_name].append(BaselineCaseResult(case, prediction))
+        return {name: tuple(values) for name, values in outcomes.items()}
 
     def _baseline_inputs(
         self, session: Session, case: HistoricalRateCase
@@ -418,15 +449,20 @@ def _metrics(results: Sequence[BacktestCaseResult]) -> ErrorMetrics:
     )
 
 
-def _baseline_metrics(outcomes: Sequence[tuple[Decimal, BaselinePrediction]]) -> ErrorMetrics:
+def _baseline_metrics(outcomes: Sequence[BaselineCaseResult]) -> ErrorMetrics:
     if not outcomes:
         return ErrorMetrics(None, None, None, None)
-    errors = tuple(abs(prediction.point_estimate_usd - actual) for actual, prediction in outcomes)
-    actual_total = sum((actual for actual, _prediction in outcomes), Decimal(0))
+    errors = tuple(
+        abs(outcome.prediction.point_estimate_usd - outcome.case.final_carrier_rate_usd)
+        for outcome in outcomes
+    )
+    actual_total = sum((outcome.case.final_carrier_rate_usd for outcome in outcomes), Decimal(0))
     coverage = tuple(
-        prediction.lower_usd <= actual <= prediction.upper_usd
-        for actual, prediction in outcomes
-        if prediction.lower_usd is not None and prediction.upper_usd is not None
+        outcome.prediction.lower_usd
+        <= outcome.case.final_carrier_rate_usd
+        <= outcome.prediction.upper_usd
+        for outcome in outcomes
+        if outcome.prediction.lower_usd is not None and outcome.prediction.upper_usd is not None
     )
     return ErrorMetrics(
         mae_usd=sum(errors, Decimal(0)) / Decimal(len(errors)),
@@ -434,6 +470,68 @@ def _baseline_metrics(outcomes: Sequence[tuple[Decimal, BaselinePrediction]]) ->
         wape=(sum(errors, Decimal(0)) / actual_total) if actual_total else None,
         range_coverage=(Decimal(sum(coverage)) / Decimal(len(coverage))) if coverage else None,
     )
+
+
+def _baseline_reports(
+    outcomes: dict[str, tuple[BaselineCaseResult, ...]],
+) -> dict[str, BaselineModelReport]:
+    return {
+        name: BaselineModelReport(len(values), _baseline_metrics(values))
+        for name, values in outcomes.items()
+    }
+
+
+def _same_population_comparisons(
+    production_cases: Sequence[BacktestCaseResult],
+    baseline_cases: dict[str, tuple[BaselineCaseResult, ...]],
+) -> dict[str, SamePopulationComparison]:
+    """Compare every baseline only where it and production both made a prediction."""
+    production_by_load = {result.case.load_id: result for result in production_cases}
+    comparisons: dict[str, SamePopulationComparison] = {}
+    for name, outcomes in baseline_cases.items():
+        pairs = tuple(
+            (production, baseline)
+            for baseline in outcomes
+            if (production := production_by_load.get(baseline.case.load_id)) is not None
+            and production.absolute_error_usd is not None
+        )
+        comparisons[name] = SamePopulationComparison(
+            len(pairs),
+            _metrics(tuple(production for production, _baseline in pairs)),
+            _baseline_metrics(tuple(baseline for _production, baseline in pairs)),
+            _comparison_breakdown(
+                pairs,
+                lambda production: (
+                    "NO_TIER"
+                    if production.estimate.local_tier is None
+                    else production.estimate.local_tier.value
+                ),
+            ),
+            _comparison_breakdown(
+                pairs,
+                lambda production: (
+                    "RICH" if production.estimate.raw_evidence_count >= 4 else "SPARSE"
+                ),
+            ),
+        )
+    return comparisons
+
+
+def _comparison_breakdown(
+    pairs: Sequence[tuple[BacktestCaseResult, BaselineCaseResult]],
+    key: Callable[[BacktestCaseResult], str],
+) -> dict[str, ComparisonBreakdown]:
+    groups: dict[str, list[tuple[BacktestCaseResult, BaselineCaseResult]]] = defaultdict(list)
+    for production, baseline in pairs:
+        groups[key(production)].append((production, baseline))
+    return {
+        name: ComparisonBreakdown(
+            len(group),
+            _metrics(tuple(production for production, _baseline in group)),
+            _baseline_metrics(tuple(baseline for _production, baseline in group)),
+        )
+        for name, group in sorted(groups.items())
+    }
 
 
 def _median(values: Sequence[Decimal]) -> Decimal:
@@ -464,6 +562,37 @@ def _report_json(report: BacktestReport) -> dict[str, object]:
         "by_tier": _breakdown_json(report.by_tier),
         "by_equipment": _breakdown_json(report.by_equipment),
         "by_history_depth": _breakdown_json(report.by_history_depth),
+        "calibration": {
+            "is_prediction_interval": False,
+            "minimum_cases_per_group": 20,
+            "confidence_levels": _breakdown_json(
+                _breakdown(
+                    tuple(
+                        result for result in report.cases if result.absolute_error_usd is not None
+                    ),
+                    lambda result: result.estimate.confidence.level.value,
+                )
+            ),
+            "range_coverage_by_tier": _breakdown_json(report.by_tier),
+            "warning": (
+                "Confidence is evidence quality and this range is historical comparison "
+                "only; neither is calibrated with this deterministic demo dataset."
+            ),
+        },
+        "model_selection_policy": {
+            "promotion_eligible": False,
+            "minimum_same_population_case_count": MIN_SAME_POPULATION_CASES_FOR_PROMOTION,
+            "minimum_relative_mae_improvement": _decimal_text(
+                MIN_RELATIVE_MAE_IMPROVEMENT_FOR_PROMOTION
+            ),
+            "requires": [
+                "lower MAE and median absolute error on the same cases",
+                "no worse sparse-history WAPE",
+                "no worse historical-range coverage",
+                "independent operational outcome data",
+            ],
+            "blocker": "Deterministic demo outcomes are not independent operational data.",
+        },
         "models": {
             MODEL_VERSION: {
                 "case_count": report.scored_case_count,
@@ -477,12 +606,35 @@ def _report_json(report: BacktestReport) -> dict[str, object]:
                 for name, value in report.baseline_models.items()
             },
         },
+        "same_population_comparisons": {
+            name: {
+                "case_count": value.case_count,
+                "production_metrics": _metrics_json(value.production_metrics),
+                "baseline_metrics": _metrics_json(value.baseline_metrics),
+                "by_tier": _comparison_breakdown_json(value.by_tier),
+                "by_history_depth": _comparison_breakdown_json(value.by_history_depth),
+            }
+            for name, value in report.same_population_comparisons.items()
+        },
     }
 
 
 def _breakdown_json(breakdown: dict[str, Breakdown]) -> dict[str, object]:
     return {
         name: {"case_count": value.case_count, "metrics": _metrics_json(value.metrics)}
+        for name, value in breakdown.items()
+    }
+
+
+def _comparison_breakdown_json(
+    breakdown: dict[str, ComparisonBreakdown],
+) -> dict[str, object]:
+    return {
+        name: {
+            "case_count": value.case_count,
+            "production_metrics": _metrics_json(value.production_metrics),
+            "baseline_metrics": _metrics_json(value.baseline_metrics),
+        }
         for name, value in breakdown.items()
     }
 

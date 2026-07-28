@@ -108,7 +108,7 @@ def validate_schedule_backtest_readiness(
         historical_ids = {
             load.logical_id
             for load in catalog.loads
-            if load.source_system is source and not load.day11_target
+            if load.source_system is source and not load.day11_target and not load.evaluation_probe
         }
         lifecycle_events = tuple(
             (sync.sync_at, event)

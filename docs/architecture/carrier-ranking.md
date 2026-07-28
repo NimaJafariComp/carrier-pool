@@ -2,7 +2,7 @@
 
 ## Scope and claim
 
-`carrier-ranking-v1` orders a tenant's own known carriers for an ACTIVE target
+`carrier-ranking-v4` orders a tenant's own known carriers for an ACTIVE target
 load using historical fit evidence available at an explicit `as_of` timestamp.
 It answers “which carriers have the strongest supported historical fit to call
 first?” It is not an acceptance-probability, live-capacity, availability,
@@ -150,6 +150,9 @@ confidence = .45 * min(1, ESS_total / 6)
            + .10 * geography_completeness
 ```
 
+`equipment_coverage = min(1, exact-equipment completed-load count / 3)`. It is
+evidence coverage, not equipment-fit quality; equipment fit remains a score term.
+
 `HIGH >= .75`, `MEDIUM >= .45`, otherwise `LOW`. Unknown target equipment,
 missing pickup geography, or `ESS_total < 1` caps confidence at LOW. Return raw
 counts, ESS, component availability, caps, and warning codes; never use a high
@@ -167,6 +170,27 @@ Sort candidates by:
 
 The carrier name, MC, DOT, or a cross-tenant identifier must not be a tie-breaker.
 
+### Decision presentation guardrails
+
+The deterministic sort is not automatically a meaningful call order. A carrier is
+`SUPPORTED` only when it has lane evidence or at least one exact-equipment completed
+load; a carrier supported only by generic recency or historical delivery proximity
+is `LIMITED` and is shown separately without a call-order claim. Supported carriers
+within two adjusted-score points share a fit group and the UI says there is no
+meaningful historical separation. Missing component evidence stays `null` through
+the API and renders as “No evidence”, never as a zero score.
+
+## Evaluation acceptance
+
+Generated temporal holdout needs at least 24 authored cases and 14 scored cases,
+with at least three scored cases per source. Rich means `ESS_total >= 3`; lower
+effective history is sparse.
+It must include rich and sparse history; near-exact, broader-lane,
+distance/equipment, limited-candidate, and close-score-tie cases; at least one
+tie; and at least three clearly separated supported tops. These are coverage and
+presentation checks, not top-1 targets. Booked-carrier top-1/3 and MRR remain
+weak-proxy diagnostics only. Deadhead ablation always uses identical cases.
+
 ## Structured explanations
 
 Outputs use reason codes plus structured values. Rendering selects fixed templates;
@@ -183,7 +207,7 @@ no free-form model generates claims.
 | `DEADHEAD_LOCATION_UNAVAILABLE` | “No valid historical delivery-to-pickup distance is available.” |
 | `NO_COMPLETED_HISTORY` | “No completed tenant-local history supports a historical-fit rank.” |
 
-Every explanation includes rank, adjusted score, confidence, component scores,
+Every explanation includes rank or fit group, adjusted score, confidence, component scores,
 model version, supporting load/version IDs, and warnings. Prohibited wording
 includes “available,” “nearby now,” “will accept,” “reliable,” “best carrier,” or
 any equivalent claim not supported by source facts.
@@ -207,11 +231,17 @@ For each historical target that first became ACTIVE, reconstruct candidates at i
 first-ACTIVE `as_of`. Use the eventually booked carrier only as a weak behavioral
 proxy, never as an acceptance label or ground truth for dispatch quality. Report:
 
-- top-1 recall and top-3 recall of the eventually booked carrier;
+- total labeled cases, **supported-only** scored cases (where the eventually
+  booked carrier is in the supported call-order set at the cutoff), and no-rank
+  cases with explicit reasons. Report top-1 recall, top-3 recall, and MRR only
+  over supported scored cases; never hide no-rank cases. All-candidate metrics
+  are secondary diagnostics and must not be presented as call-order quality;
 - mean reciprocal rank (MRR);
 - eligible-case count and no-rank count;
 - results by rich/sparse effective-history band and equipment; and
-- an ablation with deadhead evidence weight set to zero, on the identical cases.
+- ablations with lane, equipment, deadhead evidence, and recency weights each set
+  to zero, on identical cases; and
+- top-score margin, top-fit tie rate, and limited-history candidate count.
 
 Show counts for every subgroup and model/ablation. Do not compare metrics across
 different case populations. Corrections after the cutoff change only the eventual
@@ -219,3 +249,16 @@ booked/outcome label where applicable, never candidate features. Synthetic data,
 unknown contact sets, selection bias in bookings, and absent availability data mean
 these metrics cannot demonstrate acceptance prediction, causal benefit, or
 production dispatch performance.
+
+Generated booking labels are hand-authored temporal holdouts: they appear only
+after first ACTIVE and are never derived from the scorer. They test leakage and
+ranking separation, not real-world acceptance prediction.
+
+### Weight-change threshold
+
+Do not tune production ranking weights from this demo. Any future weight change
+requires at least 100 independent, supported-only outcome cases with complete
+candidate-set capture, a pre-registered candidate weight set, identical-case
+ablations, and at least a 5% relative improvement in the stated proxy metric
+without worsening sparse-case no-rank rate or close-score tie behavior. Booked
+carrier labels alone do not satisfy this threshold; they remain weak diagnostics.

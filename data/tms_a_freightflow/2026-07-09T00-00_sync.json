@@ -15,7 +15,7 @@
       },
       "equipment": "53 ft Van | Dry",
       "lastModifiedDate": "2026-07-08T19:00:00-05:00",
-      "mileage": 242.1,
+      "mileage": 243.2,
       "shipmentId": 393490,
       "status": "Dispatched",
       "stops": [
@@ -31,15 +31,15 @@
         {
           "actualDepartureDateTime": null,
           "city": "GRAND PRAIRIE",
-          "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
-          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-08T23:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-08T15:00:00-05:00",
           "state": "TX",
           "stopType": "Last Drop",
           "zipCode": "75050"
         }
       ],
-      "totalBuy": 1150,
-      "totalSell": 1430,
+      "totalBuy": 1160,
+      "totalSell": 1440,
       "weightTotal": 24000
     }
   ],

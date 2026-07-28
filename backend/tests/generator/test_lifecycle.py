@@ -48,6 +48,7 @@ def _catalog(*, day11_target: bool = False) -> ScenarioCatalog:
             ScenarioStop(2, False, True, "HOU-KAT", date(2026, 7, 8)),
         ),
         equipment=EquipmentType.DRY_VAN,
+        distance_miles=Decimal("239.4"),
         day11_target=day11_target,
     )
     return ScenarioCatalog(

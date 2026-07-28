@@ -15,6 +15,7 @@ from carrier_pool.generator.models import (
 )
 
 _CENTRAL = ZoneInfo("America/Chicago")
+_MILES_TO_KILOMETERS = Decimal("1.609344")
 
 _FREIGHTFLOW_STATUS = {
     LoadStatus.PLANNED: "Quoting",
@@ -59,6 +60,17 @@ def serialize_sync(
     raise ValueError(f"Unsupported source system: {sync.source_system}")
 
 
+def source_load_external_id(load: GeneratorLoad) -> str:
+    """Return deterministic source-native load identity for catalog metadata joins."""
+    if load.source_system is SourceSystem.FREIGHTFLOW:
+        return str(_numeric_id("ff-load", load.logical_id))
+    if load.source_system is SourceSystem.HAULDESK:
+        return load.logical_id
+    if load.source_system is SourceSystem.BROKEROS:
+        return _brokeros_id("a0j", load.logical_id)
+    raise ValueError(f"Unsupported source system: {load.source_system}")
+
+
 def _serialize_freightflow(
     catalog: ScenarioCatalog,
     sync: ScheduledSync,
@@ -80,7 +92,7 @@ def _freightflow_load(
     carrier = None if state.carrier_id is None else _carrier(catalog, state.carrier_id)
     customer_rate = state.customer_rate.amount if state.customer_rate else Decimal("1450")
     return {
-        "shipmentId": _numeric_id("ff-load", load.logical_id),
+        "shipmentId": int(source_load_external_id(load)),
         "status": _FREIGHTFLOW_STATUS[_required_status(state)],
         "mileage": _number(_distance_miles(load)),
         "totalSell": _number(customer_rate),
@@ -106,9 +118,11 @@ def _freightflow_load(
                 "city": catalog.location(stop.location_id).city.upper(),
                 "state": catalog.location(stop.location_id).state,
                 "zipCode": stop.postal_code,
-                "estimatedReadyDateTime": _offset_timestamp(_stop_start(stop.planned_date)),
+                "estimatedReadyDateTime": _offset_timestamp(
+                    _stop_start(stop.planned_date, stop.sequence)
+                ),
                 "estimatedCloseDateTime": _offset_timestamp(
-                    _stop_start(stop.planned_date) + timedelta(hours=8)
+                    _stop_start(stop.planned_date, stop.sequence) + timedelta(hours=8)
                 ),
                 "actualDepartureDateTime": None,
             }
@@ -153,7 +167,9 @@ def _hauldesk_load(
         else _numeric_id("hd-carrier", state.carrier_id),
         "equip": _hauldesk_equipment(state.equipment),
         "weight_kg": _number(_weight_lbs(load) / Decimal("2.2046226218")),
-        "dist_km": _number(_distance_miles(load) / Decimal("0.6213711922")),
+        "dist_km": _number(
+            (_distance_miles(load) * _MILES_TO_KILOMETERS).quantize(Decimal("0.001"))
+        ),
         "pu_city": pickup_location.city,
         "pu_state": pickup_location.state,
         "pu_zip": pickup.postal_code,
@@ -222,7 +238,7 @@ def _brokeros_load(
 ) -> dict[str, object]:
     customer = _customer(catalog, load.customer_id)
     return {
-        "Id": _brokeros_id("a0j", load.logical_id),
+        "Id": source_load_external_id(load),
         "Name": load.logical_id,
         "bos__Load_Status__c": _BROKEROS_STATUS[_required_status(state)],
         "bos__Distance_Miles__c": _number(_distance_miles(load)),
@@ -311,8 +327,7 @@ def _weight_lbs(load: GeneratorLoad) -> Decimal:
 
 
 def _distance_miles(load: GeneratorLoad) -> Decimal:
-    del load
-    return Decimal("242.1")
+    return load.distance_miles
 
 
 def _numeric_id(namespace: str, logical_id: str) -> int:
@@ -339,8 +354,11 @@ def _brokeros_timestamp(value: datetime) -> str:
     return value.astimezone(ZoneInfo("UTC")).strftime("%Y-%m-%dT%H:%M:%S.000+0000")
 
 
-def _stop_start(planned_date: date) -> datetime:
-    return datetime.combine(planned_date, datetime.min.time(), tzinfo=_CENTRAL).replace(hour=8)
+def _stop_start(planned_date: date, sequence: int) -> datetime:
+    """Return a plausible, ordered local appointment window for source snapshots."""
+    return datetime.combine(planned_date, datetime.min.time(), tzinfo=_CENTRAL).replace(
+        hour=8
+    ) + timedelta(hours=7 * (sequence - 1))
 
 
 def _freightflow_equipment(equipment: EquipmentType) -> str:

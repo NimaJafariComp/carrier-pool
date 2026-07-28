@@ -17,6 +17,17 @@ def test_manifest_covers_required_scenarios_with_valid_files_and_entities(tmp_pa
 
     assert manifest["scenario_ids"] == list(REQUIRED_SCENARIO_IDS)
     assert len(manifest["scenarios"]) == len(REQUIRED_SCENARIO_IDS)
+    assert len(manifest["ranking_holdouts"]) >= 24
+    assert {"RICH", "SPARSE", "CLOSE_SCORE_TIE"} <= {
+        tag
+        for holdout in manifest["ranking_holdouts"]
+        for tag in holdout["coverage_tags"]
+    }
+    assert all(
+        holdout["source_files"]
+        and all((data_root / source_file).is_file() for source_file in holdout["source_files"])
+        for holdout in manifest["ranking_holdouts"]
+    )
     load_ids = {load.logical_id for load in catalog.loads}
     customer_ids = {customer.customer_id for customer in catalog.customers}
     carrier_ids = {carrier.carrier_id for carrier in catalog.carriers}

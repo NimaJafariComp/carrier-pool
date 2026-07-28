@@ -87,6 +87,7 @@ def test_freightflow_serializer_emits_complete_replacement_snapshot_and_round_tr
     )
     assert normalized.loads[0].status is LoadStatus.COVERED
     assert normalized.loads[0].carrier_rate == Money(Decimal("1180"))
+    assert normalized.loads[0].distance_miles == Decimal("239.4")
     assert sync.source_system is SourceSystem.FREIGHTFLOW
     assert catalog.load("FF-9001").day11_target is True
 
@@ -109,6 +110,7 @@ def test_hauldesk_serializer_emits_only_financial_events_from_its_sync() -> None
     )
 
     assert len(payload["loads"]) == 1
+    assert payload["loads"][0]["dist_km"] == 430.5
     assert payload["rates"] == [
         {
             "rate_id": payload["rates"][0]["rate_id"],
@@ -128,6 +130,7 @@ def test_hauldesk_serializer_emits_only_financial_events_from_its_sync() -> None
     )
     assert normalized.loads[0].status is LoadStatus.ACTIVE
     assert normalized.source_financial_entries[0].amount == Money(Decimal("75"))
+    assert abs(normalized.loads[0].distance_miles - Decimal("267.5")) < Decimal("0.001")
 
 
 def test_brokeros_serializer_includes_all_referenced_records_and_round_trips() -> None:
@@ -155,6 +158,7 @@ def test_brokeros_serializer_includes_all_referenced_records_and_round_trips() -
     )
     assert normalized.loads[0].status is LoadStatus.ACTIVE
     assert [stop.postal_code for stop in normalized.loads[0].stops] == ["77449", "78205"]
+    assert normalized.loads[0].distance_miles == Decimal("193.6")
 
 
 @pytest.mark.parametrize(

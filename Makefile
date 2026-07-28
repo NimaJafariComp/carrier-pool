@@ -1,4 +1,11 @@
-.PHONY: setup generate validate ingest rebuild-projections backtest api-types api-types-check format format-check lint typecheck test-unit test-integration build db-up down check
+DATABASE_URL ?= postgresql+psycopg://carrier_pool:carrier_pool@localhost:5432/carrier_pool
+DEMO_DATABASE_NAME := carrier_pool_demo
+DEMO_DATABASE_URL := postgresql+psycopg://carrier_pool:carrier_pool@localhost:5432/$(DEMO_DATABASE_NAME)
+FREIGHTFLOW_TENANT_ID ?= 11111111-1111-4111-8111-111111111111
+HAULDESK_TENANT_ID ?= 22222222-2222-4222-8222-222222222222
+BROKEROS_TENANT_ID ?= 33333333-3333-4333-8333-333333333333
+
+.PHONY: setup generate validate migrate seed-demo-tenants ingest decisions demo-reset demo rebuild-projections backtest api-types api-types-check format format-check lint typecheck test-unit test-integration build db-up down check
 
 setup:
 	cd backend && uv sync --all-groups
@@ -10,16 +17,37 @@ generate:
 validate:
 	cd backend && uv run carrier-pool validate-data --data-root ../data
 
-ingest:
-	test -n "$(FREIGHTFLOW_TENANT_ID)" && test -n "$(HAULDESK_TENANT_ID)" && test -n "$(BROKEROS_TENANT_ID)"
-	cd backend && uv run carrier-pool ingest-all --data-root ../data --freightflow-tenant-id "$(FREIGHTFLOW_TENANT_ID)" --hauldesk-tenant-id "$(HAULDESK_TENANT_ID)" --brokeros-tenant-id "$(BROKEROS_TENANT_ID)"
+migrate: db-up
+	cd backend && DATABASE_URL="$(DATABASE_URL)" uv run alembic upgrade head
+
+seed-demo-tenants: migrate
+	cd backend && DATABASE_URL="$(DATABASE_URL)" uv run carrier-pool seed-demo-tenants
+
+ingest: generate validate seed-demo-tenants
+	cd backend && DATABASE_URL="$(DATABASE_URL)" uv run carrier-pool ingest-all --data-root ../data --freightflow-tenant-id "$(FREIGHTFLOW_TENANT_ID)" --hauldesk-tenant-id "$(HAULDESK_TENANT_ID)" --brokeros-tenant-id "$(BROKEROS_TENANT_ID)"
+
+decisions: ingest
+	cd backend && DATABASE_URL="$(DATABASE_URL)" uv run carrier-pool decide-active
+
+demo-reset: db-up
+	test "$(DEMO_DATABASE_NAME)" = "carrier_pool_demo"
+	docker compose --env-file .env.example exec -T db dropdb --if-exists --force --username=carrier_pool $(DEMO_DATABASE_NAME)
+	docker compose --env-file .env.example exec -T db createdb --username=carrier_pool $(DEMO_DATABASE_NAME)
+
+demo: demo-reset generate validate
+	cd backend && DATABASE_URL="$(DEMO_DATABASE_URL)" uv run alembic upgrade head
+	cd backend && DATABASE_URL="$(DEMO_DATABASE_URL)" uv run carrier-pool seed-demo-tenants
+	cd backend && DATABASE_URL="$(DEMO_DATABASE_URL)" uv run carrier-pool ingest-all --data-root ../data --freightflow-tenant-id "$(FREIGHTFLOW_TENANT_ID)" --hauldesk-tenant-id "$(HAULDESK_TENANT_ID)" --brokeros-tenant-id "$(BROKEROS_TENANT_ID)"
+	cd backend && DATABASE_URL="$(DEMO_DATABASE_URL)" uv run carrier-pool decide-active
+	APP_DATABASE_NAME="$(DEMO_DATABASE_NAME)" docker compose --env-file .env.example up --detach --build backend frontend
+	@echo "Carrier Pool demo: http://localhost:5173"
 
 rebuild-projections:
 	test -n "$(TENANT_ID)"
 	cd backend && uv run carrier-pool rebuild-projections --tenant-id "$(TENANT_ID)"
 
 backtest: db-up
-	cd backend && DATABASE_URL=postgresql+psycopg://carrier_pool:carrier_pool@localhost:5432/carrier_pool uv run carrier-pool rate-backtest --artifacts-dir ../artifacts
+	cd backend && DATABASE_URL="$(DATABASE_URL)" uv run carrier-pool rate-backtest --artifacts-dir ../artifacts
 
 api-types:
 	cd backend && uv run python scripts/export_openapi.py ../frontend/openapi.json
@@ -49,7 +77,7 @@ test-unit:
 	cd frontend && pnpm test
 
 test-integration: db-up
-	cd backend && DATABASE_URL=postgresql+psycopg://carrier_pool:carrier_pool@localhost:5432/carrier_pool uv run pytest tests/db/test_persistence_integration.py tests/db/test_rls_direct_sql_integration.py tests/ingestion/test_freightflow_persistence_integration.py tests/ingestion/test_hauldesk_persistence_integration.py tests/ingestion/test_brokeros_persistence_integration.py
+	cd backend && DATABASE_URL="$(DATABASE_URL)" uv run pytest tests/db/test_persistence_integration.py tests/db/test_rls_direct_sql_integration.py tests/ingestion/test_freightflow_persistence_integration.py tests/ingestion/test_hauldesk_persistence_integration.py tests/ingestion/test_brokeros_persistence_integration.py
 
 build:
 	cd backend && uv build

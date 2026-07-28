@@ -3,7 +3,7 @@
 import json
 from collections.abc import Iterable
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict, ValidationError, field_validator
@@ -56,12 +56,12 @@ class HaulDeskLoadDto(HaulDeskDto):
     pu_city: str
     pu_state: str
     pu_zip: str
-    pu_date: str
+    pu_date: date
     pu_departed_at: datetime | None
     del_city: str
     del_state: str
     del_zip: str
-    del_date: str
+    del_date: date
     del_arrived_at: datetime | None
     entered_at: datetime
     updated_at: datetime
@@ -208,9 +208,7 @@ def parse_hauldesk_file(
     _require_unique(source_file, "rate_id", (rate.rate_id for rate in sync.rates))
     carriers = {carrier.carrier_id: carrier for carrier in sync.carriers}
     carriers_by_load_num = {
-        load.load_num: None
-        if load.carrier_ref is None
-        else carriers.get(load.carrier_ref)
+        load.load_num: None if load.carrier_ref is None else carriers.get(load.carrier_ref)
         for load in sync.loads
     }
     rates: dict[str, list[HaulDeskRateDto]] = {}
@@ -297,6 +295,7 @@ def normalize_hauldesk(
                 load.pu_city,
                 load.pu_state,
                 load.pu_zip,
+                planned_date=load.pu_date,
                 actual_departure_at=load.pu_departed_at,
             ),
             CanonicalStop(
@@ -306,6 +305,7 @@ def normalize_hauldesk(
                 load.del_city,
                 load.del_state,
                 load.del_zip,
+                planned_date=load.del_date,
                 actual_arrival_at=load.del_arrived_at,
             ),
         )

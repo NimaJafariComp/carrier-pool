@@ -4,6 +4,34 @@ Status is measured against `docs/IMPLEMENTATION_PLAN.md`. “Implemented” mean
 code and focused tests exist; a phase gate is marked separately when its full
 acceptance evidence has not yet been recorded.
 
+## Post-phase evaluation work — Complete (external validation unavailable)
+
+- `docs/gaps.md` evaluation implementation complete: rate artifacts now contain
+  per-baseline same-population comparisons with tier/rich-sparse breakdowns and
+  explicit zero-case regression rows; confidence/range calibration diagnostics
+  state that historical ranges are not prediction intervals. Ranking artifacts now
+  use supported-only primary recall/MRR, all-candidate secondary diagnostics,
+  no-rank reason counts, and lane/equipment/deadhead/recency ablations on the same
+  27 labeled cases. The evaluator derives coverage from immutable cutoff facts and
+  no longer imports generator catalog metadata. `make demo` plus demo-db
+  `rate-backtest` pass; full unit suite is `191 passed, 19 skipped`, database
+  integration is `7 passed`, generated-data smoke is `1 passed`, and Ruff/Pyright
+  plus `git diff --check` pass. Tuning/promotion remains ineligible: deterministic
+  demo outcomes are not independent operational evidence.
+- First `docs/gaps.md` corrective slice complete: generated historical and holdout
+  loads use 27 hand-authored booking/final carrier-pay outcomes rather than a
+  lifecycle-position formula. FreightFlow and BrokerOS restate final corrections;
+  HaulDesk appends positive/negative `ADJUSTMENT` ledger rows. Generator tests
+  (`17 passed`), `make generate && make validate` (`123` files), resettable
+  `make demo`, and demo-db `rate-backtest` pass.
+- Current rate evaluation: `24/27` scored cases; production MAE `$130.14`, WAPE
+  `9.24%`, historical-range coverage `12.5%`; same-population tenant median MAE
+  `$159.58`, unshrunk nearest-lane MAE `$132.92`. Equipment/distance-band median
+  MAE `$77.75` applies to only `20` cases, so it cannot select a production model.
+  No weight tuning is justified. Remaining `docs/gaps.md` work: equal-population
+  baseline reporting, richer independent ranking labels/evaluation, and confidence
+  calibration.
+
 ## Phase 0 — Freeze product thesis — Complete
 
 - Repository rules in `AGENTS.md` define temporal correctness, tenant isolation,
@@ -75,6 +103,10 @@ acceptance evidence has not yet been recorded.
   file through its source adapter.
 
 ## Phase 6 — Deterministic data generator — complete
+
+- Generated source mileage is now hand-authored per ordered catalog route, rather
+  than a shared placeholder. FreightFlow/BrokerOS emit curated miles; HaulDesk
+  converts the same canonical value to km. UI rounds displayed miles to one decimal.
 
 - `docs/DATA_SCENARIOS.md` defines the three-tenant catalog, 26 required
   scenarios, exact lifecycle/correction events, Day 11 target cases, and later
@@ -247,8 +279,12 @@ acceptance evidence has not yet been recorded.
   no live-availability claim is produced.
 - `CarrierHistoricalFitScorer` applies documented lane/equipment/deadhead/recency
   components, neutral-prior shrinkage, separate confidence, and stable tie-breaking
-  under model version `carrier-ranking-v1`. Focused tests cover exact-lane priority,
-  deadhead rank changes, stale-evidence decay, and sparse one-load shrinkage.
+  under model version `carrier-ranking-v4`. It uses endpoint/route/recency lane
+  weights with Kish ESS, recency-weighted equipment history, cutoff-relative
+  recency, and only renormalizes present components, so missing location evidence
+  is warned about but never silently becomes a zero-point penalty. Focused tests
+  cover exact-lane priority, deadhead rank changes, stale-evidence decay, sparse
+  one-load shrinkage, missing-evidence renormalization, and cutoff recency.
 - Structured ranking explanations use fixed reason templates and include rank,
   adjusted score, confidence, component values, evidence IDs, warnings, and model
   version. Explanation tests prohibit unsupported availability, reliability, and
@@ -342,6 +378,53 @@ acceptance evidence has not yet been recorded.
 
 ## Latest verification — 2026-07-27
 
+- Ranking honesty correction: `carrier-ranking-v4` preserves unavailable
+  components as `null`, uses tier-accurate rather than blanket directional language,
+  separates limited-relevant-history carriers from supported call-order candidates,
+  and groups supported scores within two points as no meaningful historical
+  separation. Persisted decisions now retain human-readable component evidence.
+  Confidence now uses exact-equipment evidence coverage rather than equipment-fit
+  quality. Fresh demo validation rebuilt 123 source syncs, ingested them, persisted
+  3 Day 11 decisions, and wrote a 24-case ranking report: 14 scored cases across
+  FreightFlow (4), HaulDesk (5), and BrokerOS (5), with 14 close-score ties and
+  10 clear supported tops. The no-deadhead ablation had equal top-1 recall and only
+  a small MRR increase (`0.6786` vs `0.6607`); it is not evidence to tune weights.
+  This remains temporal synthetic-holdout coverage, not production performance evidence.
+  Generated-ingestion integration coverage now also proves a later immutable load
+  correction exists yet cannot enter feature evidence or change a ranking rebuilt
+  at that load's earlier `ACTIVE` cutoff.
+- Curated route-mile correction: generator catalog now assigns each ordered route
+  a deterministic highway-mile value instead of emitting the former `242.1` for
+  every load. Day 11 output verifies FreightFlow `239.4 mi`, HaulDesk `430.5 km`
+  (`267.5 mi` canonical), and BrokerOS `193.6 mi`. Generator catalog/lifecycle/
+  serializer tests (`15 passed`), Ruff, `make generate`, `make validate`, frontend
+  component tests, lint, typecheck, production build, and `git diff --check` pass.
+- Schedule-source clarity: active-load cards and decision detail now distinguish
+  source-provided appointment times from date-only plans, using “Planned dates
+  only — no appointment times supplied” rather than making date-only HaulDesk or
+  BrokerOS records look equivalent to FreightFlow appointment windows. Frontend
+  component tests, Playwright review path, lint, typecheck, and build pass.
+- Ranking evaluation coverage correction: rolling scheduler now reuses known
+  tenant-local carriers for later loads, while retaining first-observation labels
+  as explicit no-rank diagnostics. Ranking artifacts now separate `case_count`,
+  `scored_case_count`, and `no_rank_count`; recall/MRR are conditional on scored
+  cases and never hide no-rank cases. Reset demo backtest: 15 labels, 11 scored,
+  4 no-rank; 4 rich and 7 sparse scored cases. The synthetic scored top-1 result
+  is `1.0`, so it is coverage evidence only—not proof of production accuracy or a
+  reason to tune weights. The deadhead ablation changes MRR from `1.0` to `0.9545`.
+- Schedule-display correction: FreightFlow stop windows are now ordered by stop
+  sequence; HaulDesk normalization preserves strict source pickup/delivery dates;
+  date-only schedules are exposed as `planned_date` through the generated API
+  contract and displayed without invented times. A reset `make demo` confirms Day
+  11 Grand Prairie→Katy at `Jul 11 13:00` then `Jul 12 20:00` UTC, Plano→Baytown
+  at pickup `Jul 11`/delivery `Jul 12`, and Katy→San Antonio at pickup `Jul 11`/
+  delivery `Jul 12` rather than “pending” or same-day schedules.
+- Ranking v2 correction: `make generate && make validate`, resettable `make demo`,
+  and demo-database `make backtest` pass. Ranking contracts: `7 passed`; focused
+  Ruff and Pyright: `0` errors. The clean 18-case demo backtest has 15 ranking
+  cases (all sparse; 12 booked carriers were not candidates at cutoff), top-1
+  `0.1333`, top-3 `0.2`, and paired deadhead MRR `0.1556` versus `0.1667` without
+  deadhead. This is diagnostic evidence only, not a reason to tune weights.
 - `make backtest`: pass; wrote rate artifacts and `artifacts/ranking_metrics.json`
   for `494` historical cases (`345` rate-scored).
 - Phase 10 ranking evaluation/scoring tests: `4 passed`. Focused Ruff passes.
@@ -372,5 +455,107 @@ acceptance evidence has not yet been recorded.
   safely on narrow cards. Focused component tests (`10 passed`), frontend
   typecheck, lint, production build, browser review path (`2 passed`), and
   `git diff --check` pass.
+- Local review deployment: rebuilt backend/frontend images serve the current Phase
+  12 bundle; Nginx proxies `/api/` to the backend, and the application role can
+  read the safe tenant directory. Migration contract tests (`2 passed`), frontend
+  component tests (`10 passed`), typecheck, lint, build, and live proxy check pass.
+- Legacy persisted decisions without an explicit currency now default to documented
+  USD during API serialization. Focused API integration test passes; Ruff, Pyright,
+  `git diff --check`, and the live Day 11 decision endpoint pass.
+- Frontend presentation refresh: the review UI is now a responsive dispatcher
+  workbench with a compact utility header, active-load rail, persistent decision
+  workspace, selected-load state, and an explicit pre-selection prompt. Focused
+  component tests (`10 passed`), browser review path (`2 passed`), typecheck, lint,
+  build, container rebuild, and visual desktop inspection pass.
+- Frontend visual refinement: replaced the decorative teal/blue console treatment
+  with a restrained graphite operations desk: warm neutral type, one amber signal
+  color, square utility surfaces, tabular numeric treatment, and no decorative motion.
+  Live browser inspection, component tests (`12 passed`), Playwright review path
+  (`2 passed`), lint, typecheck, production build, and container rebuild pass.
+- Frontend explanation-language pass: primary decision labels now explain matching,
+  weighted historical evidence, carrier-ranking reasons, and supporting completed
+  loads in dispatch language. Model/version/audit metadata remains in the secondary
+  disclosure. Focused component tests (`12 passed`), lint, typecheck, production
+  build, and diff checks pass.
+- Decision explanation consistency pass: displayed raw/effective evidence now covers
+  the same resolved comparison set shown in the UI; effective sample size is rounded
+  to one decimal; raw warning codes are translated and deduplicated; carrier notes are
+  deduplicated; ranking factors use plain-language labels; and collapsed weighted
+  quantiles show the observed comparable-rate spread instead of a misleading flat
+  comparison range. Pricing/API tests (`12 passed`), frontend component tests (`13
+  passed`), Playwright review path (`2 passed`), Ruff, Pyright, build, diff checks,
+  and a regenerated `make demo` pass.
+- Frontend copy cleanup: removed ornamental/marketing labels and replaced the empty
+  decision-state language with the direct instruction “Select a load.” Frontend
+  component tests (`13 passed`), Playwright (`2 passed`), lint, typecheck, build,
+  and diff checks pass.
+- Reproducible review-demo path: `make demo` now applies migrations, seeds the three
+  fixed broker/source bindings, generates and validates deterministic data, ingests
+  it chronologically, persists Day 11 decisions, and starts the UI. The public tenant
+  directory is limited to those bindings, and stale browser selections are replaced
+  before any broker data is requested. Live directory/load checks and focused backend
+  and frontend tests pass.
+- Demo database isolation: `make demo` resets only `carrier_pool_demo`, while normal
+  local and integration-test work remains in `carrier_pool`. Two complete demo runs
+  passed, each generated/validated `123` sync files and created `3` Day 11 decisions
+  before starting the UI. The isolated demo database has `3` tenants versus `560` test
+  and development tenants in the primary database; live API checks confirmed all three
+  demo tenants have an active load with persisted pricing and carrier evidence. API
+  integration coverage (`5 passed`) proves the public directory excludes deliberately
+  created integration-fixture tenants; Ruff, Pyright, Compose configuration, and diff
+  checks pass.
 - Prior baseline verification: `make test-integration`: `7 passed`; full backend
   suite with `DATABASE_URL`: `182 passed` (before Phase 10 additions).
+- Comparable-load evidence now has a tenant-safe typed API contract and compact
+  desktop table: source load label, route/equipment, carrier pay, readable endpoint
+  match, and completion observation. Database UUIDs remain stored audit facts but are
+  not returned as comparable display fields. Focused API contracts (`4 passed`),
+  frontend components (`14 passed`), frontend typecheck/lint/build, backend Ruff and
+  Pyright, generated OpenAPI types, `git diff --check`, live API inspection, and a
+  regenerated `make demo` pass.
+- UI evidence-strength audit: Day 11 pricing has one High and two Medium outcomes;
+  the High case has strong near-exact, equipment-known, recent evidence, so model
+  thresholds were intentionally left unchanged. The UI now maps confidence to
+  Strong/Moderate/Limited evidence, keeps numeric scores internal, shows plain
+  comparable/effective/tier facts, and provides an expandable reason for any
+  non-strong result. Frontend components (`14 passed`), lint, typecheck, production
+  build, and Playwright review path (`2 passed`) pass.
+- Comparable-load table refinement: compact fixed columns now keep source IDs,
+  routes, carrier pay, match evidence, and completion dates on one visual row;
+  long audit IDs/routes use an ellipsis with the full value on hover. Match prose is
+  reduced to a tier and endpoint summary. A fresh `make demo` confirmed current
+  evidence details and visual rendering; frontend unit tests (`14 passed`), lint,
+  typecheck, build, Playwright (`2 passed`), and diff checks pass.
+- Mobile overflow correction: the scrollable comparable table had propagated its
+  minimum width through nested grid items, causing the complete mobile workspace to
+  render at desktop width. Grid boundaries now explicitly shrink. A Playwright
+  narrow-viewport regression asserts page `scrollWidth == clientWidth`; all three
+  browser review tests pass and live mobile inspection confirms the fix.
+- Comparable-table layout refinement: the active-load rail is narrower and the
+  decision workspace wider. The table now fits its desktop allocation without a
+  scrollbar; on narrow screens every comparable becomes a compact, non-scrolling
+  evidence row. Frontend tests (`14 passed`), lint, typecheck, build, Playwright
+  (`3 passed`), desktop/mobile visual checks, and a fresh `make demo` pass.
+- Comparable-table layout refinement: the active-load rail is narrower and the
+  decision workspace wider. The table now fits its desktop allocation without a
+  scrollbar; on narrow screens every comparable becomes a compact, non-scrolling
+  evidence row. Frontend tests (`14 passed`), lint, typecheck, build, Playwright
+  (`3 passed`), desktop/mobile visual checks, and a fresh `make demo` pass.
+- Mobile overflow correction: the scrollable comparable table had propagated its
+  minimum width through nested grid items, causing the complete mobile workspace to
+  render at desktop width. Grid boundaries now explicitly shrink. A Playwright
+  narrow-viewport regression asserts page `scrollWidth == clientWidth`; all three
+  browser review tests pass and live mobile inspection confirms the fix.
+- Comparable-load table refinement: compact fixed columns now keep source IDs,
+  routes, carrier pay, match evidence, and completion dates on one visual row;
+  long audit IDs/routes use an ellipsis with the full value on hover. Match prose is
+  reduced to a tier and endpoint summary. A fresh `make demo` confirmed current
+  evidence details and visual rendering; frontend unit tests (`14 passed`), lint,
+  typecheck, build, Playwright (`2 passed`), and diff checks pass.
+- UI evidence-strength audit: Day 11 pricing has one High and two Medium outcomes;
+  the High case has strong near-exact, equipment-known, recent evidence, so model
+  thresholds were intentionally left unchanged. The UI now maps confidence to
+  Strong/Moderate/Limited evidence, keeps numeric scores internal, shows plain
+  comparable/effective/tier facts, and provides an expandable reason for any
+  non-strong result. Frontend components (`14 passed`), lint, typecheck, production
+  build, and Playwright review path (`2 passed`) pass.

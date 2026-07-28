@@ -91,6 +91,23 @@ Use `make build`, `make lint`, `make typecheck`, or `make test-unit` to run one
 verification category. Copy `.env.example` to `.env` only when overriding the safe
 local defaults.
 
+### Review demo
+
+Run the complete deterministic demo from a clean checkout with:
+
+```bash
+make setup
+make demo
+```
+
+`make demo` resets the dedicated `carrier_pool_demo` database (never the normal local
+or integration-test database), applies migrations, creates the three fixed fictional
+brokers (North Star Freight, Alamo Brokerage, and Gulf Bridge Logistics), generates
+and validates the source files, ingests them chronologically, persists the Day 11
+decisions, and starts the API/UI. The demo selector exposes only those three broker
+bindings. Open `http://localhost:5173` and choose a broker. Re-running the command
+recreates the same deterministic demo state.
+
 ## Constraints (the few we do impose)
 
 **Starting point**

@@ -51,6 +51,11 @@ drop-off flags. Date-only source plans remain a `date`, while source timestamps
 are normalized by existing adapter rules. Money is `Decimal`; physical units are
 canonical pounds/miles before serialization.
 
+Each generated ordered route also has a hand-authored, deterministic highway-mile
+value in the catalog. Serializers use that source fact (converting only for
+HaulDesk km output); it is not a centroid/Haversine calculation. Haversine remains
+the separate explainable geography metric for endpoint similarity.
+
 ## Lifecycle and correction rules
 
 The reducer accepts source corrections rather than imposing monotonic state:

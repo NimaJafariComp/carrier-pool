@@ -103,3 +103,7 @@ def test_artifact_writer_emits_json_and_csv(tmp_path: Path) -> None:
         "quantile_regression",
     }
     assert all("metrics" in model for model in models.values())
+    artifact = json.loads(metrics_path.read_text())
+    assert artifact["calibration"]["is_prediction_interval"] is False
+    assert "same_population_comparisons" in artifact
+    assert artifact["model_selection_policy"]["promotion_eligible"] is False

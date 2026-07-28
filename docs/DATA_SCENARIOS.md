@@ -107,11 +107,13 @@ intervening appearances repeat only the source's normal changed-load snapshot.
    historical slots (`PLANNED`, `ACTIVE`, `COVERED`, `IN_TRANSIT`, `DELIVERED`,
    `COMPLETED`). Every other historical load first becomes `ACTIVE` only after
    its source anchor is completed.
-2. Each source has six historical loads. The first 36 source slots run their
-   ordered six-stage lifecycle blocks; the final four slots emit deterministic
-   completed snapshots. The catalog supplies same-tenant near-exact/rich,
-   regional, metro-corridor, thin/sparse, and distance/equipment fallback
-   evidence. Day 11 targets are unchanged.
+2. Each source has six historical lifecycle loads. The first 36 source slots run
+   their ordered six-stage lifecycle blocks; the final four slots carry three
+   authored rolling-holdout loads through `PLANNED`, `ACTIVE`, `COVERED`, and
+   `COMPLETED` together. Later booked-carrier labels and coverage tags are
+   canonical catalog data, never derived from ranking output. They cover rich and
+   sparse history, near-exact, broader-lane, distance/equipment,
+   limited-candidate, and close-score-tie cases. Day 11 targets are unchanged.
 3. Historical files use the literal name `{YYYY-MM-DD}T{HH-MM}_sync.json`.
    Event timestamps fall at or before the file timestamp; all source-specific
    modified timestamps advance with that event.

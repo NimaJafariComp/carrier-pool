@@ -86,7 +86,9 @@ ESS = (sum(w_i)^2) / sum(w_i^2)
 ```
 
 Ten equal weights give ESS `10`; one dominant weight among ten rows yields ESS
-near `1`. Raw count and ESS are both exposed.
+near `1`. Raw count and ESS are both exposed. When a sparse local tier is blended
+with broader history, the displayed raw count and ESS describe the full displayed
+comparison set, not only the narrow local tier.
 
 ## Hierarchy, blending, and shrinkage
 
@@ -170,7 +172,20 @@ regression only when sample size supports it. Report case count, MAE, median
 absolute error, WAPE `sum(|e|)/sum(actual)`, q25–q75 range coverage, and breakdowns
 by tier, equipment, and rich/sparse lane.
 
-Select the simplest explainable model unless another method materially improves
-rolling MAE and median error without worsening sparse-tier WAPE or range coverage.
+For every baseline, also emit a **same-population comparison**. Its denominator is
+only targets where both production and that baseline returned a point estimate at
+the same cutoff. It reports both models' metrics and tier/rich-sparse breakdowns
+on those exact targets. A baseline with zero eligible cases is displayed with zero
+cases and null metrics; it cannot win, lose, or be compared to production.
+
+Calibration diagnostics group production cases by confidence level and by retrieval
+tier, reporting count, MAE, WAPE, and historical-range coverage. A group needs at
+least 20 independent cases before calibration may be assessed. These diagnostics
+never turn the range into a prediction interval; the artifact explicitly records
+that it is not one.
+
+Select the simplest explainable model unless another method has at least 30
+same-population independent cases, improves MAE by at least 5% *and* lowers median
+absolute error, without worsening sparse-tier WAPE or historical-range coverage.
 Record parameters, data cutoff, model version, metrics, and rationale in
-`DECISIONS.md`; do not select from Day 11 outcomes.
+`DECISIONS.md`; do not select from Day 11 outcomes or deterministic demo outcomes.

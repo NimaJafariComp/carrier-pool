@@ -158,6 +158,8 @@ def test_sparse_local_history_blends_with_metro_baseline() -> None:
     assert result.broader_tier is LaneTier.METRO_CORRIDOR
     assert result.blend_local_weight == Decimal("0.1428571428571428571428571429")
     assert result.point_estimate_usd == Decimal("1171.428571428571428571428572")
+    assert result.raw_evidence_count == len(result.comparables) == 3
+    assert abs(result.effective_evidence_count - Decimal("3")) < Decimal("0.000001")
     assert "SPARSE_EVIDENCE" in result.warnings
     assert "BROADER_FALLBACK" in result.warnings
 

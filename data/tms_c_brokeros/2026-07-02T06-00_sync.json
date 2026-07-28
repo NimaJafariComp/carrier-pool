@@ -5,11 +5,11 @@
       "Id": "a0j863E719F3368C7D",
       "LastModifiedDate": "2026-07-02T06:00:00.000+0000",
       "Name": "BO-3001",
-      "bos__Carrier_Rate__c": 1225,
+      "bos__Carrier_Rate__c": 1550,
       "bos__Carrier__c": "00190FB4F1C847097A",
-      "bos__Customer_Rate__c": 1505,
+      "bos__Customer_Rate__c": 1830,
       "bos__Customer__c": "0014DD806107C8FF73",
-      "bos__Distance_Miles__c": 242.1,
+      "bos__Distance_Miles__c": 193.6,
       "bos__Equipment_Type__c": "Reefer",
       "bos__Line_Items__r": [
         {
@@ -35,7 +35,7 @@
           "bos__Is_Pickup__c": false,
           "bos__Location__c": "001AE19313D2600FCA",
           "bos__Number__c": 2,
-          "bos__Scheduled_Date__c": "2026-07-07"
+          "bos__Scheduled_Date__c": "2026-07-08"
         }
       ]
     }

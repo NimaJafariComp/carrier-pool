@@ -1,13 +1,7 @@
 {
   "loads": [
     {
-      "carrier": {
-        "carrierMasterId": 169083,
-        "dotNumber": "3900201",
-        "mcNumber": "1350201",
-        "name": "Lone Star Van",
-        "phoneNumber": "+12145550101"
-      },
+      "carrier": null,
       "createdDate": "2026-07-10T01:00:00-05:00",
       "customer": {
         "customerId": 493634,
@@ -15,9 +9,9 @@
       },
       "equipment": "53 ft Van | Dry",
       "lastModifiedDate": "2026-07-10T01:00:00-05:00",
-      "mileage": 242.1,
-      "shipmentId": 352333,
-      "status": "Completed",
+      "mileage": 239.4,
+      "shipmentId": 450830,
+      "status": "Booking",
       "stops": [
         {
           "actualDepartureDateTime": null,
@@ -31,15 +25,87 @@
         {
           "actualDepartureDateTime": null,
           "city": "KATY",
-          "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
-          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-08T23:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-08T15:00:00-05:00",
           "state": "TX",
           "stopType": "Last Drop",
           "zipCode": "77449"
         }
       ],
-      "totalBuy": 1250,
-      "totalSell": 1530,
+      "totalBuy": null,
+      "totalSell": 1450,
+      "weightTotal": 24000
+    },
+    {
+      "carrier": null,
+      "createdDate": "2026-07-10T01:00:00-05:00",
+      "customer": {
+        "customerId": 493634,
+        "name": "Lone Star Beverages"
+      },
+      "equipment": "53 ft Van | Dry",
+      "lastModifiedDate": "2026-07-10T01:00:00-05:00",
+      "mileage": 239.8,
+      "shipmentId": 485834,
+      "status": "Booking",
+      "stops": [
+        {
+          "actualDepartureDateTime": null,
+          "city": "DALLAS",
+          "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
+          "state": "TX",
+          "stopType": "First Pickup",
+          "zipCode": "75201"
+        },
+        {
+          "actualDepartureDateTime": null,
+          "city": "HOUSTON",
+          "estimatedCloseDateTime": "2026-07-08T23:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-08T15:00:00-05:00",
+          "state": "TX",
+          "stopType": "Last Drop",
+          "zipCode": "77002"
+        }
+      ],
+      "totalBuy": null,
+      "totalSell": 1450,
+      "weightTotal": 24000
+    },
+    {
+      "carrier": null,
+      "createdDate": "2026-07-10T01:00:00-05:00",
+      "customer": {
+        "customerId": 907640,
+        "name": "Metro Retail"
+      },
+      "equipment": "53 ft Van | Reefer",
+      "lastModifiedDate": "2026-07-10T01:00:00-05:00",
+      "mileage": 197.8,
+      "shipmentId": 341076,
+      "status": "Booking",
+      "stops": [
+        {
+          "actualDepartureDateTime": null,
+          "city": "HOUSTON",
+          "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
+          "state": "TX",
+          "stopType": "First Pickup",
+          "zipCode": "77002"
+        },
+        {
+          "actualDepartureDateTime": null,
+          "city": "SAN ANTONIO",
+          "estimatedCloseDateTime": "2026-07-08T23:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-08T15:00:00-05:00",
+          "state": "TX",
+          "stopType": "Last Drop",
+          "zipCode": "78205"
+        }
+      ],
+      "totalBuy": null,
+      "totalSell": 1450,
       "weightTotal": 24000
     }
   ],

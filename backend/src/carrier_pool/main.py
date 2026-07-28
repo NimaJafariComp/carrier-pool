@@ -2,7 +2,7 @@
 
 import os
 from collections.abc import Generator
-from typing import Any
+from typing import Any, cast
 from uuid import UUID
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query
@@ -10,8 +10,17 @@ from pydantic import BaseModel
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
-from carrier_pool.db.models import Carrier, CarrierRecommendation, DecisionRun, Load, Stop, Tenant
+from carrier_pool.db.models import (
+    Carrier,
+    CarrierRecommendation,
+    DecisionRun,
+    Load,
+    LoadVersion,
+    Stop,
+    Tenant,
+)
 from carrier_pool.db.tenant import set_tenant_context
+from carrier_pool.demo import DEMO_TENANT_SLUGS
 from carrier_pool.domain.types import LoadStatus
 
 
@@ -33,6 +42,7 @@ class StopResponse(BaseModel):
     city: str
     state: str
     postal_code: str
+    planned_date: str | None
     scheduled_start_at: str | None
 
 
@@ -67,16 +77,40 @@ class ConfidenceResponse(BaseModel):
     components: dict[str, str]
 
 
+class EvidenceLoadResponse(BaseModel):
+    """A human-readable, tenant-local completed-load reference."""
+
+    load_external_id: str
+    route: str
+    equipment: str | None = None
+    completed_observed_at: str | None = None
+    distance_miles: str | None = None
+    tier: str | None = None
+    origin_distance_miles: float | None = None
+    destination_distance_miles: float | None = None
+
+
 class RankedCarrierResponse(BaseModel):
     rank: int
     carrier_id: str
     carrier_name: str
     adjusted_score: str
     confidence_score: str
-    component_scores: dict[str, str]
+    component_scores: dict[str, str | None]
     reason_codes: list[str]
     explanation_bullets: list[str]
     evidence_ids: list[str]
+    evidence_status: str
+    tie_group: int | None
+    evidence_by_component: dict[str, list[EvidenceLoadResponse]]
+
+
+class ComparableLoadResponse(EvidenceLoadResponse):
+    """Safe, readable rate-comparison evidence for one tenant-owned load."""
+
+    carrier_rate_usd: str | None = None
+    route_mile_difference: str | None = None
+    recency_days: float | None = None
 
 
 class DecisionResponse(BaseModel):
@@ -88,7 +122,7 @@ class DecisionResponse(BaseModel):
     pricing: PricingResponse
     confidence: ConfidenceResponse
     ranked_carriers: list[RankedCarrierResponse]
-    comparable_loads: list[dict[str, Any]]
+    comparable_loads: list[ComparableLoadResponse]
     warnings: list[str]
 
 
@@ -125,7 +159,9 @@ def list_tenants(session: Session = Depends(database_session)) -> list[TenantRes
             name=tenant.name,
             source_system=tenant.source_system.value,
         )
-        for tenant in session.scalars(select(Tenant).order_by(Tenant.name)).all()
+        for tenant in session.scalars(
+            select(Tenant).where(Tenant.slug.in_(DEMO_TENANT_SLUGS)).order_by(Tenant.name)
+        ).all()
     ]
 
 
@@ -177,7 +213,8 @@ def get_decision(
     )
     if decision is None:
         raise HTTPException(status_code=409, detail="Decision not computed.")
-    pricing = decision.price_estimate
+    pricing = dict(decision.price_estimate)
+    pricing.setdefault("currency", "USD")
     if pricing.get("point_estimate_usd") is None:
         raise HTTPException(status_code=422, detail="Insufficient decision evidence.")
     recommendations = session.scalars(
@@ -202,6 +239,7 @@ def get_decision(
     if len(carriers) != len(recommendations):
         raise HTTPException(status_code=404, detail="Load not found.")
     warnings = list(pricing.get("warnings", []))
+    ranking_evidence = decision.evidence_summary.get("ranking_evidence", {})
     return DecisionResponse(
         load=_load_response(session, tenant_id, load),
         as_of=decision.as_of.isoformat(),
@@ -211,24 +249,104 @@ def get_decision(
         pricing=PricingResponse(**pricing),
         confidence=ConfidenceResponse(**decision.confidence),
         ranked_carriers=[
-            RankedCarrierResponse(
-                rank=item.rank,
-                carrier_id=str(item.carrier_id),
-                carrier_name=carriers[item.carrier_id].name,
-                adjusted_score=str(item.adjusted_score),
-                confidence_score=str(item.confidence),
-                component_scores={key: str(value) for key, value in item.component_values.items()},
-                reason_codes=item.explanation_reason_codes,
-                explanation_bullets=[
-                    _reason_bullet(code) for code in item.explanation_reason_codes
-                ],
-                evidence_ids=item.evidence_ids,
-            )
+            _ranked_carrier_response(item, carriers[item.carrier_id], ranking_evidence)
             for item in recommendations
         ],
-        comparable_loads=list(decision.evidence_summary.get("comparable_loads", [])),
+        comparable_loads=[
+            _comparable_load_response(cast(dict[str, object], entry))
+            for entry in cast(list[object], decision.evidence_summary.get("comparable_loads", []))
+            if isinstance(entry, dict)
+        ],
         warnings=warnings,
     )
+
+
+def _ranked_carrier_response(
+    recommendation: CarrierRecommendation,
+    carrier: Carrier,
+    ranking_evidence: object,
+) -> RankedCarrierResponse:
+    raw_evidence = (
+        cast(dict[str, Any], ranking_evidence) if isinstance(ranking_evidence, dict) else {}
+    )
+    stored_value = raw_evidence.get(carrier.external_id, {})
+    stored = cast(dict[str, Any], stored_value) if isinstance(stored_value, dict) else {}
+    components_value = stored.get("components", {})
+    components = (
+        cast(dict[str, Any], components_value) if isinstance(components_value, dict) else {}
+    )
+    bullets_value = stored.get("bullets", [])
+    bullets = cast(list[object], bullets_value) if isinstance(bullets_value, list) else []
+    status = stored.get("status")
+    tie_group = stored.get("tie_group")
+    return RankedCarrierResponse(
+        rank=recommendation.rank,
+        carrier_id=str(recommendation.carrier_id),
+        carrier_name=carrier.name,
+        adjusted_score=str(recommendation.adjusted_score),
+        confidence_score=str(recommendation.confidence),
+        component_scores={
+            key: None if value is None else str(value)
+            for key, value in recommendation.component_values.items()
+        },
+        reason_codes=recommendation.explanation_reason_codes,
+        explanation_bullets=(
+            [item for item in bullets if isinstance(item, str)]
+            or [_reason_bullet(code) for code in recommendation.explanation_reason_codes]
+        ),
+        evidence_ids=recommendation.evidence_ids,
+        evidence_status=status if isinstance(status, str) else "SUPPORTED",
+        tie_group=tie_group if isinstance(tie_group, int) else None,
+        evidence_by_component={
+            key: [
+                _evidence_load_response(cast(dict[str, object], entry))
+                for entry in cast(list[object], values)
+                if isinstance(entry, dict)
+            ]
+            for key, values in components.items()
+            if isinstance(values, list)
+        },
+    )
+
+
+def _evidence_load_response(entry: dict[str, object]) -> EvidenceLoadResponse:
+    """Expose readable evidence, never a persisted database UUID as its label."""
+    label = _string_or_none(entry.get("load_external_id")) or "Historical load"
+    try:
+        UUID(label)
+    except ValueError:
+        pass
+    else:
+        label = "Historical load"
+    return EvidenceLoadResponse(
+        load_external_id=label,
+        route=_string_or_none(entry.get("route")) or "Route unavailable",
+        equipment=_string_or_none(entry.get("equipment")),
+        completed_observed_at=_string_or_none(entry.get("completed_observed_at")),
+        distance_miles=_string_or_none(entry.get("distance_miles")),
+        tier=_string_or_none(entry.get("tier")),
+        origin_distance_miles=_float_or_none(entry.get("origin_distance_miles")),
+        destination_distance_miles=_float_or_none(entry.get("destination_distance_miles")),
+    )
+
+
+def _comparable_load_response(entry: dict[str, object]) -> ComparableLoadResponse:
+    """Strip database audit IDs while retaining display-safe comparison facts."""
+    summary = _evidence_load_response(entry)
+    return ComparableLoadResponse(
+        **summary.model_dump(),
+        carrier_rate_usd=_string_or_none(entry.get("carrier_rate_usd")),
+        route_mile_difference=_string_or_none(entry.get("route_mile_difference")),
+        recency_days=_float_or_none(entry.get("recency_days")),
+    )
+
+
+def _string_or_none(value: object) -> str | None:
+    return value if isinstance(value, str) else None
+
+
+def _float_or_none(value: object) -> float | None:
+    return float(value) if isinstance(value, (int, float)) and not isinstance(value, bool) else None
 
 
 def _load_or_not_found(session: Session, tenant_id: UUID, load_id: UUID) -> Load:
@@ -245,6 +363,7 @@ def _load_response(session: Session, tenant_id: UUID, load: Load) -> LoadRespons
         .where(Stop.load_id == load.id, Stop.tenant_id == tenant_id)
         .order_by(Stop.sequence)
     ).all()
+    planned_dates = _planned_dates(session, tenant_id, load.current_version_id)
     summary = _load_decision_summary(session, tenant_id, load)
     return LoadResponse(
         id=str(load.id),
@@ -263,6 +382,7 @@ def _load_response(session: Session, tenant_id: UUID, load: Load) -> LoadRespons
                 city=stop.city,
                 state=stop.state,
                 postal_code=stop.postal_code,
+                planned_date=planned_dates.get(stop.sequence),
                 scheduled_start_at=None
                 if stop.scheduled_start_at is None
                 else stop.scheduled_start_at.isoformat(),
@@ -270,6 +390,35 @@ def _load_response(session: Session, tenant_id: UUID, load: Load) -> LoadRespons
             for stop in stops
         ],
     )
+
+
+def _planned_dates(
+    session: Session, tenant_id: UUID, current_version_id: UUID | None
+) -> dict[int, str]:
+    """Expose source date-only schedules without inventing a time of day."""
+    if current_version_id is None:
+        return {}
+    version = session.scalar(
+        select(LoadVersion).where(
+            LoadVersion.tenant_id == tenant_id,
+            LoadVersion.id == current_version_id,
+        )
+    )
+    if version is None:
+        return {}
+    raw_stops = version.canonical_snapshot.get("stops")
+    if not isinstance(raw_stops, list):
+        return {}
+    result: dict[int, str] = {}
+    for raw_stop in cast(list[object], raw_stops):
+        if not isinstance(raw_stop, dict):
+            continue
+        stop = cast(dict[str, object], raw_stop)
+        sequence = stop.get("sequence")
+        planned_date = stop.get("planned_date")
+        if isinstance(sequence, int) and isinstance(planned_date, str):
+            result[sequence] = planned_date
+    return result
 
 
 def _load_decision_summary(
@@ -301,7 +450,13 @@ def _reason_bullet(code: str) -> str:
     return {
         "DIRECTIONAL_LANE_HISTORY": "Completed directional historical loads support this fit.",
         "EQUIPMENT_HISTORY": "Completed equipment-matching loads are recorded.",
-        "HISTORICAL_DELIVERY_PROXIMITY": "Historical delivery evidence is not live location.",
+        "HISTORICAL_DELIVERY_PROXIMITY": (
+            "The last recorded delivery helps compare historical proximity; "
+            "it is not live location."
+        ),
         "SPARSE_HISTORY_SHRINKAGE": "Limited completed history pulls score toward neutral prior.",
         "UNKNOWN_TARGET_EQUIPMENT": "Target equipment is unknown, so confidence is limited.",
+        "DEADHEAD_LOCATION_UNAVAILABLE": (
+            "No historical delivery-to-pickup distance is available for this carrier."
+        ),
     }.get(code, "Historical-fit evidence recorded.")

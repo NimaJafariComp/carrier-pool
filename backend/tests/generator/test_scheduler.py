@@ -5,9 +5,11 @@ import re
 from datetime import UTC
 from pathlib import Path
 
+from carrier_pool.domain.types import LoadStatus
 from carrier_pool.generator.catalog import build_catalog
 from carrier_pool.generator.models import FinancialEvent, LifecycleEvent
 from carrier_pool.generator.scheduler import (
+    _RATE_OUTCOMES,
     ANCHOR_LOAD_IDS,
     DAY11_SYNC_AT,
     HISTORICAL_SYNC_COUNT,
@@ -68,6 +70,64 @@ def test_hauldesk_load_emits_one_booking_linehaul_not_status_adjustments() -> No
     )
 
     assert [(entry.code, entry.amount.amount) for entry in entries] == [("LINEHAUL", 1150)]
+
+
+def test_rate_outcomes_are_authored_and_final_corrections_are_source_accurate() -> None:
+    catalog = build_catalog()
+    historical_ids = {load.logical_id for load in catalog.loads if not load.day11_target}
+    assert set(_RATE_OUTCOMES) == historical_ids
+    assert _RATE_OUTCOMES["FF-1001"] != _RATE_OUTCOMES["FF-1101"]
+    assert _RATE_OUTCOMES["FF-1301"][1] > _RATE_OUTCOMES["FF-1401"][1]
+
+    lifecycle_events = {
+        event.load_id: event
+        for sync in build_schedule(catalog)
+        for event in sync.events
+        if isinstance(event, LifecycleEvent) and event.status is LoadStatus.COMPLETED
+    }
+    assert lifecycle_events["FF-1101"].carrier_rate is not None
+    assert lifecycle_events["FF-1101"].carrier_rate.amount == 1265
+    assert lifecycle_events["FF-1101"].correction_reason == "FINAL_CARRIER_PAY_CORRECTION"
+
+    hauldesk_entries = {
+        load_id: [
+            event
+            for sync in build_schedule(catalog)
+            for event in sync.events
+            if isinstance(event, FinancialEvent) and event.load_id == load_id
+        ]
+        for load_id in ("HD-2002", "HD-2005")
+    }
+    assert [(item.code, item.amount.amount) for item in hauldesk_entries["HD-2002"]] == [
+        ("LINEHAUL", 1190),
+        ("ADJUSTMENT", 35),
+    ]
+    assert [(item.code, item.amount.amount) for item in hauldesk_entries["HD-2005"]] == [
+        ("LINEHAUL", 1600),
+        ("ADJUSTMENT", -25),
+    ]
+
+
+def test_authored_holdouts_are_labeled_only_after_first_active() -> None:
+    catalog = build_catalog()
+    labels = {item.load_id: item.booked_carrier_id for item in catalog.ranking_holdouts}
+    events = {
+        load_id: [
+            event
+            for sync in build_schedule(catalog)
+            for event in sync.events
+            if isinstance(event, LifecycleEvent) and event.load_id == load_id
+        ]
+        for load_id in labels
+    }
+
+    for load_id, booked_carrier_id in labels.items():
+        lifecycle = events[load_id]
+        assert lifecycle[0].status is LoadStatus.PLANNED
+        assert lifecycle[1].status is LoadStatus.ACTIVE
+        assert lifecycle[0].carrier_id is None
+        assert lifecycle[1].carrier_id is None
+        assert all(event.carrier_id == booked_carrier_id for event in lifecycle[2:])
 
 
 def test_writer_uses_strict_names_and_is_byte_deterministic(tmp_path: Path) -> None:

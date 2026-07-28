@@ -1,39 +1,126 @@
 {
   "carriers": [
     {
-      "carrier_id": 141389,
-      "carrier_name": "Crossroads Carrier",
-      "dot_no": "3901001",
+      "carrier_id": 927919,
+      "carrier_name": "Guadalupe Transport",
+      "dot_no": "3900404",
       "home_city": "Dallas",
       "home_state": "TX",
-      "mc_no": "1350101",
+      "mc_no": "1350404",
+      "phone": "(214) 555-0101"
+    },
+    {
+      "carrier_id": 884814,
+      "carrier_name": "Delta Prime",
+      "dot_no": "3900401",
+      "home_city": "Dallas",
+      "home_state": "TX",
+      "mc_no": "1350401",
+      "phone": "(214) 555-0101"
+    },
+    {
+      "carrier_id": 393580,
+      "carrier_name": "Bexar Logistics",
+      "dot_no": "3900407",
+      "home_city": "Dallas",
+      "home_state": "TX",
+      "mc_no": "1350407",
       "phone": "(214) 555-0101"
     }
   ],
   "loads": [
     {
-      "carrier_ref": 141389,
-      "customer_code": "HD-CUST-301",
-      "customer_name": "Alamo Building Supply",
+      "carrier_ref": 927919,
+      "customer_code": "HD-CUST-302",
+      "customer_name": "Hill Country Produce",
       "del_arrived_at": null,
-      "del_city": "Houston",
-      "del_date": "2026-07-07",
+      "del_city": "Baytown",
+      "del_date": "2026-07-08",
       "del_state": "TX",
-      "del_zip": "77002",
-      "dist_km": 389.62218242340975,
+      "del_zip": "77520",
+      "dist_km": 430.5,
       "entered_at": "2026-07-10 07:00:00",
       "equip": "V",
-      "load_num": "HD-2003",
-      "pu_city": "Dallas",
+      "load_num": "HD-2201",
+      "pu_city": "Plano",
       "pu_date": "2026-07-07",
       "pu_departed_at": null,
       "pu_state": "TX",
-      "pu_zip": "75201",
-      "status_code": 90,
+      "pu_zip": "75024",
+      "status_code": 30,
+      "updated_at": "2026-07-10 07:00:00",
+      "weight_kg": 10886.21688024085
+    },
+    {
+      "carrier_ref": 884814,
+      "customer_code": "HD-CUST-301",
+      "customer_name": "Alamo Building Supply",
+      "del_arrived_at": null,
+      "del_city": "Katy",
+      "del_date": "2026-07-08",
+      "del_state": "TX",
+      "del_zip": "77449",
+      "dist_km": 385.277,
+      "entered_at": "2026-07-10 07:00:00",
+      "equip": "V",
+      "load_num": "HD-2202",
+      "pu_city": "Grand Prairie",
+      "pu_date": "2026-07-07",
+      "pu_departed_at": null,
+      "pu_state": "TX",
+      "pu_zip": "75050",
+      "status_code": 30,
+      "updated_at": "2026-07-10 07:00:00",
+      "weight_kg": 10886.21688024085
+    },
+    {
+      "carrier_ref": 393580,
+      "customer_code": "HD-CUST-303",
+      "customer_name": "Mission Foods",
+      "del_arrived_at": null,
+      "del_city": "Fort Worth",
+      "del_date": "2026-07-08",
+      "del_state": "TX",
+      "del_zip": "76102",
+      "dist_km": 439.512,
+      "entered_at": "2026-07-10 07:00:00",
+      "equip": "F",
+      "load_num": "HD-2203",
+      "pu_city": "San Antonio",
+      "pu_date": "2026-07-07",
+      "pu_departed_at": null,
+      "pu_state": "TX",
+      "pu_zip": "78205",
+      "status_code": 30,
       "updated_at": "2026-07-10 07:00:00",
       "weight_kg": 10886.21688024085
     }
   ],
-  "rates": [],
+  "rates": [
+    {
+      "amount_usd": 1305,
+      "code": "LINEHAUL",
+      "created_at": "2026-07-10 07:00:00",
+      "load_num": "HD-2201",
+      "rate_id": 730403,
+      "side": "pay"
+    },
+    {
+      "amount_usd": 1180,
+      "code": "LINEHAUL",
+      "created_at": "2026-07-10 07:00:00",
+      "load_num": "HD-2202",
+      "rate_id": 340295,
+      "side": "pay"
+    },
+    {
+      "amount_usd": 1540,
+      "code": "LINEHAUL",
+      "created_at": "2026-07-10 07:00:00",
+      "load_num": "HD-2203",
+      "rate_id": 744021,
+      "side": "pay"
+    }
+  ],
   "synced_at": "2026-07-10 07:00:00"
 }

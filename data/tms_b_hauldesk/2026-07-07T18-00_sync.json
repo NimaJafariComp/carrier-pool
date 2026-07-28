@@ -1,26 +1,26 @@
 {
   "carriers": [
     {
-      "carrier_id": 233984,
-      "carrier_name": "River City Freight",
-      "dot_no": "3900408",
+      "carrier_id": 668390,
+      "carrier_name": "Central Haul",
+      "dot_no": "3900402",
       "home_city": "Dallas",
       "home_state": "TX",
-      "mc_no": "1350408",
+      "mc_no": "1350402",
       "phone": "(214) 555-0101"
     }
   ],
   "loads": [
     {
-      "carrier_ref": 233984,
+      "carrier_ref": 668390,
       "customer_code": "HD-CUST-303",
       "customer_name": "Mission Foods",
       "del_arrived_at": null,
       "del_city": "San Antonio",
-      "del_date": "2026-07-07",
+      "del_date": "2026-07-08",
       "del_state": "TX",
       "del_zip": "78205",
-      "dist_km": 389.62218242340975,
+      "dist_km": 318.328,
       "entered_at": "2026-07-07 13:00:00",
       "equip": "R",
       "load_num": "HD-2005",

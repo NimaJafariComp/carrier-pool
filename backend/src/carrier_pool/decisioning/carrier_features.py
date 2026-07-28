@@ -33,6 +33,13 @@ class CarrierFeatureSet:
     delivery_to_pickup_gap_days: float | None
     raw_evidence_ids: tuple[str, ...]
     target_equipment_unknown: bool
+    relevant_completed_count: int = 0
+    has_broad_recency_evidence: bool = False
+    relevant_completed_age_days: float | None = None
+    equipment_history_age_days: tuple[float, ...] = ()
+    completed_history_age_days: tuple[float, ...] = ()
+    equipment_history_version_ids: tuple[UUID, ...] = ()
+    relevant_completed_version_ids: tuple[UUID, ...] = ()
 
 
 class CarrierFeatureService:
@@ -108,18 +115,34 @@ class CarrierFeatureService:
         target_pickup = _endpoint(target, pickup=True)
         for carrier in carriers:
             history = tuple(
-                sorted(by_carrier.get(carrier.id, ()), key=lambda value: value.observed_at)
+                sorted(
+                    by_carrier.get(carrier.id, ()),
+                    key=_version_precedence,
+                )
             )
             if not history:
                 continue
-            equipment_history = tuple(
-                value for value in history if value.equipment == target.equipment
+            equipment_history = (
+                ()
+                if unknown
+                else tuple(value for value in history if value.equipment == target.equipment)
             )
-            relevant = equipment_history[-1] if equipment_history else history[-1]
             last_delivery = history[-1]
             delivery = _endpoint(last_delivery, pickup=False)
             lane = tuple(
                 sorted(lane_by_carrier.get(carrier.id, ()), key=lambda item: item.version_id)
+            )
+            lane_version_ids = {item.version_id for item in lane}
+            lane_versions = tuple(
+                version_by_id[version_id]
+                for version_id in lane_version_ids
+                if version_id in version_by_id
+            )
+            relevant_versions = {value.id: value for value in (*equipment_history, *lane_versions)}
+            has_broad_recency_evidence = not relevant_versions
+            relevant = max(
+                relevant_versions.values() if relevant_versions else history,
+                key=_version_precedence,
             )
             evidence_ids = tuple(
                 str(value)
@@ -144,6 +167,19 @@ class CarrierFeatureService:
                     max(0.0, (as_of - last_delivery.observed_at).total_seconds() / 86_400),
                     tuple(dict.fromkeys(evidence_ids)),
                     unknown,
+                    len(relevant_versions),
+                    has_broad_recency_evidence,
+                    max(0.0, (as_of - relevant.observed_at).total_seconds() / 86_400),
+                    tuple(
+                        max(0.0, (as_of - value.observed_at).total_seconds() / 86_400)
+                        for value in equipment_history
+                    ),
+                    tuple(
+                        max(0.0, (as_of - value.observed_at).total_seconds() / 86_400)
+                        for value in history
+                    ),
+                    tuple(value.id for value in equipment_history),
+                    tuple(sorted(relevant_versions, key=str)),
                 )
             )
         return tuple(sorted(result, key=lambda item: item.carrier_external_id))
@@ -165,13 +201,17 @@ def _endpoint(version: LoadVersion, *, pickup: bool) -> Coordinate | None:
         postal_code = stop.get("postal_code")
         city = stop.get("city")
         state = stop.get("state")
-        if (
-            not isinstance(postal_code, str)
-            or not isinstance(city, str)
-            or not isinstance(state, str)
-        ):
+        if not isinstance(postal_code, str) or not isinstance(state, str):
             continue
-        geography = GeographyLookup.default().lookup(postal_code, city, state)
+        # ZIP and state establish coordinates; city is explanatory only.
+        geography = GeographyLookup.default().lookup(
+            postal_code, city if isinstance(city, str) else None, state
+        )
         if geography.latitude is not None and geography.longitude is not None:
             return Coordinate(float(geography.latitude), float(geography.longitude))
     return None
+
+
+def _version_precedence(version: LoadVersion) -> tuple[datetime, UUID]:
+    """Stable ordering for source observations with equal timestamps."""
+    return version.observed_at, version.id

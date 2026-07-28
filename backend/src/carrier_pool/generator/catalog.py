@@ -1,6 +1,7 @@
 """Hand-authored deterministic catalogs for the Phase 6 scenarios."""
 
-from datetime import date
+from datetime import date, timedelta
+from decimal import Decimal
 
 from carrier_pool.domain.types import EquipmentType, SourceSystem
 from carrier_pool.generator.models import (
@@ -10,6 +11,7 @@ from carrier_pool.generator.models import (
     GeneratorLoad,
     GeneratorTenant,
     LocationDefinition,
+    RankingHoldoutDefinition,
     ScenarioCatalog,
     ScenarioDefinition,
     ScenarioStop,
@@ -42,6 +44,24 @@ _AUTHORITIES: dict[str, tuple[str, str]] = {
     "BO-C-608": ("1350608", "3900608"),
 }
 
+# Hand-authored highway miles for each ordered generated route. These are source
+# facts, not Haversine distances: geography uses ZIP centroids separately when it
+# explains lane similarity. Keep a route here only when the scenario uses it.
+_CURATED_ROUTE_MILES: dict[tuple[str, ...], Decimal] = {
+    ("DFW-GP", "HOU-KAT"): Decimal("239.4"),
+    ("HOU-HOU", "SAT-SAT"): Decimal("197.8"),
+    ("HOU-PAS", "DFW-GP"): Decimal("248.6"),
+    ("HOU-HOU", "DFW-GP"): Decimal("243.2"),
+    ("DFW-PLN", "HOU-BAY"): Decimal("267.5"),
+    ("DFW-DAL", "HOU-HOU"): Decimal("239.8"),
+    ("SAT-SAT", "DFW-FTW"): Decimal("273.1"),
+    ("HOU-KAT", "SAT-SAT"): Decimal("193.6"),
+    ("HOU-SUG", "SAT-SCH"): Decimal("190.4"),
+    ("HOU-GLV", "SAT-SAT"): Decimal("237.9"),
+    ("SAT-SAT", "DFW-DAL"): Decimal("275.6"),
+    ("HOU-SUG", "HOU-HOU", "SAT-SCH"): Decimal("214.7"),
+}
+
 
 def build_catalog() -> ScenarioCatalog:
     """Return the fixed catalog described in docs/DATA_SCENARIOS.md."""
@@ -52,6 +72,7 @@ def build_catalog() -> ScenarioCatalog:
         carriers=_carriers(),
         loads=_loads(),
         scenarios=_scenarios(),
+        ranking_holdouts=_ranking_holdouts(),
     )
 
 
@@ -221,7 +242,7 @@ def _route(*location_ids: str, pickup_date: date) -> tuple[ScenarioStop, ...]:
             is_pickup=index == 1,
             is_dropoff=index == len(location_ids),
             location_id=location_id,
-            planned_date=pickup_date,
+            planned_date=pickup_date + timedelta(days=index - 1),
         )
         for index, location_id in enumerate(location_ids, start=1)
     )
@@ -235,6 +256,7 @@ def _load(
     equipment: EquipmentType,
     *location_ids: str,
     day11_target: bool = False,
+    evaluation_probe: bool = False,
 ) -> GeneratorLoad:
     return GeneratorLoad(
         logical_id=logical_id,
@@ -243,8 +265,18 @@ def _load(
         customer_id=customer_id,
         stops=_route(*location_ids, pickup_date=date(2026, 7, 11 if day11_target else 7)),
         equipment=equipment,
+        distance_miles=_curated_route_miles(location_ids),
         day11_target=day11_target,
+        evaluation_probe=evaluation_probe,
     )
+
+
+def _curated_route_miles(location_ids: tuple[str, ...]) -> Decimal:
+    try:
+        return _CURATED_ROUTE_MILES[location_ids]
+    except KeyError as error:
+        route = " -> ".join(location_ids)
+        raise ValueError(f"missing curated miles for generated route {route}") from error
 
 
 def _loads() -> tuple[GeneratorLoad, ...]:
@@ -358,6 +390,18 @@ def _loads() -> tuple[GeneratorLoad, ...]:
             "HOU-BAY",
         ),
         _load(
+            "FF-1501", "ff-broker", SourceSystem.FREIGHTFLOW, "FF-CUST-101",
+            EquipmentType.DRY_VAN, "DFW-GP", "HOU-KAT", evaluation_probe=True,
+        ),
+        _load(
+            "FF-1502", "ff-broker", SourceSystem.FREIGHTFLOW, "FF-CUST-101",
+            EquipmentType.DRY_VAN, "DFW-DAL", "HOU-HOU", evaluation_probe=True,
+        ),
+        _load(
+            "FF-1503", "ff-broker", SourceSystem.FREIGHTFLOW, "FF-CUST-102",
+            EquipmentType.REEFER, "HOU-HOU", "SAT-SAT", evaluation_probe=True,
+        ),
+        _load(
             "BO-3001",
             "bo-broker",
             SourceSystem.BROKEROS,
@@ -413,6 +457,30 @@ def _loads() -> tuple[GeneratorLoad, ...]:
             "SAT-SCH",
         ),
         _load(
+            "HD-2201", "hd-broker", SourceSystem.HAULDESK, "HD-CUST-302",
+            EquipmentType.DRY_VAN, "DFW-PLN", "HOU-BAY", evaluation_probe=True,
+        ),
+        _load(
+            "HD-2202", "hd-broker", SourceSystem.HAULDESK, "HD-CUST-301",
+            EquipmentType.DRY_VAN, "DFW-GP", "HOU-KAT", evaluation_probe=True,
+        ),
+        _load(
+            "HD-2203", "hd-broker", SourceSystem.HAULDESK, "HD-CUST-303",
+            EquipmentType.FLATBED, "SAT-SAT", "DFW-FTW", evaluation_probe=True,
+        ),
+        _load(
+            "BO-3201", "bo-broker", SourceSystem.BROKEROS, "BO-CUST-501",
+            EquipmentType.REEFER, "HOU-KAT", "SAT-SAT", evaluation_probe=True,
+        ),
+        _load(
+            "BO-3202", "bo-broker", SourceSystem.BROKEROS, "BO-CUST-501",
+            EquipmentType.REEFER, "HOU-SUG", "SAT-SCH", evaluation_probe=True,
+        ),
+        _load(
+            "BO-3203", "bo-broker", SourceSystem.BROKEROS, "BO-CUST-502",
+            EquipmentType.DRY_VAN, "SAT-SAT", "DFW-DAL", evaluation_probe=True,
+        ),
+        _load(
             "FF-9001",
             "ff-broker",
             SourceSystem.FREIGHTFLOW,
@@ -443,6 +511,40 @@ def _loads() -> tuple[GeneratorLoad, ...]:
             day11_target=True,
         ),
     )
+
+
+def _ranking_holdouts() -> tuple[RankingHoldoutDefinition, ...]:
+    """Independent hand-authored booking labels; never derived from rank output."""
+    rows = (
+        ("FF-1001", "FF-C-201", ("RICH", "NEAR_EXACT", "KNOWN_EQUIPMENT")),
+        ("FF-1101", "FF-C-202", ("SPARSE", "NEAR_EXACT", "KNOWN_EQUIPMENT")),
+        ("FF-1201", "FF-C-201", ("RICH", "NEAR_EXACT", "KNOWN_EQUIPMENT")),
+        ("FF-1301", "FF-C-203", ("SPARSE", "BROADER_LANE", "KNOWN_EQUIPMENT")),
+        ("FF-1401", "FF-C-204", ("SPARSE", "DISTANCE_EQUIPMENT", "KNOWN_EQUIPMENT")),
+        ("FF-1402", "FF-C-205", ("SPARSE", "LIMITED_CANDIDATE", "KNOWN_EQUIPMENT")),
+        ("HD-2001", "HD-C-401", ("RICH", "NEAR_EXACT", "KNOWN_EQUIPMENT")),
+        ("HD-2002", "HD-C-404", ("SPARSE", "BROADER_LANE", "KNOWN_EQUIPMENT")),
+        ("HD-2003", "HD-C-401", ("RICH", "METRO_CORRIDOR", "KNOWN_EQUIPMENT")),
+        ("HD-2004", "HD-C-407", ("SPARSE", "DISTANCE_EQUIPMENT", "KNOWN_EQUIPMENT")),
+        ("HD-2005", "HD-C-402", ("SPARSE", "BROADER_LANE", "KNOWN_EQUIPMENT")),
+        ("HD-2101", "HD-C-404", ("SPARSE", "NEAR_EXACT", "KNOWN_EQUIPMENT")),
+        ("BO-3001", "BO-C-601", ("RICH", "NEAR_EXACT", "KNOWN_EQUIPMENT")),
+        ("BO-3002", "BO-C-602", ("SPARSE", "BROADER_LANE", "KNOWN_EQUIPMENT")),
+        ("BO-3003", "BO-C-603", ("SPARSE", "METRO_CORRIDOR", "KNOWN_EQUIPMENT")),
+        ("BO-3004", "BO-C-603", ("SPARSE", "DISTANCE_EQUIPMENT", "KNOWN_EQUIPMENT")),
+        ("BO-3005", "BO-C-604", ("SPARSE", "LIMITED_CANDIDATE", "KNOWN_EQUIPMENT")),
+        ("BO-3101", "BO-C-601", ("RICH", "NEAR_EXACT", "KNOWN_EQUIPMENT")),
+        ("FF-1501", "FF-C-202", ("RICH", "NEAR_EXACT", "CLOSE_SCORE_TIE")),
+        ("FF-1502", "FF-C-201", ("SPARSE", "BROADER_LANE", "KNOWN_EQUIPMENT")),
+        ("FF-1503", "FF-C-203", ("SPARSE", "DISTANCE_EQUIPMENT", "KNOWN_EQUIPMENT")),
+        ("HD-2201", "HD-C-404", ("RICH", "NEAR_EXACT", "CLOSE_SCORE_TIE")),
+        ("HD-2202", "HD-C-401", ("SPARSE", "BROADER_LANE", "KNOWN_EQUIPMENT")),
+        ("HD-2203", "HD-C-407", ("SPARSE", "DISTANCE_EQUIPMENT", "LIMITED_CANDIDATE")),
+        ("BO-3201", "BO-C-602", ("RICH", "NEAR_EXACT", "CLOSE_SCORE_TIE")),
+        ("BO-3202", "BO-C-601", ("SPARSE", "BROADER_LANE", "KNOWN_EQUIPMENT")),
+        ("BO-3203", "BO-C-604", ("SPARSE", "DISTANCE_EQUIPMENT", "LIMITED_CANDIDATE")),
+    )
+    return tuple(RankingHoldoutDefinition(*row) for row in rows)
 
 
 def _scenarios() -> tuple[ScenarioDefinition, ...]:

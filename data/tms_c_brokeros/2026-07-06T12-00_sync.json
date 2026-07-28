@@ -5,11 +5,11 @@
       "Id": "a0j71905B1A95DF4B0",
       "LastModifiedDate": "2026-07-06T12:00:00.000+0000",
       "Name": "BO-3004",
-      "bos__Carrier_Rate__c": 1200,
-      "bos__Carrier__c": "001F20F3DAA4B0297A",
-      "bos__Customer_Rate__c": 1480,
+      "bos__Carrier_Rate__c": 1880,
+      "bos__Carrier__c": "001D5D8A47515E0A1D",
+      "bos__Customer_Rate__c": 2160,
       "bos__Customer__c": "0014DD806107C8FF73",
-      "bos__Distance_Miles__c": 242.1,
+      "bos__Distance_Miles__c": 214.7,
       "bos__Equipment_Type__c": "Reefer",
       "bos__Line_Items__r": [
         {
@@ -35,7 +35,7 @@
           "bos__Is_Pickup__c": false,
           "bos__Location__c": "0013C3DBA5ED1B5F8C",
           "bos__Number__c": 2,
-          "bos__Scheduled_Date__c": "2026-07-07"
+          "bos__Scheduled_Date__c": "2026-07-08"
         },
         {
           "bos__Arrival_Time__c": null,
@@ -43,7 +43,7 @@
           "bos__Is_Pickup__c": false,
           "bos__Location__c": "001A06FC7BDA751406",
           "bos__Number__c": 3,
-          "bos__Scheduled_Date__c": "2026-07-07"
+          "bos__Scheduled_Date__c": "2026-07-09"
         }
       ]
     }
@@ -68,17 +68,17 @@
       "bos__State__c": "TX",
       "type": "Location"
     },
+    "001D5D8A47515E0A1D": {
+      "Name": "Lone Oak Logistics",
+      "record_type": "Carrier",
+      "type": "Account"
+    },
     "001F04A07EF8DE704D": {
       "Name": "Sugar Land Facility",
       "bos__City__c": "Sugar Land",
       "bos__Postal_Code__c": "77478",
       "bos__State__c": "TX",
       "type": "Location"
-    },
-    "001F20F3DAA4B0297A": {
-      "Name": "Port City Transport",
-      "record_type": "Carrier",
-      "type": "Account"
     }
   },
   "synced_at": "2026-07-06T12:00:00.000+0000"

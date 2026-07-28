@@ -17,10 +17,10 @@
       "customer_name": "Hill Country Produce",
       "del_arrived_at": null,
       "del_city": "Baytown",
-      "del_date": "2026-07-07",
+      "del_date": "2026-07-08",
       "del_state": "TX",
       "del_zip": "77520",
-      "dist_km": 389.62218242340975,
+      "dist_km": 430.5,
       "entered_at": "2026-07-01 07:00:00",
       "equip": "V",
       "load_num": "HD-2001",
@@ -36,7 +36,7 @@
   ],
   "rates": [
     {
-      "amount_usd": 1150,
+      "amount_usd": 1280,
       "code": "LINEHAUL",
       "created_at": "2026-07-01 07:00:00",
       "load_num": "HD-2001",

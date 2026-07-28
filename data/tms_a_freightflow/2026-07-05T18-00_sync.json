@@ -9,7 +9,7 @@
       },
       "equipment": "53 ft Van | Reefer",
       "lastModifiedDate": "2026-07-05T13:00:00-05:00",
-      "mileage": 242.1,
+      "mileage": 197.8,
       "shipmentId": 351331,
       "status": "Booking",
       "stops": [
@@ -25,15 +25,15 @@
         {
           "actualDepartureDateTime": null,
           "city": "SAN ANTONIO",
-          "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
-          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-08T23:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-08T15:00:00-05:00",
           "state": "TX",
           "stopType": "Last Drop",
           "zipCode": "78205"
         }
       ],
       "totalBuy": null,
-      "totalSell": 1405,
+      "totalSell": 1940,
       "weightTotal": 24000
     }
   ],

@@ -25,6 +25,19 @@ constraints. Those missing labels make acceptance-probability and optimal-dispat
 claims unsupported. Deadhead evidence is phrased as a historical delivery location,
 never as a claim that a truck is available.
 
+### Ranking-weight policy
+
+Keep lane `.40`, equipment `.20`, historical delivery proximity `.20`, and
+recency `.20` unchanged. Expanded generated temporal holdout has 24 ranking cases,
+14 scored across all three sources, plus deliberate sparse/rich and tie cases.
+Evaluation reports supported-only primary metrics, explicit no-rank reasons,
+all-candidate secondary diagnostics, and lane/equipment/deadhead/recency ablations
+on identical cases. Current artifacts are deterministic-demo diagnostics only; no
+weight change is eligible. Revisit only with at least 100 independent,
+supported-only cases with complete candidate-set capture and a pre-registered
+weight set that improves the selected proxy by at least 5% without worsening sparse
+no-rank rate or close-score-tie behavior.
+
 ## History, corrections, and time
 
 Choose immutable observed source history plus rebuildable current projections.
@@ -71,8 +84,11 @@ quantile regression requires at least twenty.
 The production choice remains `pricing-hierarchical-v1`. Do not promote a regression
 baseline from synthetic data unless rolling as-of results materially improve both MAE
 and median absolute error without worsening sparse-history WAPE or range coverage.
-Current local generated-fixture backtests contain no scored estimates, so they do not
-provide evidence to promote any baseline.
+Artifacts compare every eligible baseline on its exact shared population and show
+zero-case baselines explicitly. A challenger can be considered only with at least
+30 same-population independent cases, at least 5% lower MAE and lower median error,
+and no worse sparse-history WAPE or historical-range coverage. Current deterministic
+fixture data cannot promote a model.
 
 ## Shared carrier pool
 

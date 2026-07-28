@@ -1,6 +1,7 @@
 """Phase 6.3 deterministic catalog and integrity tests."""
 
 from dataclasses import replace
+from decimal import Decimal
 
 import pytest
 
@@ -68,6 +69,20 @@ def test_catalog_day11_targets_cover_exact_neighbor_and_sparse_cases() -> None:
     assert targets["FF-9001"].equipment is EquipmentType.DRY_VAN
     assert [stop.location_id for stop in targets["BO-9001"].stops] == ["HOU-KAT", "SAT-SAT"]
     assert [stop.location_id for stop in targets["HD-9001"].stops] == ["DFW-PLN", "HOU-BAY"]
+
+
+def test_catalog_uses_complete_ordered_route_specific_curated_miles() -> None:
+    catalog = build_catalog()
+    routes = {
+        load.logical_id: (tuple(stop.location_id for stop in load.stops), load.distance_miles)
+        for load in catalog.loads
+    }
+
+    assert routes["FF-9001"] == (("DFW-GP", "HOU-KAT"), Decimal("239.4"))
+    assert routes["BO-9001"] == (("HOU-KAT", "SAT-SAT"), Decimal("193.6"))
+    assert routes["HD-9001"] == (("DFW-PLN", "HOU-BAY"), Decimal("267.5"))
+    assert all(load.distance_miles > 0 for load in catalog.loads)
+    assert len({load.distance_miles for load in catalog.loads}) > 8
 
 
 def test_catalog_rejects_duplicate_locations_and_cross_tenant_customer_reference() -> None:

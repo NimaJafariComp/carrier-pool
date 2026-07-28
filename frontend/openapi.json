@@ -1,6 +1,124 @@
 {
   "components": {
     "schemas": {
+      "ComparableLoadResponse": {
+        "description": "Safe, readable rate-comparison evidence for one tenant-owned load.",
+        "properties": {
+          "carrier_rate_usd": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Carrier Rate Usd"
+          },
+          "completed_observed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed Observed At"
+          },
+          "destination_distance_miles": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Distance Miles"
+          },
+          "distance_miles": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance Miles"
+          },
+          "equipment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Equipment"
+          },
+          "load_external_id": {
+            "title": "Load External Id",
+            "type": "string"
+          },
+          "origin_distance_miles": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin Distance Miles"
+          },
+          "recency_days": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recency Days"
+          },
+          "route": {
+            "title": "Route",
+            "type": "string"
+          },
+          "route_mile_difference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Route Mile Difference"
+          },
+          "tier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tier"
+          }
+        },
+        "required": [
+          "load_external_id",
+          "route"
+        ],
+        "title": "ComparableLoadResponse",
+        "type": "object"
+      },
       "ConfidenceResponse": {
         "properties": {
           "components": {
@@ -35,8 +153,7 @@
           },
           "comparable_loads": {
             "items": {
-              "additionalProperties": true,
-              "type": "object"
+              "$ref": "#/components/schemas/ComparableLoadResponse"
             },
             "title": "Comparable Loads",
             "type": "array"
@@ -91,6 +208,91 @@
           "warnings"
         ],
         "title": "DecisionResponse",
+        "type": "object"
+      },
+      "EvidenceLoadResponse": {
+        "description": "A human-readable, tenant-local completed-load reference.",
+        "properties": {
+          "completed_observed_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed Observed At"
+          },
+          "destination_distance_miles": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Distance Miles"
+          },
+          "distance_miles": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance Miles"
+          },
+          "equipment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Equipment"
+          },
+          "load_external_id": {
+            "title": "Load External Id",
+            "type": "string"
+          },
+          "origin_distance_miles": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin Distance Miles"
+          },
+          "route": {
+            "title": "Route",
+            "type": "string"
+          },
+          "tier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tier"
+          }
+        },
+        "required": [
+          "load_external_id",
+          "route"
+        ],
+        "title": "EvidenceLoadResponse",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -335,7 +537,14 @@
           },
           "component_scores": {
             "additionalProperties": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "title": "Component Scores",
             "type": "object"
@@ -344,12 +553,26 @@
             "title": "Confidence Score",
             "type": "string"
           },
+          "evidence_by_component": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/EvidenceLoadResponse"
+              },
+              "type": "array"
+            },
+            "title": "Evidence By Component",
+            "type": "object"
+          },
           "evidence_ids": {
             "items": {
               "type": "string"
             },
             "title": "Evidence Ids",
             "type": "array"
+          },
+          "evidence_status": {
+            "title": "Evidence Status",
+            "type": "string"
           },
           "explanation_bullets": {
             "items": {
@@ -368,6 +591,17 @@
             },
             "title": "Reason Codes",
             "type": "array"
+          },
+          "tie_group": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tie Group"
           }
         },
         "required": [
@@ -379,7 +613,10 @@
           "component_scores",
           "reason_codes",
           "explanation_bullets",
-          "evidence_ids"
+          "evidence_ids",
+          "evidence_status",
+          "tie_group",
+          "evidence_by_component"
         ],
         "title": "RankedCarrierResponse",
         "type": "object"
@@ -397,6 +634,17 @@
           "is_pickup": {
             "title": "Is Pickup",
             "type": "boolean"
+          },
+          "planned_date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Planned Date"
           },
           "postal_code": {
             "title": "Postal Code",
@@ -429,6 +677,7 @@
           "city",
           "state",
           "postal_code",
+          "planned_date",
           "scheduled_start_at"
         ],
         "title": "StopResponse",

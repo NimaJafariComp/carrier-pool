@@ -7,15 +7,20 @@ from typing import Annotated
 from uuid import UUID
 
 import typer
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
+from carrier_pool.db.models import Load
+from carrier_pool.db.tenant import set_tenant_context
 from carrier_pool.decisioning.backtest import RateBacktestHarness, write_backtest_artifacts
+from carrier_pool.decisioning.decision_runs import DecisionRunService
 from carrier_pool.decisioning.ranking_evaluation import (
     RankingBacktestHarness,
+    ranking_acceptance_failures,
     write_ranking_artifacts,
 )
-from carrier_pool.domain.types import SourceSystem
+from carrier_pool.demo import DEMO_TENANTS, seed_demo_tenants
+from carrier_pool.domain.types import LoadStatus, SourceSystem
 from carrier_pool.generator.manifest import write_scenarios_manifest
 from carrier_pool.generator.scheduler import write_sync_files
 from carrier_pool.generator.validator import validate_generated_data
@@ -61,6 +66,48 @@ def validate_data(
     """Validate generated sync JSON and scenario metadata without database writes."""
     report = validate_generated_data(data_root)
     typer.echo(f"validated {report.sync_file_count} sync files")
+
+
+@app.command("seed-demo-tenants")
+def seed_demo() -> None:
+    """Create the three fixed fictional brokers used by the review demo."""
+    database_url = _database_url("seeding demo tenants")
+    engine = create_engine(database_url)
+    try:
+        with Session(engine) as session:
+            tenants = seed_demo_tenants(session)
+            session.commit()
+    finally:
+        engine.dispose()
+    typer.echo(f"seeded {len(tenants)} demo tenants")
+
+
+@app.command("decide-active")
+def decide_active() -> None:
+    """Persist or reuse decisions for every active Day 11 demo load."""
+    database_url = _database_url("computing demo decisions")
+    engine = create_engine(database_url)
+    created = 0
+    reused = 0
+    try:
+        with Session(engine) as session:
+            service = DecisionRunService()
+            for tenant in DEMO_TENANTS:
+                set_tenant_context(session, tenant.id)
+                loads = session.scalars(
+                    select(Load).where(
+                        Load.tenant_id == tenant.id,
+                        Load.status == LoadStatus.ACTIVE,
+                    )
+                ).all()
+                for load in loads:
+                    result = service.run(session, tenant.id, load.id, load.observed_at)
+                    reused += int(result.reused)
+                    created += int(not result.reused)
+            session.commit()
+    finally:
+        engine.dispose()
+    typer.echo(f"decisions created={created} reused={reused}")
 
 
 @app.command("ingest-file")
@@ -149,6 +196,10 @@ def rate_backtest(
         engine.dispose()
     metrics_path, cases_path = write_backtest_artifacts(report, artifacts_dir)
     ranking_metrics_path = write_ranking_artifacts(ranking_report, artifacts_dir)
+    ranking_failures = ranking_acceptance_failures(ranking_report)
+    if ranking_failures:
+        typer.echo("ranking evaluation acceptance failed: " + "; ".join(ranking_failures))
+        raise typer.Exit(code=1)
     typer.echo(
         json.dumps(
             {
@@ -164,9 +215,7 @@ def rate_backtest(
 
 
 def _ingest_discovered(sync: DiscoveredSync) -> IngestionResult:
-    database_url = os.environ.get("DATABASE_URL")
-    if database_url is None:
-        raise typer.BadParameter("DATABASE_URL is required for ingestion.")
+    database_url = _database_url("ingestion")
     coordinator = {
         SourceSystem.FREIGHTFLOW: FreightFlowIngestionCoordinator(),
         SourceSystem.HAULDESK: HaulDeskIngestionCoordinator(),
@@ -191,6 +240,13 @@ def _result_message(result: IngestionResult) -> str:
             sort_keys=True,
         )
     return result.report.render()
+
+
+def _database_url(operation: str) -> str:
+    database_url = os.environ.get("DATABASE_URL")
+    if database_url is None:
+        raise typer.BadParameter(f"DATABASE_URL is required for {operation}.")
+    return database_url
 
 
 def main() -> None:

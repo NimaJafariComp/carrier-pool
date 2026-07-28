@@ -29,7 +29,10 @@ from carrier_pool.decisioning.carrier_features import CarrierFeatureService
 from carrier_pool.decisioning.carrier_scoring import CarrierHistoricalFitScorer
 from carrier_pool.decisioning.decision_runs import DecisionRunService
 from carrier_pool.decisioning.pricing import HierarchicalRateEstimator
-from carrier_pool.decisioning.ranking_evaluation import RankingBacktestHarness
+from carrier_pool.decisioning.ranking_evaluation import (
+    RankingBacktestHarness,
+    ranking_acceptance_failures,
+)
 from carrier_pool.domain.types import LoadStatus, SourceSystem
 from carrier_pool.generator.manifest import write_scenarios_manifest
 from carrier_pool.generator.scheduler import DAY11_SYNC_AT, write_sync_files
@@ -315,16 +318,52 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
                 .order_by(LoadVersion.observed_at)
             )
             assert active_version is not None
+            later_version_count = session.scalar(
+                select(func.count())
+                .select_from(LoadVersion)
+                .where(
+                    LoadVersion.load_id == correction_load.id,
+                    LoadVersion.observed_at > active_version.observed_at,
+                )
+            )
+            assert later_version_count is not None and later_version_count > 0
+            historical_features = CarrierFeatureService().retrieve(
+                session,
+                correction_load.tenant_id,
+                correction_load.id,
+                active_version.id,
+                active_version.observed_at,
+            )
+            historical_ranking = CarrierHistoricalFitScorer().score(historical_features)
+            feature_version_ids = {
+                UUID(version_id)
+                for feature in historical_features
+                for version_id in feature.raw_evidence_ids
+            }
+            feature_observed_at = {
+                version_id: observed_at
+                for version_id, observed_at in session.execute(
+                    select(LoadVersion.id, LoadVersion.observed_at).where(
+                        LoadVersion.id.in_(feature_version_ids)
+                    )
+                ).tuples()
+            }
+            assert all(
+                observed_at <= active_version.observed_at
+                for observed_at in feature_observed_at.values()
+            )
+            # The already-ingested later correction exists, but cannot change this cutoff ranking.
             assert (
-                session.scalar(
-                    select(func.count())
-                    .select_from(LoadVersion)
-                    .where(
-                        LoadVersion.load_id == correction_load.id,
-                        LoadVersion.observed_at > active_version.observed_at,
+                CarrierHistoricalFitScorer().score(
+                    CarrierFeatureService().retrieve(
+                        session,
+                        correction_load.tenant_id,
+                        correction_load.id,
+                        active_version.id,
+                        active_version.observed_at,
                     )
                 )
-                > 0
+                == historical_ranking
             )
             historical_decision = decision_service.run(
                 session,
@@ -372,13 +411,40 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
             assert all(
                 model.case_count <= report.case_count for model in report.baseline_models.values()
             )
+            assert set(report.same_population_comparisons) == set(report.baseline_models)
+            for name, comparison in report.same_population_comparisons.items():
+                assert comparison.case_count <= report.baseline_models[name].case_count
+                if comparison.case_count:
+                    assert comparison.production_metrics.mae_usd is not None
+                    assert comparison.baseline_metrics.mae_usd is not None
+                    assert comparison.by_tier
+                    assert comparison.by_history_depth
             ranking_report = RankingBacktestHarness().run(session, tuple(tenant_ids.values()))
             assert (
                 ranking_report.with_deadhead.case_count
                 == ranking_report.without_deadhead.case_count
             )
             assert ranking_report.with_deadhead.case_count > 0
-            assert ranking_report.with_deadhead.by_history_depth
+            assert ranking_report.with_deadhead.scored_case_count > 0
+            assert ranking_report.with_deadhead.by_history_depth["RICH"].case_count >= 1
+            assert ranking_report.with_deadhead.by_history_depth["SPARSE"].case_count >= 1
+            assert ranking_report.all_candidates_with_deadhead.case_count == (
+                ranking_report.with_deadhead.case_count
+            )
+            assert sum(ranking_report.with_deadhead.no_rank_reason_counts.values()) == (
+                ranking_report.with_deadhead.no_rank_count
+            )
+            assert set(ranking_report.component_ablations) == {
+                "without_lane",
+                "without_equipment",
+                "without_recency",
+            }
+            assert all(
+                ablation.case_count == ranking_report.with_deadhead.case_count
+                for ablation in ranking_report.component_ablations.values()
+            )
+            assert ranking_report.weight_tuning_eligible is False
+            assert not ranking_acceptance_failures(ranking_report)
             for model in report.baseline_models.values():
                 if model.case_count:
                     assert model.metrics.mae_usd is not None

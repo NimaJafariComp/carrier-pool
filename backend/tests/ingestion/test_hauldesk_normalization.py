@@ -25,12 +25,12 @@ def test_normalizes_units_and_preserves_negative_adjustment() -> None:
                 "pu_city": "A",
                 "pu_state": "TX",
                 "pu_zip": "1",
-                "pu_date": "x",
+                "pu_date": "2026-07-06",
                 "pu_departed_at": "2026-07-06 07:00:00",
                 "del_city": "B",
                 "del_state": "TX",
                 "del_zip": "2",
-                "del_date": "x",
+                "del_date": "2026-07-07",
                 "del_arrived_at": "2026-07-06 12:00:00",
                 "entered_at": "2026-07-05 14:00:00",
                 "updated_at": "2026-07-06 03:00:00",
@@ -73,10 +73,10 @@ def test_normalizes_units_and_preserves_negative_adjustment() -> None:
     )
     assert result.loads[0].weight_lbs is not None and result.loads[0].weight_lbs > 22
     assert result.loads[0].carrier is not None
-    assert result.loads[0].stops[0].actual_departure_at == datetime(
-        2026, 7, 6, 12, tzinfo=UTC
-    )
+    assert result.loads[0].stops[0].actual_departure_at == datetime(2026, 7, 6, 12, tzinfo=UTC)
     assert result.loads[0].stops[1].actual_arrival_at == datetime(2026, 7, 6, 17, tzinfo=UTC)
+    assert result.loads[0].stops[0].planned_date.isoformat() == "2026-07-06"
+    assert result.loads[0].stops[1].planned_date.isoformat() == "2026-07-07"
     assert [entry.amount.amount for entry in result.source_financial_entries] == [
         Decimal("15"),
         Decimal("-10"),

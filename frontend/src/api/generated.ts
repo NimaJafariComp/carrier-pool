@@ -105,6 +105,34 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * ComparableLoadResponse
+         * @description Safe, readable rate-comparison evidence for one tenant-owned load.
+         */
+        ComparableLoadResponse: {
+            /** Carrier Rate Usd */
+            carrier_rate_usd?: string | null;
+            /** Completed Observed At */
+            completed_observed_at?: string | null;
+            /** Destination Distance Miles */
+            destination_distance_miles?: number | null;
+            /** Distance Miles */
+            distance_miles?: string | null;
+            /** Equipment */
+            equipment?: string | null;
+            /** Load External Id */
+            load_external_id: string;
+            /** Origin Distance Miles */
+            origin_distance_miles?: number | null;
+            /** Recency Days */
+            recency_days?: number | null;
+            /** Route */
+            route: string;
+            /** Route Mile Difference */
+            route_mile_difference?: string | null;
+            /** Tier */
+            tier?: string | null;
+        };
         /** ConfidenceResponse */
         ConfidenceResponse: {
             /** Components */
@@ -121,9 +149,7 @@ export interface components {
             /** As Of */
             as_of: string;
             /** Comparable Loads */
-            comparable_loads: {
-                [key: string]: unknown;
-            }[];
+            comparable_loads: components["schemas"]["ComparableLoadResponse"][];
             confidence: components["schemas"]["ConfidenceResponse"];
             load: components["schemas"]["LoadResponse"];
             /** Model Parameters */
@@ -139,6 +165,28 @@ export interface components {
             ranking_model_version: string;
             /** Warnings */
             warnings: string[];
+        };
+        /**
+         * EvidenceLoadResponse
+         * @description A human-readable, tenant-local completed-load reference.
+         */
+        EvidenceLoadResponse: {
+            /** Completed Observed At */
+            completed_observed_at?: string | null;
+            /** Destination Distance Miles */
+            destination_distance_miles?: number | null;
+            /** Distance Miles */
+            distance_miles?: string | null;
+            /** Equipment */
+            equipment?: string | null;
+            /** Load External Id */
+            load_external_id: string;
+            /** Origin Distance Miles */
+            origin_distance_miles?: number | null;
+            /** Route */
+            route: string;
+            /** Tier */
+            tier?: string | null;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -210,18 +258,26 @@ export interface components {
             carrier_name: string;
             /** Component Scores */
             component_scores: {
-                [key: string]: string;
+                [key: string]: string | null;
             };
             /** Confidence Score */
             confidence_score: string;
+            /** Evidence By Component */
+            evidence_by_component: {
+                [key: string]: components["schemas"]["EvidenceLoadResponse"][];
+            };
             /** Evidence Ids */
             evidence_ids: string[];
+            /** Evidence Status */
+            evidence_status: string;
             /** Explanation Bullets */
             explanation_bullets: string[];
             /** Rank */
             rank: number;
             /** Reason Codes */
             reason_codes: string[];
+            /** Tie Group */
+            tie_group: number | null;
         };
         /** StopResponse */
         StopResponse: {
@@ -231,6 +287,8 @@ export interface components {
             is_dropoff: boolean;
             /** Is Pickup */
             is_pickup: boolean;
+            /** Planned Date */
+            planned_date: string | null;
             /** Postal Code */
             postal_code: string;
             /** Scheduled Start At */

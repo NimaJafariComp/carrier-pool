@@ -2,6 +2,90 @@
   "loads": [
     {
       "carrier": {
+        "carrierMasterId": 857186,
+        "dotNumber": "3900202",
+        "mcNumber": "1350202",
+        "name": "Cedar Express",
+        "phoneNumber": "+12145550101"
+      },
+      "createdDate": "2026-07-10T13:00:00-05:00",
+      "customer": {
+        "customerId": 493634,
+        "name": "Lone Star Beverages"
+      },
+      "equipment": "53 ft Van | Dry",
+      "lastModifiedDate": "2026-07-10T13:00:00-05:00",
+      "mileage": 239.4,
+      "shipmentId": 450830,
+      "status": "Completed",
+      "stops": [
+        {
+          "actualDepartureDateTime": null,
+          "city": "GRAND PRAIRIE",
+          "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
+          "state": "TX",
+          "stopType": "First Pickup",
+          "zipCode": "75050"
+        },
+        {
+          "actualDepartureDateTime": null,
+          "city": "KATY",
+          "estimatedCloseDateTime": "2026-07-08T23:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-08T15:00:00-05:00",
+          "state": "TX",
+          "stopType": "Last Drop",
+          "zipCode": "77449"
+        }
+      ],
+      "totalBuy": 1260,
+      "totalSell": 1540,
+      "weightTotal": 24000
+    },
+    {
+      "carrier": {
+        "carrierMasterId": 169083,
+        "dotNumber": "3900201",
+        "mcNumber": "1350201",
+        "name": "Lone Star Van",
+        "phoneNumber": "+12145550101"
+      },
+      "createdDate": "2026-07-10T13:00:00-05:00",
+      "customer": {
+        "customerId": 493634,
+        "name": "Lone Star Beverages"
+      },
+      "equipment": "53 ft Van | Dry",
+      "lastModifiedDate": "2026-07-10T13:00:00-05:00",
+      "mileage": 239.8,
+      "shipmentId": 485834,
+      "status": "Completed",
+      "stops": [
+        {
+          "actualDepartureDateTime": null,
+          "city": "DALLAS",
+          "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
+          "state": "TX",
+          "stopType": "First Pickup",
+          "zipCode": "75201"
+        },
+        {
+          "actualDepartureDateTime": null,
+          "city": "HOUSTON",
+          "estimatedCloseDateTime": "2026-07-08T23:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-08T15:00:00-05:00",
+          "state": "TX",
+          "stopType": "Last Drop",
+          "zipCode": "77002"
+        }
+      ],
+      "totalBuy": 1165,
+      "totalSell": 1445,
+      "weightTotal": 24000
+    },
+    {
+      "carrier": {
         "carrierMasterId": 250037,
         "dotNumber": "3900203",
         "mcNumber": "1350203",
@@ -15,8 +99,8 @@
       },
       "equipment": "53 ft Van | Reefer",
       "lastModifiedDate": "2026-07-10T13:00:00-05:00",
-      "mileage": 242.1,
-      "shipmentId": 351331,
+      "mileage": 197.8,
+      "shipmentId": 341076,
       "status": "Completed",
       "stops": [
         {
@@ -31,15 +115,15 @@
         {
           "actualDepartureDateTime": null,
           "city": "SAN ANTONIO",
-          "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
-          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
+          "estimatedCloseDateTime": "2026-07-08T23:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-08T15:00:00-05:00",
           "state": "TX",
           "stopType": "Last Drop",
           "zipCode": "78205"
         }
       ],
-      "totalBuy": 1250,
-      "totalSell": 1530,
+      "totalBuy": 1810,
+      "totalSell": 2090,
       "weightTotal": 24000
     }
   ],

@@ -17,10 +17,10 @@
       "customer_name": "Mission Foods",
       "del_arrived_at": null,
       "del_city": "Fort Worth",
-      "del_date": "2026-07-07",
+      "del_date": "2026-07-08",
       "del_state": "TX",
       "del_zip": "76102",
-      "dist_km": 389.62218242340975,
+      "dist_km": 439.512,
       "entered_at": "2026-07-05 19:00:00",
       "equip": "F",
       "load_num": "HD-2004",
@@ -36,7 +36,7 @@
   ],
   "rates": [
     {
-      "amount_usd": 1150,
+      "amount_usd": 1480,
       "code": "LINEHAUL",
       "created_at": "2026-07-05 19:00:00",
       "load_num": "HD-2004",

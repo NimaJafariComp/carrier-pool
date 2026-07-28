@@ -23,6 +23,7 @@ from carrier_pool.db.models import (
 )
 from carrier_pool.db.tenant import set_tenant_context
 from carrier_pool.decisioning.decision_runs import DecisionRunService
+from carrier_pool.demo import DEMO_TENANTS, seed_demo_tenants
 from carrier_pool.domain.types import LoadStatus, SourceSystem
 from carrier_pool.generator.scheduler import DAY11_SYNC_AT, write_sync_files
 from carrier_pool.ingestion.base import SourceFile, TenantContext
@@ -63,6 +64,7 @@ def api_dataset(tmp_path: Path) -> Iterator[ApiDataset]:
     }
     try:
         with Session(engine) as session:
+            seed_demo_tenants(session)
             session.add_all(
                 Tenant(
                     id=tenant_id,
@@ -110,6 +112,20 @@ def _headers(dataset: ApiDataset, source: SourceSystem) -> dict[str, str]:
     return {"X-Tenant-ID": str(dataset.tenant_ids[source])}
 
 
+def test_tenant_directory_excludes_integration_fixture_tenants(api_dataset: ApiDataset) -> None:
+    response = TestClient(app).get("/api/v1/tenants")
+    assert response.status_code == 200
+    assert response.json() == [
+        {
+            "id": str(tenant.id),
+            "slug": tenant.slug,
+            "name": tenant.name,
+            "source_system": tenant.source_system.value,
+        }
+        for tenant in sorted(DEMO_TENANTS, key=lambda tenant: tenant.name)
+    ]
+
+
 def test_active_loads_and_decision_contract_are_tenant_scoped(api_dataset: ApiDataset) -> None:
     client = TestClient(app)
     source = SourceSystem.BROKEROS
@@ -141,6 +157,43 @@ def test_active_loads_and_decision_contract_are_tenant_scoped(api_dataset: ApiDa
     assert body["ranked_carriers"]
     assert all(
         item["evidence_ids"] and item["explanation_bullets"] for item in body["ranked_carriers"]
+    )
+    evidence_summaries = [
+        summary
+        for ranked in body["ranked_carriers"]
+        for summaries in ranked["evidence_by_component"].values()
+        for summary in summaries
+    ]
+    assert evidence_summaries
+    assert all(
+        summary["load_external_id"] and summary["completed_observed_at"] and "→" in summary["route"]
+        for summary in evidence_summaries
+    )
+    lane_summaries = [
+        summary
+        for ranked in body["ranked_carriers"]
+        for summary in ranked["evidence_by_component"].get("lane", [])
+    ]
+    assert lane_summaries
+    assert all(
+        summary["origin_distance_miles"] is not None
+        and summary["destination_distance_miles"] is not None
+        for summary in lane_summaries
+    )
+    assert all(
+        not re.fullmatch(
+            r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+            summary["load_external_id"],
+        )
+        for summary in evidence_summaries
+    )
+    assert body["comparable_loads"]
+    assert all(
+        item["load_external_id"]
+        and item["route"]
+        and item["completed_observed_at"]
+        and item["carrier_rate_usd"]
+        for item in body["comparable_loads"]
     )
 
     schema = json.loads((Path(__file__).parents[2] / "frontend" / "openapi.json").read_text())
@@ -179,8 +232,10 @@ def test_cross_tenant_matches_absent_and_evidence_never_crosses_tenants(
         engine.dispose()
     body = decision.json()
     evidence_ids = {value for ranked in body["ranked_carriers"] for value in ranked["evidence_ids"]}
-    comparable_ids = {item["load_version_id"] for item in body["comparable_loads"]}
-    assert not (evidence_ids | comparable_ids) & foreign_version_ids
+    assert not evidence_ids & foreign_version_ids
+    assert all(
+        "load_version_id" not in item and "load_id" not in item for item in body["comparable_loads"]
+    )
 
 
 def test_inactive_and_insufficient_decision_responses_are_stable(api_dataset: ApiDataset) -> None:
@@ -234,7 +289,6 @@ def test_inactive_and_insufficient_decision_responses_are_stable(api_dataset: Ap
                 pricing_model_version="test-pricing-low",
                 model_parameters={},
                 price_estimate={
-                    "currency": "USD",
                     "point_estimate_usd": "1200.00",
                     "historical_comparison_lower_usd": "1100.00",
                     "historical_comparison_upper_usd": "1300.00",
@@ -280,6 +334,7 @@ def test_inactive_and_insufficient_decision_responses_are_stable(api_dataset: Ap
             f"/api/v1/loads/{low_load_id}/decision", headers=_headers(api_dataset, low_source)
         )
         assert low.status_code == 200
+        assert low.json()["pricing"]["currency"] == "USD"
         assert low.json()["confidence"]["level"] == "LOW"
     finally:
         engine.dispose()

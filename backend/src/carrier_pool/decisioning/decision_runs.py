@@ -2,10 +2,11 @@
 
 import hashlib
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
-from typing import Any
+from typing import Any, cast
 from uuid import UUID
 
 from sqlalchemy import select
@@ -13,7 +14,7 @@ from sqlalchemy.orm import Session
 
 from carrier_pool.db.models import Carrier, CarrierRecommendation, DecisionRun, LoadVersion
 from carrier_pool.db.tenant import set_tenant_context
-from carrier_pool.decisioning.carrier_explanations import explain_rankings
+from carrier_pool.decisioning.carrier_explanations import RankedCarrierExplanation, explain_rankings
 from carrier_pool.decisioning.carrier_features import CarrierFeatureService, CarrierFeatureSet
 from carrier_pool.decisioning.carrier_scoring import CarrierHistoricalFitScorer
 from carrier_pool.decisioning.pricing import HierarchicalRateEstimator, RateEstimate
@@ -82,6 +83,8 @@ class DecisionRunService:
         features = self._features.retrieve(session, tenant_id, load_id, input_version.id, as_of)
         rankings = self._scorer.score(features)
         explanations = explain_rankings(rankings, features)
+        ranking_evidence = _ranking_evidence(session, tenant_id, features, explanations)
+        comparable_loads = _pricing_evidence(session, tenant_id, estimate)
         parameters = {
             "identity_rule": IDENTITY_RULE,
             "ranking": {
@@ -102,7 +105,7 @@ class DecisionRunService:
             load_id,
             input_version.id,
             as_of,
-            rankings[0].model_version if rankings else "carrier-ranking-v1",
+            rankings[0].model_version if rankings else "carrier-ranking-v4",
             estimate.model_version,
             parameters,
         )
@@ -115,7 +118,7 @@ class DecisionRunService:
             load_id=load_id,
             input_version_id=input_version.id,
             as_of=as_of,
-            ranking_model_version=rankings[0].model_version if rankings else "carrier-ranking-v1",
+            ranking_model_version=rankings[0].model_version if rankings else "carrier-ranking-v4",
             pricing_model_version=estimate.model_version,
             model_parameters=parameters,
             price_estimate=_price_json(estimate),
@@ -128,31 +131,15 @@ class DecisionRunService:
                 "pricing_evidence_ids": [
                     str(item.load_version_id) for item in estimate.comparables
                 ],
-                "comparable_loads": [
-                    {
-                        "load_id": str(item.load_id),
-                        "load_external_id": item.load_external_id,
-                        "load_version_id": str(item.load_version_id),
-                        "carrier_rate_usd": str(item.carrier_rate_usd),
-                        "tier": item.tier.value,
-                        "origin_distance_miles": item.origin_distance_miles,
-                        "destination_distance_miles": item.destination_distance_miles,
-                        "route_mile_difference": None
-                        if item.route_mile_difference is None
-                        else str(item.route_mile_difference),
-                        "recency_days": item.recency_days,
-                        "weight": str(item.weight),
-                        "evidence_ids": list(item.evidence_ids),
-                    }
-                    for item in estimate.comparables
-                ],
+                "comparable_loads": comparable_loads,
                 "pricing_warnings": list(estimate.warnings),
+                "ranking_evidence": ranking_evidence,
                 "ranking_identity": decision_identity(
                     str(tenant_id),
                     str(load_id),
                     str(input_version.id),
                     as_of.isoformat(),
-                    rankings[0].model_version if rankings else "carrier-ranking-v1",
+                    rankings[0].model_version if rankings else "carrier-ranking-v4",
                     estimate.model_version,
                     parameters,
                 ),
@@ -254,8 +241,8 @@ class DecisionRunService:
         )
 
 
-def _decimal_map(values: dict[str, Decimal]) -> dict[str, str]:
-    return {key: str(value) for key, value in values.items()}
+def _decimal_map(values: Mapping[str, Decimal | None]) -> dict[str, str | None]:
+    return {key: None if value is None else str(value) for key, value in values.items()}
 
 
 def _price_json(estimate: RateEstimate) -> dict[str, Any]:
@@ -291,3 +278,163 @@ def _reason_codes(warnings: tuple[str, ...], feature: CarrierFeatureSet) -> list
     if feature.delivery_to_pickup_miles is not None:
         codes.append("HISTORICAL_DELIVERY_PROXIMITY")
     return [*codes, *warnings]
+
+
+def _ranking_evidence(
+    session: Session,
+    tenant_id: UUID,
+    features: tuple[CarrierFeatureSet, ...],
+    explanations: tuple[RankedCarrierExplanation, ...],
+) -> dict[str, dict[str, Any]]:
+    """Persist readable, component-scoped tenant-local evidence with each decision."""
+    by_carrier = {item.carrier_external_id: item for item in features}
+    version_ids = {
+        version_id
+        for feature in features
+        for version_id in (
+            *(item.version_id for item in feature.lane_history),
+            *feature.equipment_history_version_ids,
+            *feature.relevant_completed_version_ids,
+            *(
+                (feature.last_delivery_load_version_id,)
+                if feature.last_delivery_load_version_id
+                else ()
+            ),
+        )
+    }
+    versions = {
+        version.id: version
+        for version in session.scalars(
+            select(LoadVersion).where(
+                LoadVersion.tenant_id == tenant_id, LoadVersion.id.in_(version_ids)
+            )
+        ).all()
+    }
+    result: dict[str, dict[str, Any]] = {}
+    for explanation in explanations:
+        feature = by_carrier[explanation.carrier_external_id]
+        lane_tiers = {item.version_id: item.tier.value for item in feature.lane_history}
+        result[explanation.carrier_external_id] = {
+            "status": explanation.evidence_status,
+            "tie_group": explanation.tie_group,
+            "bullets": list(explanation.evidence_bullets),
+            "components": {
+                "lane": [
+                    _evidence_summary(
+                        versions[item.version_id],
+                        tier=item.tier.value,
+                        origin_distance_miles=item.origin_distance_miles,
+                        destination_distance_miles=item.destination_distance_miles,
+                    )
+                    for item in feature.lane_history
+                    if item.version_id in versions
+                ],
+                "equipment": [
+                    _evidence_summary(versions[version_id])
+                    for version_id in feature.equipment_history_version_ids
+                    if version_id in versions
+                ],
+                "recency": [
+                    _evidence_summary(versions[version_id], tier=lane_tiers.get(version_id))
+                    for version_id in feature.relevant_completed_version_ids
+                    if version_id in versions
+                ],
+                "deadhead": (
+                    []
+                    if (
+                        feature.last_delivery_load_version_id is None
+                        or feature.last_delivery_load_version_id not in versions
+                    )
+                    else [_evidence_summary(versions[feature.last_delivery_load_version_id])]
+                ),
+            },
+        }
+    return result
+
+
+def _pricing_evidence(
+    session: Session, tenant_id: UUID, estimate: RateEstimate
+) -> list[dict[str, Any]]:
+    """Persist readable, tenant-local rate-comparison evidence in one batch."""
+    version_ids = tuple(item.load_version_id for item in estimate.comparables)
+    versions = {
+        version.id: version
+        for version in session.scalars(
+            select(LoadVersion).where(
+                LoadVersion.tenant_id == tenant_id, LoadVersion.id.in_(version_ids)
+            )
+        ).all()
+    }
+    summaries: list[dict[str, Any]] = []
+    for item in estimate.comparables:
+        version = versions.get(item.load_version_id)
+        readable = (
+            _evidence_summary(version, tier=item.tier.value)
+            if version is not None
+            else {
+                "load_external_id": item.load_external_id,
+                "route": "Route unavailable",
+                "equipment": None,
+                "completed_observed_at": None,
+                "distance_miles": None,
+                "tier": item.tier.value,
+            }
+        )
+        summaries.append(
+            {
+                **readable,
+                # Immutable IDs remain in the stored audit payload only. API output uses
+                # the readable source-load summary above.
+                "load_id": str(item.load_id),
+                "load_version_id": str(item.load_version_id),
+                "carrier_rate_usd": str(item.carrier_rate_usd),
+                "origin_distance_miles": item.origin_distance_miles,
+                "destination_distance_miles": item.destination_distance_miles,
+                "route_mile_difference": None
+                if item.route_mile_difference is None
+                else str(item.route_mile_difference),
+                "recency_days": item.recency_days,
+                "weight": str(item.weight),
+                "evidence_ids": list(item.evidence_ids),
+            }
+        )
+    return summaries
+
+
+def _evidence_summary(
+    version: LoadVersion,
+    *,
+    tier: str | None = None,
+    origin_distance_miles: float | None = None,
+    destination_distance_miles: float | None = None,
+) -> dict[str, object]:
+    snapshot = version.canonical_snapshot
+    stops = snapshot.get("stops")
+    locations: list[str] = []
+    if isinstance(stops, list):
+        for raw_stop in cast(list[object], stops):
+            if isinstance(raw_stop, dict):
+                stop = cast(dict[str, object], raw_stop)
+                city, state = stop.get("city"), stop.get("state")
+                if isinstance(city, str) and isinstance(state, str):
+                    locations.append(f"{city.title()}, {state}")
+    external_id = snapshot.get("external_id")
+    result: dict[str, object] = {
+        # A missing source ID should be visibly incomplete, not fall back to a database UUID.
+        "load_external_id": external_id if isinstance(external_id, str) else "Historical load",
+        "route": (
+            " → ".join((locations[0], locations[-1]))
+            if len(locations) >= 2
+            else "Route unavailable"
+        ),
+        "equipment": "UNKNOWN" if version.equipment is None else version.equipment.value,
+        "completed_observed_at": version.observed_at.isoformat(),
+        "distance_miles": None if version.distance_miles is None else str(version.distance_miles),
+    }
+    if tier is not None:
+        result["tier"] = tier
+    if origin_distance_miles is not None:
+        result["origin_distance_miles"] = origin_distance_miles
+    if destination_distance_miles is not None:
+        result["destination_distance_miles"] = destination_distance_miles
+    return result

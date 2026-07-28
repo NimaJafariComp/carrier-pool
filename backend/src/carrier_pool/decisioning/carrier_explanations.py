@@ -5,6 +5,7 @@ from decimal import Decimal
 
 from carrier_pool.decisioning.carrier_features import CarrierFeatureSet
 from carrier_pool.decisioning.carrier_scoring import CarrierHistoricalFit
+from carrier_pool.geography.comparables import LaneTier
 
 
 @dataclass(frozen=True, slots=True)
@@ -13,11 +14,13 @@ class RankedCarrierExplanation:
     carrier_external_id: str
     adjusted_score: Decimal
     confidence: str
-    component_scores: dict[str, Decimal]
+    component_scores: dict[str, Decimal | None]
     evidence_bullets: tuple[str, ...]
     supporting_load_ids: tuple[str, ...]
     warnings: tuple[str, ...]
     model_version: str
+    evidence_status: str
+    tie_group: int | None
 
 
 def explain_rankings(
@@ -30,11 +33,7 @@ def explain_rankings(
         feature = by_carrier[item.carrier_external_id]
         warnings = list(item.warnings)
         bullets: list[str] = []
-        if feature.lane_history:
-            bullets.append(
-                f"{len(feature.lane_history)} completed directional historical loads "
-                "support this fit."
-            )
+        bullets.extend(_lane_bullets(feature))
         if feature.equipment_history_count:
             bullets.append(
                 f"{feature.equipment_history_count} completed equipment-matching loads "
@@ -61,6 +60,37 @@ def explain_rankings(
                 feature.raw_evidence_ids,
                 tuple(sorted(set(warnings))),
                 item.model_version,
+                item.evidence_status,
+                item.tie_group,
             )
         )
     return tuple(result)
+
+
+def _lane_bullets(feature: CarrierFeatureSet) -> tuple[str, ...]:
+    directional = sum(
+        1
+        for item in feature.lane_history
+        if item.tier in {LaneTier.NEAR_EXACT, LaneTier.REGIONAL, LaneTier.METRO_CORRIDOR}
+    )
+    distance_equipment = sum(
+        1 for item in feature.lane_history if item.tier is LaneTier.DISTANCE_EQUIPMENT
+    )
+    tenant_equipment = sum(
+        1 for item in feature.lane_history if item.tier is LaneTier.TENANT_EQUIPMENT
+    )
+    tenant_all = sum(
+        1 for item in feature.lane_history if item.tier is LaneTier.TENANT_ALL_EQUIPMENT
+    )
+    bullets: list[str] = []
+    if directional:
+        bullets.append(f"{directional} completed directional lane matches are recorded.")
+    if distance_equipment:
+        bullets.append(
+            f"{distance_equipment} completed distance-and-equipment matches are recorded."
+        )
+    if tenant_equipment:
+        bullets.append(f"{tenant_equipment} completed same-equipment tenant loads are recorded.")
+    if tenant_all:
+        bullets.append(f"{tenant_all} broader tenant-history loads are recorded.")
+    return tuple(bullets)

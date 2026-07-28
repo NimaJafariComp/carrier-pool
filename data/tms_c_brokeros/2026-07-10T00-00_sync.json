@@ -2,14 +2,14 @@
   "records": [
     {
       "CreatedDate": "2026-07-10T00:00:00.000+0000",
-      "Id": "a0j863E719F3368C7D",
+      "Id": "a0jD50F3353E765AA9",
       "LastModifiedDate": "2026-07-10T00:00:00.000+0000",
-      "Name": "BO-3001",
-      "bos__Carrier_Rate__c": 1250,
-      "bos__Carrier__c": "00190FB4F1C847097A",
-      "bos__Customer_Rate__c": 1530,
+      "Name": "BO-3201",
+      "bos__Carrier_Rate__c": null,
+      "bos__Carrier__c": null,
+      "bos__Customer_Rate__c": null,
       "bos__Customer__c": "0014DD806107C8FF73",
-      "bos__Distance_Miles__c": 242.1,
+      "bos__Distance_Miles__c": 193.6,
       "bos__Equipment_Type__c": "Reefer",
       "bos__Line_Items__r": [
         {
@@ -19,7 +19,7 @@
           "bos__Weight__c": 24000
         }
       ],
-      "bos__Load_Status__c": "Paid",
+      "bos__Load_Status__c": "Quotes Requested",
       "bos__Stops__r": [
         {
           "bos__Arrival_Time__c": null,
@@ -35,7 +35,85 @@
           "bos__Is_Pickup__c": false,
           "bos__Location__c": "001AE19313D2600FCA",
           "bos__Number__c": 2,
+          "bos__Scheduled_Date__c": "2026-07-08"
+        }
+      ]
+    },
+    {
+      "CreatedDate": "2026-07-10T00:00:00.000+0000",
+      "Id": "a0j28AF1E409DDB702",
+      "LastModifiedDate": "2026-07-10T00:00:00.000+0000",
+      "Name": "BO-3202",
+      "bos__Carrier_Rate__c": null,
+      "bos__Carrier__c": null,
+      "bos__Customer_Rate__c": null,
+      "bos__Customer__c": "0014DD806107C8FF73",
+      "bos__Distance_Miles__c": 190.4,
+      "bos__Equipment_Type__c": "Reefer",
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "General freight",
+          "bos__Pallet_Count__c": 18,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Weight__c": 24000
+        }
+      ],
+      "bos__Load_Status__c": "Quotes Requested",
+      "bos__Stops__r": [
+        {
+          "bos__Arrival_Time__c": null,
+          "bos__Is_Dropoff__c": false,
+          "bos__Is_Pickup__c": true,
+          "bos__Location__c": "001F04A07EF8DE704D",
+          "bos__Number__c": 1,
           "bos__Scheduled_Date__c": "2026-07-07"
+        },
+        {
+          "bos__Arrival_Time__c": null,
+          "bos__Is_Dropoff__c": true,
+          "bos__Is_Pickup__c": false,
+          "bos__Location__c": "001A06FC7BDA751406",
+          "bos__Number__c": 2,
+          "bos__Scheduled_Date__c": "2026-07-08"
+        }
+      ]
+    },
+    {
+      "CreatedDate": "2026-07-10T00:00:00.000+0000",
+      "Id": "a0jE33E511FD9ED870",
+      "LastModifiedDate": "2026-07-10T00:00:00.000+0000",
+      "Name": "BO-3203",
+      "bos__Carrier_Rate__c": null,
+      "bos__Carrier__c": null,
+      "bos__Customer_Rate__c": null,
+      "bos__Customer__c": "0017F25C12B6C0E60C",
+      "bos__Distance_Miles__c": 275.6,
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "General freight",
+          "bos__Pallet_Count__c": 18,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Weight__c": 24000
+        }
+      ],
+      "bos__Load_Status__c": "Quotes Requested",
+      "bos__Stops__r": [
+        {
+          "bos__Arrival_Time__c": null,
+          "bos__Is_Dropoff__c": false,
+          "bos__Is_Pickup__c": true,
+          "bos__Location__c": "001AE19313D2600FCA",
+          "bos__Number__c": 1,
+          "bos__Scheduled_Date__c": "2026-07-07"
+        },
+        {
+          "bos__Arrival_Time__c": null,
+          "bos__Is_Dropoff__c": true,
+          "bos__Is_Pickup__c": false,
+          "bos__Location__c": "001599B950DA4A43ED",
+          "bos__Number__c": 2,
+          "bos__Scheduled_Date__c": "2026-07-08"
         }
       ]
     }
@@ -46,10 +124,24 @@
       "record_type": "Customer",
       "type": "Account"
     },
-    "00190FB4F1C847097A": {
-      "Name": "Gulf Reefers",
-      "record_type": "Carrier",
+    "001599B950DA4A43ED": {
+      "Name": "Dallas Facility",
+      "bos__City__c": "Dallas",
+      "bos__Postal_Code__c": "75201",
+      "bos__State__c": "TX",
+      "type": "Location"
+    },
+    "0017F25C12B6C0E60C": {
+      "Name": "Bayou Retail",
+      "record_type": "Customer",
       "type": "Account"
+    },
+    "001A06FC7BDA751406": {
+      "Name": "Schertz Facility",
+      "bos__City__c": "Schertz",
+      "bos__Postal_Code__c": "78154",
+      "bos__State__c": "TX",
+      "type": "Location"
     },
     "001AE19313D2600FCA": {
       "Name": "San Antonio Facility",
@@ -62,6 +154,13 @@
       "Name": "Katy Facility",
       "bos__City__c": "Katy",
       "bos__Postal_Code__c": "77449",
+      "bos__State__c": "TX",
+      "type": "Location"
+    },
+    "001F04A07EF8DE704D": {
+      "Name": "Sugar Land Facility",
+      "bos__City__c": "Sugar Land",
+      "bos__Postal_Code__c": "77478",
       "bos__State__c": "TX",
       "type": "Location"
     }

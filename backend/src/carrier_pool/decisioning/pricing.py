@@ -147,8 +147,12 @@ class HierarchicalRateEstimator:
             local_tier=resolved.tier,
             broader_tier=resolved.broader_tier,
             blend_local_weight=resolved.local_weight,
-            raw_evidence_count=len(local.comparables),
-            effective_evidence_count=local.effective_sample_size,
+            # The API displays every resolved (local plus broader) comparison. Its
+            # counts must therefore describe that same displayed evidence set.
+            raw_evidence_count=len(resolved.comparables),
+            effective_evidence_count=effective_sample_size(
+                tuple(item.weight for item in resolved.comparables)
+            ),
             comparables=resolved.comparables,
             warnings=warnings,
         )

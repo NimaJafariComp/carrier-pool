@@ -38,31 +38,46 @@ _STATUSES = (
     LoadStatus.DELIVERED,
     LoadStatus.COMPLETED,
 )
-_CARRIERS = {
-    "FF-1001": "FF-C-201",
-    "FF-1101": "FF-C-201",
-    "FF-1201": "FF-C-202",
-    "FF-1301": "FF-C-203",
-    "FF-1401": "FF-C-204",
-    "FF-1402": "FF-C-205",
-    "HD-2101": "HD-C-404",
-    "HD-2001": "HD-C-401",
-    "HD-2002": "HD-C-405",
-    "HD-2003": "HD-C-206",
-    "HD-2004": "HD-C-407",
-    "HD-2005": "HD-C-408",
-    "BO-3001": "BO-C-601",
-    "BO-3002": "BO-C-602",
-    "BO-3003": "BO-C-603",
-    "BO-3005": "BO-C-604",
-    "BO-3101": "BO-C-601",
-    "BO-3004": "BO-C-602",
-}
-
 ANCHOR_LOAD_IDS = {
     SourceSystem.FREIGHTFLOW: "FF-1001",
     SourceSystem.HAULDESK: "HD-2001",
     SourceSystem.BROKEROS: "BO-3001",
+}
+
+# Hand-authored booking and eventually corrected carrier-pay totals. These are
+# intentionally not a formula of lifecycle position: they encode lane, equipment,
+# time, and exceptional-final-payment variation for leakage-safe rate evaluation.
+_RATE_OUTCOMES: dict[str, tuple[Decimal, Decimal]] = {
+    # FreightFlow: DFW→Houston dry-van history, reefer premium, and corrections.
+    "FF-1001": (Decimal("1180"), Decimal("1180")),
+    "FF-1101": (Decimal("1210"), Decimal("1265")),
+    "FF-1201": (Decimal("1235"), Decimal("1210")),
+    "FF-1301": (Decimal("1660"), Decimal("1695")),
+    "FF-1401": (Decimal("1120"), Decimal("1175")),
+    "FF-1402": (Decimal("1160"), Decimal("1160")),
+    "FF-1501": (Decimal("1240"), Decimal("1260")),
+    "FF-1502": (Decimal("1185"), Decimal("1165")),
+    "FF-1503": (Decimal("1740"), Decimal("1810")),
+    # HaulDesk: final changes become append-only ledger adjustments.
+    "HD-2001": (Decimal("1280"), Decimal("1280")),
+    "HD-2002": (Decimal("1190"), Decimal("1225")),
+    "HD-2003": (Decimal("1250"), Decimal("1250")),
+    "HD-2004": (Decimal("1480"), Decimal("1540")),
+    "HD-2005": (Decimal("1600"), Decimal("1575")),
+    "HD-2101": (Decimal("1150"), Decimal("1150")),
+    "HD-2201": (Decimal("1305"), Decimal("1335")),
+    "HD-2202": (Decimal("1180"), Decimal("1180")),
+    "HD-2203": (Decimal("1540"), Decimal("1500")),
+    # BrokerOS: reefer/dry-van and multi-stop outcomes include market variation.
+    "BO-3001": (Decimal("1550"), Decimal("1550")),
+    "BO-3002": (Decimal("1490"), Decimal("1520")),
+    "BO-3003": (Decimal("1630"), Decimal("1660")),
+    "BO-3004": (Decimal("1880"), Decimal("1935")),
+    "BO-3005": (Decimal("1260"), Decimal("1240")),
+    "BO-3101": (Decimal("1510"), Decimal("1510")),
+    "BO-3201": (Decimal("1575"), Decimal("1610")),
+    "BO-3202": (Decimal("1535"), Decimal("1505")),
+    "BO-3203": (Decimal("1300"), Decimal("1340")),
 }
 
 
@@ -70,7 +85,9 @@ def build_schedule(catalog: ScenarioCatalog) -> tuple[ScheduledSync, ...]:
     """Create all 120 historical slots and three explicit Day 11 active-load slots."""
     historical_loads: dict[SourceSystem, tuple[GeneratorLoad, ...]] = {
         source: tuple(
-            load for load in catalog.loads if load.source_system is source and not load.day11_target
+            load
+            for load in catalog.loads
+            if load.source_system is source and not load.day11_target and not load.evaluation_probe
         )
         for source in SourceSystem
     }
@@ -86,12 +103,15 @@ def build_schedule(catalog: ScenarioCatalog) -> tuple[ScheduledSync, ...]:
             )
             slot = day_offset * len(SYNC_HOURS) + SYNC_HOURS.index(hour)
             for source in SourceSystem:
-                load, occurrence = _scheduled_historical_load(
-                    source, historical_loads[source], slot
-                )
-                schedule.append(
-                    _historical_sync(catalog, source, load.logical_id, sync_at, occurrence)
-                )
+                if slot < len(historical_loads[source]) * len(_STATUSES):
+                    load, occurrence = _scheduled_historical_load(
+                        source, historical_loads[source], slot
+                    )
+                    schedule.append(
+                        _historical_sync(catalog, source, load.logical_id, sync_at, occurrence)
+                    )
+                else:
+                    schedule.append(_holdout_probe_sync(catalog, source, sync_at, slot))
 
     day11_loads = sorted(
         (load for load in catalog.loads if load.day11_target), key=lambda item: item.logical_id
@@ -127,8 +147,7 @@ def _scheduled_historical_load(
     lifecycle_slots = len(ordered) * len(_STATUSES)
     if slot < lifecycle_slots:
         return ordered[slot // len(_STATUSES)], slot % len(_STATUSES)
-    tail_slot = slot - lifecycle_slots
-    return ordered[tail_slot % len(ordered)], len(_STATUSES) + tail_slot // len(ordered)
+    raise ValueError("historical lifecycle slots exhausted.")
 
 
 def write_sync_files(data_root: Path, catalog: ScenarioCatalog | None = None) -> tuple[Path, ...]:
@@ -165,14 +184,20 @@ def _historical_sync(
 ) -> ScheduledSync:
     load = catalog.load(load_id)
     status = _STATUSES[min(occurrence, len(_STATUSES) - 1)]
-    rate = Money(Decimal("1100") + Decimal(occurrence * 25))
+    booking_rate, final_rate = _rate_outcome(load_id)
+    carrier_rate = Money(final_rate if status is LoadStatus.COMPLETED else booking_rate)
     event = LifecycleEvent(
         load_id=load_id,
         occurred_at=sync_at,
         status=status,
-        carrier_id=_CARRIERS[load_id] if occurrence >= 2 else None,
-        customer_rate=Money(rate.amount + Decimal("280")) if occurrence >= 1 else None,
-        carrier_rate=rate if occurrence >= 2 else None,
+        carrier_id=_holdout_carrier(catalog, load_id) if occurrence >= 2 else None,
+        customer_rate=Money(carrier_rate.amount + Decimal("280")) if occurrence >= 1 else None,
+        carrier_rate=carrier_rate if occurrence >= 2 else None,
+        correction_reason=(
+            "FINAL_CARRIER_PAY_CORRECTION"
+            if status is LoadStatus.COMPLETED and final_rate != booking_rate
+            else None
+        ),
     )
     events: tuple[LifecycleEvent | FinancialEvent, ...] = (event,)
     if source is SourceSystem.HAULDESK and occurrence == 2:
@@ -184,7 +209,23 @@ def _historical_sync(
                 entry_id=f"HD-RATE-{sync_at:%Y%m%d%H%M}-{occurrence}",
                 side=FinancialSide.PAY,
                 code="LINEHAUL",
-                amount=rate,
+                amount=Money(booking_rate),
+            ),
+        )
+    elif (
+        source is SourceSystem.HAULDESK
+        and status is LoadStatus.COMPLETED
+        and final_rate != booking_rate
+    ):
+        events = (
+            event,
+            FinancialEvent(
+                load_id=load_id,
+                occurred_at=sync_at,
+                entry_id=f"HD-FINAL-{sync_at:%Y%m%d%H%M}-{occurrence}",
+                side=FinancialSide.PAY,
+                code="ADJUSTMENT",
+                amount=Money(final_rate - booking_rate),
             ),
         )
     return ScheduledSync(
@@ -194,6 +235,106 @@ def _historical_sync(
         sync_at=sync_at,
         events=events,
     )
+
+
+def _holdout_probe_sync(
+    catalog: ScenarioCatalog, source: SourceSystem, sync_at: datetime, slot: int
+) -> ScheduledSync:
+    """Pack three authored temporal holdouts into each source's final four files."""
+    base_slots = len(
+        tuple(
+            load
+            for load in catalog.loads
+            if load.source_system is source and not load.day11_target and not load.evaluation_probe
+        )
+    ) * len(_STATUSES)
+    stage = slot - base_slots
+    if stage not in range(4):
+        raise ValueError("invalid holdout probe stage.")
+    probes = tuple(
+        sorted(
+            (
+                load
+                for load in catalog.loads
+                if load.source_system is source and load.evaluation_probe
+            ),
+            key=lambda load: load.logical_id,
+        )
+    )
+    if len(probes) != 3:
+        raise ValueError(f"{source.value} requires exactly three evaluation probes.")
+    statuses = (LoadStatus.PLANNED, LoadStatus.ACTIVE, LoadStatus.COVERED, LoadStatus.COMPLETED)
+    status = statuses[stage]
+    events: list[LifecycleEvent | FinancialEvent] = []
+    for load in probes:
+        booking_rate, final_rate = _rate_outcome(load.logical_id)
+        carrier_rate = Money(final_rate if status is LoadStatus.COMPLETED else booking_rate)
+        event = LifecycleEvent(
+            load_id=load.logical_id,
+            occurred_at=sync_at,
+            status=status,
+            carrier_id=_holdout_carrier(catalog, load.logical_id) if stage >= 2 else None,
+            customer_rate=Money(carrier_rate.amount + Decimal("280")) if stage >= 2 else None,
+            carrier_rate=carrier_rate if stage >= 2 else None,
+            correction_reason=(
+                "FINAL_CARRIER_PAY_CORRECTION"
+                if status is LoadStatus.COMPLETED and final_rate != booking_rate
+                else None
+            ),
+        )
+        events.append(event)
+        if source is SourceSystem.HAULDESK and stage == 2:
+            events.append(
+                FinancialEvent(
+                    load_id=load.logical_id,
+                    occurred_at=sync_at,
+                    entry_id=f"HD-HOLDOUT-{load.logical_id}-{sync_at:%Y%m%d%H%M}",
+                    side=FinancialSide.PAY,
+                    code="LINEHAUL",
+                    amount=Money(booking_rate),
+                )
+            )
+        elif (
+            source is SourceSystem.HAULDESK
+            and status is LoadStatus.COMPLETED
+            and final_rate != booking_rate
+        ):
+            events.append(
+                FinancialEvent(
+                    load_id=load.logical_id,
+                    occurred_at=sync_at,
+                    entry_id=f"HD-HOLDOUT-FINAL-{load.logical_id}-{sync_at:%Y%m%d%H%M}",
+                    side=FinancialSide.PAY,
+                    code="ADJUSTMENT",
+                    amount=Money(final_rate - booking_rate),
+                )
+            )
+    return ScheduledSync(
+        sync_id=f"{source.value}-{sync_at:%Y%m%dT%H%M}",
+        tenant_id=probes[0].tenant_id,
+        source_system=source,
+        sync_at=sync_at,
+        events=tuple(events),
+    )
+
+
+def _holdout_carrier(catalog: ScenarioCatalog, load_id: str) -> str:
+    try:
+        return next(
+            holdout.booked_carrier_id
+            for holdout in catalog.ranking_holdouts
+            if holdout.load_id == load_id
+        )
+    except StopIteration as error:
+        raise ValueError(f"missing ranking holdout label for {load_id}") from error
+
+
+def _rate_outcome(load_id: str) -> tuple[Decimal, Decimal]:
+    """Return authored booking/final carrier-pay facts for one historical outcome."""
+    try:
+        return _RATE_OUTCOMES[load_id]
+    except KeyError as error:
+        raise ValueError(f"missing authored rate outcome for {load_id}") from error
 
 
 def _filename(sync_at: datetime) -> str:

@@ -39,6 +39,7 @@ function load(
         city: origin,
         state: "TX",
         postal_code: "75001",
+        planned_date: "2026-07-11",
         scheduled_start_at: "2026-07-11T08:00:00+00:00",
       },
       {
@@ -48,6 +49,7 @@ function load(
         city: destination,
         state: "TX",
         postal_code: "77001",
+        planned_date: "2026-07-11",
         scheduled_start_at: null,
       },
     ],
@@ -57,7 +59,7 @@ function load(
 function decision(loadData: typeof exactLoad, sparse = false) {
   return {
     as_of: "2026-07-11T06:00:00+00:00",
-    ranking_model_version: "carrier-ranking-v1",
+    ranking_model_version: "carrier-ranking-v2",
     pricing_model_version: "pricing-hierarchical-v1",
     model_parameters: {},
     load: loadData,
@@ -92,6 +94,9 @@ function decision(loadData: typeof exactLoad, sparse = false) {
           ? ["Limited completed history pulls the score toward a neutral prior."]
           : ["Last known delivery was 18 miles from pickup 2 days earlier."],
         evidence_ids: [sparse ? "hd-history-version" : "ff-history-version"],
+        evidence_status: "SUPPORTED",
+        tie_group: 1,
+        evidence_by_component: {},
       },
     ],
     comparable_loads: [
@@ -140,15 +145,13 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("reviews exact and sparse Day 11 decisions without tenant cache leakage", async ({ page }) => {
-  await page.getByLabel("Fictional broker").selectOption("ff-demo-tenant");
+  await page.getByLabel("Broker").selectOption("ff-demo-tenant");
   await page.getByRole("button", { name: "View decision for FF-9001" }).click();
 
   const exactDecision = page.getByRole("region", { name: "Dallas, TX to Houston, TX" });
-  await expect(exactDecision.getByText("$1,250.00 expected carrier rate")).toBeVisible();
-  await expect(
-    exactDecision.getByText("$1,100.00–$1,300.00 historical comparison range"),
-  ).toBeVisible();
-  await expect(exactDecision.getByText("High confidence", { exact: true })).toBeVisible();
+  await expect(exactDecision.getByText("$1,250.00")).toBeVisible();
+  await expect(exactDecision.getByText("$1,100.00–$1,300.00")).toBeVisible();
+  await expect(exactDecision.getByText("Strong evidence", { exact: true })).toBeVisible();
   await expect(
     exactDecision.getByRole("heading", { name: "Triangle Transport", level: 4 }),
   ).toBeVisible();
@@ -156,7 +159,7 @@ test("reviews exact and sparse Day 11 decisions without tenant cache leakage", a
     exactDecision.getByText("Last known delivery was 18 miles from pickup 2 days earlier."),
   ).toBeVisible();
 
-  await page.getByLabel("Fictional broker").selectOption("hd-demo-tenant");
+  await page.getByLabel("Broker").selectOption("hd-demo-tenant");
   await expect(
     page.getByRole("heading", { name: "Plano, TX to Baytown, TX", level: 3 }),
   ).toBeVisible();
@@ -164,12 +167,17 @@ test("reviews exact and sparse Day 11 decisions without tenant cache leakage", a
   await page.getByRole("button", { name: "View decision for HD-9001" }).click();
 
   const sparseDecision = page.getByRole("region", { name: "Plano, TX to Baytown, TX" });
-  await expect(sparseDecision.getByText("Low confidence", { exact: true })).toBeVisible();
-  await expect(sparseDecision.getByText("Regional lane blended with metro corridor")).toBeVisible();
+  await expect(sparseDecision.getByText("Limited evidence", { exact: true })).toBeVisible();
+  await expect(
+    sparseDecision.getByText("Regional lane matches, blended with metro corridor matches"),
+  ).toBeVisible();
   await expect(sparseDecision.getByText("Sparse historical evidence.")).toBeVisible();
   await expect(
-    sparseDecision.getByText("Limited history pulls this score toward the neutral prior."),
+    sparseDecision.getByText("Limited completed history pulls the score toward a neutral prior."),
   ).toBeVisible();
+  await sparseDecision.getByText("Why this is not high evidence", { exact: true }).click();
+  await expect(sparseDecision.getByText("Limited independent history.")).toBeVisible();
+  await expect(sparseDecision.getByText("Used broader lane evidence.")).toBeVisible();
 });
 
 test("returns the same generic not-found response for cross-tenant and unknown load IDs", async ({
@@ -189,4 +197,17 @@ test("returns the same generic not-found response for cross-tenant and unknown l
     { status: 404, body: { detail: "Load not found." } },
     { status: 404, body: { detail: "Load not found." } },
   ]);
+});
+
+test("keeps the decision workspace inside a narrow viewport", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByLabel("Broker").selectOption("hd-demo-tenant");
+  await page.getByRole("button", { name: "View decision for HD-9001" }).click();
+
+  await expect(page.getByRole("region", { name: "Plano, TX to Baytown, TX" })).toBeVisible();
+  const pageWidths = await page.evaluate(() => ({
+    clientWidth: document.documentElement.clientWidth,
+    scrollWidth: document.documentElement.scrollWidth,
+  }));
+  expect(pageWidths.scrollWidth).toBe(pageWidths.clientWidth);
 });

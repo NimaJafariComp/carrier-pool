@@ -26,6 +26,28 @@
             ],
             "title": "Completed Observed At"
           },
+          "delivery_to_pickup_gap_days": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivery To Pickup Gap Days"
+          },
+          "delivery_to_pickup_miles": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivery To Pickup Miles"
+          },
           "destination_distance_miles": {
             "anyOf": [
               {
@@ -216,6 +238,28 @@
               }
             ],
             "title": "Completed Observed At"
+          },
+          "delivery_to_pickup_gap_days": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivery To Pickup Gap Days"
+          },
+          "delivery_to_pickup_miles": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delivery To Pickup Miles"
           },
           "destination_distance_miles": {
             "anyOf": [

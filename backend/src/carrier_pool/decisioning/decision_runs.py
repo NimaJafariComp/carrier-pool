@@ -349,7 +349,13 @@ def _ranking_evidence(
                         feature.last_delivery_load_version_id is None
                         or feature.last_delivery_load_version_id not in versions
                     )
-                    else [_evidence_summary(versions[feature.last_delivery_load_version_id])]
+                    else [
+                        _evidence_summary(
+                            versions[feature.last_delivery_load_version_id],
+                            delivery_to_pickup_miles=feature.delivery_to_pickup_miles,
+                            delivery_to_pickup_gap_days=feature.delivery_to_pickup_gap_days,
+                        )
+                    ]
                 ),
             },
         }
@@ -413,6 +419,8 @@ def _evidence_summary(
     tier: str | None = None,
     origin_distance_miles: float | None = None,
     destination_distance_miles: float | None = None,
+    delivery_to_pickup_miles: float | None = None,
+    delivery_to_pickup_gap_days: float | None = None,
 ) -> dict[str, object]:
     snapshot = version.canonical_snapshot
     stops = snapshot.get("stops")
@@ -447,4 +455,8 @@ def _evidence_summary(
         result["origin_distance_miles"] = origin_distance_miles
     if destination_distance_miles is not None:
         result["destination_distance_miles"] = destination_distance_miles
+    if delivery_to_pickup_miles is not None:
+        result["delivery_to_pickup_miles"] = delivery_to_pickup_miles
+    if delivery_to_pickup_gap_days is not None:
+        result["delivery_to_pickup_gap_days"] = delivery_to_pickup_gap_days
     return result

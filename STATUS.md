@@ -670,6 +670,11 @@ acceptance evidence has not yet been recorded.
   are scoped to the PostgreSQL job. `make api-types-check`, backend unit tests
   (`196 passed, 26 expected DB skips`), frontend lint/type/tests/build, and
   `actionlint` pass locally.
+- **Historical-delivery evidence:** newly created decisions now persist and expose
+  the tenant-local last-delivery-to-pickup distance and observation-time gap. The UI
+  renders these only when both facts exist, labels them as historical records rather
+  than live location, and the refreshed demo returned `485834` at `228 mi` and
+  `0.5` days. API contracts (`9 passed`) and frontend tests (`14 passed`) pass.
 
 ## Historical verification archive (continued)
 

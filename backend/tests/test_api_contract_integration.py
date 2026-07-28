@@ -315,6 +315,17 @@ def test_active_loads_and_decision_contract_are_tenant_scoped(api_dataset: ApiDa
         and summary["destination_distance_miles"] is not None
         for summary in lane_summaries
     )
+    deadhead_summaries = [
+        summary
+        for ranked in body["ranked_carriers"]
+        for summary in ranked["evidence_by_component"].get("deadhead", [])
+    ]
+    assert deadhead_summaries
+    assert any(
+        summary["delivery_to_pickup_miles"] is not None
+        and summary["delivery_to_pickup_gap_days"] is not None
+        for summary in deadhead_summaries
+    )
     assert all(
         not re.fullmatch(
             r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",

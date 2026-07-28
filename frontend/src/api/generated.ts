@@ -134,6 +134,10 @@ export interface components {
       carrier_rate_usd?: string | null;
       /** Completed Observed At */
       completed_observed_at?: string | null;
+      /** Delivery To Pickup Gap Days */
+      delivery_to_pickup_gap_days?: number | null;
+      /** Delivery To Pickup Miles */
+      delivery_to_pickup_miles?: number | null;
       /** Destination Distance Miles */
       destination_distance_miles?: number | null;
       /** Distance Miles */
@@ -193,6 +197,10 @@ export interface components {
     EvidenceLoadResponse: {
       /** Completed Observed At */
       completed_observed_at?: string | null;
+      /** Delivery To Pickup Gap Days */
+      delivery_to_pickup_gap_days?: number | null;
+      /** Delivery To Pickup Miles */
+      delivery_to_pickup_miles?: number | null;
       /** Destination Distance Miles */
       destination_distance_miles?: number | null;
       /** Distance Miles */

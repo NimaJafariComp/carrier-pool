@@ -464,6 +464,20 @@ describe("App", () => {
                 destination_distance_miles: 23,
               },
             ],
+            deadhead: [
+              {
+                load_external_id: "FF-1401",
+                route: "Houston, TX → Grand Prairie, TX",
+                equipment: "DRY_VAN",
+                completed_observed_at: "2026-07-10T18:00:00+00:00",
+                distance_miles: "240",
+                tier: null,
+                origin_distance_miles: null,
+                destination_distance_miles: null,
+                delivery_to_pickup_miles: 12.4,
+                delivery_to_pickup_gap_days: 0.75,
+              },
+            ],
           },
         },
       ],
@@ -505,6 +519,11 @@ describe("App", () => {
     expect(
       screen.getByText(
         "FF-1101 · Grand Prairie, TX → Katy, TX · Dry Van · Completed Jul 8, 2026 · 239.4 mi · Near-exact geography · 12 mi from pickup · 23 mi from delivery",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "FF-1401 · Last recorded delivery · 12 mi from this pickup · recorded 18 hours earlier · Historical record only — not live truck location or availability.",
       ),
     ).toBeInTheDocument();
   });

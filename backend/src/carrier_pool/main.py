@@ -89,6 +89,8 @@ class EvidenceLoadResponse(BaseModel):
     tier: str | None = None
     origin_distance_miles: float | None = None
     destination_distance_miles: float | None = None
+    delivery_to_pickup_miles: float | None = None
+    delivery_to_pickup_gap_days: float | None = None
 
 
 class RankedCarrierResponse(BaseModel):
@@ -429,6 +431,8 @@ def _evidence_load_response(entry: dict[str, object]) -> EvidenceLoadResponse:
         tier=_string_or_none(entry.get("tier")),
         origin_distance_miles=_float_or_none(entry.get("origin_distance_miles")),
         destination_distance_miles=_float_or_none(entry.get("destination_distance_miles")),
+        delivery_to_pickup_miles=_float_or_none(entry.get("delivery_to_pickup_miles")),
+        delivery_to_pickup_gap_days=_float_or_none(entry.get("delivery_to_pickup_gap_days")),
     )
 
 

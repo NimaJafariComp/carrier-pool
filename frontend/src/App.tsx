@@ -243,7 +243,26 @@ function componentEvidenceLabel(component: string): string {
 
 type EvidenceLoad = Decision["ranked_carriers"][number]["evidence_by_component"][string][number];
 
+function historicalGap(days: number): string {
+  const hours = Math.max(0, Math.round(days * 24));
+  return hours < 48 ? `${Math.max(1, hours)} hours earlier` : `${Math.round(days)} days earlier`;
+}
+
 function componentEvidenceSummary(evidence: EvidenceLoad): string {
+  if (
+    evidence.delivery_to_pickup_miles !== null &&
+    evidence.delivery_to_pickup_miles !== undefined &&
+    evidence.delivery_to_pickup_gap_days !== null &&
+    evidence.delivery_to_pickup_gap_days !== undefined
+  ) {
+    return [
+      evidence.load_external_id,
+      "Last recorded delivery",
+      `${Math.round(evidence.delivery_to_pickup_miles)} mi from this pickup`,
+      `recorded ${historicalGap(evidence.delivery_to_pickup_gap_days)}`,
+      "Historical record only — not live truck location or availability.",
+    ].join(" · ");
+  }
   const geographyMatch =
     evidence.tier &&
     evidence.origin_distance_miles !== null &&

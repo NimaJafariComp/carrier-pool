@@ -63,6 +63,7 @@ backtest: decisions
 api-types:
 	cd backend && uv run python scripts/export_openapi.py ../frontend/openapi.json
 	cd frontend && pnpm exec openapi-typescript openapi.json -o src/api/generated.ts
+	cd frontend && pnpm exec prettier --write openapi.json src/api/generated.ts
 
 api-types-check: api-types
 	git diff --exit-code -- frontend/openapi.json frontend/src/api/generated.ts

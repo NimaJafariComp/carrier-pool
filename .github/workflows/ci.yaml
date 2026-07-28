@@ -15,8 +15,6 @@ concurrency:
 env:
   PYTHON_VERSION: "3.13"
   NODE_VERSION: "22"
-  DATABASE_URL: postgresql+psycopg://carrier_pool:carrier_pool@localhost:5432/carrier_pool
-  APP_DATABASE_URL: postgresql+psycopg://carrier_pool_app:carrier_pool_app@localhost:5432/carrier_pool
 
 jobs:
   backend-quality:
@@ -114,6 +112,9 @@ jobs:
   database-and-data:
     name: PostgreSQL integration, RLS, and data smoke
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql+psycopg://carrier_pool:carrier_pool@localhost:5432/carrier_pool
+      APP_DATABASE_URL: postgresql+psycopg://carrier_pool_app:carrier_pool_app@localhost:5432/carrier_pool
     services:
       postgres:
         image: postgres:18-alpine

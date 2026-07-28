@@ -439,7 +439,7 @@ acceptance evidence has not yet been recorded.
 - Phase 15: documentation and review preparation.
 - Phase 16: optional shared carrier pool.
 
-## Latest verification — 2026-07-28
+## Historical verification archive
 
 - Phase 14.2 repository commands: Make dry-runs confirm required dependency order
   for `reset`, `demo`, `rebuild`, `test`, `e2e`, `backtest`, `api-types`, and
@@ -649,6 +649,30 @@ acceptance evidence has not yet been recorded.
   comparable/effective/tier facts, and provides an expandable reason for any
   non-strong result. Frontend components (`14 passed`), lint, typecheck, production
   build, and Playwright review path (`2 passed`) pass.
+
+## Latest verification — 2026-07-28
+
+- **Clean evaluator path:** a disposable committed snapshot with an empty Docker
+  volume passed `make setup`, `make demo`, `make check`, and `make backtest` using
+  README instructions only. It reached healthy UI/API services, validated and
+  ingested `123` sync files, persisted `3` Day 11 decisions, and wrote backtest
+  artifacts.
+- **Decision review:** rich FreightFlow `888509` returned near-exact, High-evidence
+  pricing; sparse HaulDesk `HD-9001` returned its documented broader fallback and
+  Medium evidence.
+- **Automated checks:** `make check` and Playwright (`3 passed`) pass. All
+  PostgreSQL-gated tests were also run explicitly: `26 passed`; the complete
+  database-enabled backend suite: `222 passed`.
+- **CI correction:** GitHub run `#18` exposed two independent quality-job defects:
+  API generation was not formatted before freshness comparison, and global database
+  URLs made the backend unit job run integration tests without a PostgreSQL service.
+  Generated OpenAPI artifacts are now formatted deterministically and database URLs
+  are scoped to the PostgreSQL job. `make api-types-check`, backend unit tests
+  (`196 passed, 26 expected DB skips`), frontend lint/type/tests/build, and
+  `actionlint` pass locally.
+
+## Historical verification archive (continued)
+
 - Comparable-load table refinement: compact fixed columns now keep source IDs,
   routes, carrier pay, match evidence, and completion dates on one visual row;
   long audit IDs/routes use an ellipsis with the full value on hover. Match prose is

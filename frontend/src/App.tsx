@@ -484,47 +484,47 @@ function DecisionDetail({ decision }: { decision: Decision }) {
           <>
             <div className="comparables__table-wrap">
               <table id="comparable-loads-table">
-              <thead>
-                <tr>
-                  <th scope="col">Load</th>
-                  <th scope="col">Route</th>
-                  <th scope="col">Carrier pay</th>
-                  <th scope="col">Match</th>
-                  <th scope="col">Completed</th>
-                </tr>
-              </thead>
-              <tbody>
-                {visibleComparables.map((item, index) => {
-                  const match = comparableMatch(item);
-                  return (
-                    <tr key={`${item.load_external_id}-${index}`}>
-                      <td className="comparables__load-id">
-                        <span title={item.load_external_id}>
-                          {item.load_number ?? item.load_external_id}
-                        </span>
-                      </td>
-                      <td className="comparables__route">
-                        <div>
-                          <strong title={item.route}>{item.route}</strong>
-                          {item.equipment && <span>{titleCase(item.equipment)}</span>}
-                        </div>
-                      </td>
-                      <td className="comparables__rate">
-                        {usd(item.carrier_rate_usd ?? null, "").trim()}
-                      </td>
-                      <td className="comparables__match">
-                        <strong>{match.tier}</strong>
-                        <span>{match.endpoints}</span>
-                      </td>
-                      <td className="comparables__completed">
-                        {item.completed_observed_at
-                          ? formatDate(item.completed_observed_at)
-                          : "Date unavailable"}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
+                <thead>
+                  <tr>
+                    <th scope="col">Load</th>
+                    <th scope="col">Route</th>
+                    <th scope="col">Carrier pay</th>
+                    <th scope="col">Match</th>
+                    <th scope="col">Completed</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visibleComparables.map((item, index) => {
+                    const match = comparableMatch(item);
+                    return (
+                      <tr key={`${item.load_external_id}-${index}`}>
+                        <td className="comparables__load-id">
+                          <span title={item.load_external_id}>
+                            {item.load_number ?? item.load_external_id}
+                          </span>
+                        </td>
+                        <td className="comparables__route">
+                          <div>
+                            <strong title={item.route}>{item.route}</strong>
+                            {item.equipment && <span>{titleCase(item.equipment)}</span>}
+                          </div>
+                        </td>
+                        <td className="comparables__rate">
+                          {usd(item.carrier_rate_usd ?? null, "").trim()}
+                        </td>
+                        <td className="comparables__match">
+                          <strong>{match.tier}</strong>
+                          <span>{match.endpoints}</span>
+                        </td>
+                        <td className="comparables__completed">
+                          {item.completed_observed_at
+                            ? formatDate(item.completed_observed_at)
+                            : "Date unavailable"}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
               </table>
             </div>
             {hiddenComparableCount > 0 && (

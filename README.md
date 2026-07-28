@@ -1,188 +1,233 @@
-# Take-Home: Carrier Recommendation for Freight Brokers
+# Carrier Pool
 
-- You may use AI coding tools (Claude Code, Codex, Cursor, etc) are strongly encouraged.
-- With AI tools and the provided skeleton, a working baseline is roughly a **4-hour job — that's the floor, not the goal**. Strong submissions typically take one to two focused days on top.
-- **Cutting scope deliberately is a valid strategy, not a failure** — a smaller thing done deeply beats a big thing done shallow. Say what you cut and why in `DECISIONS.md`.
-- We want to see how you think, how deep you go, and which problems you notice on your own.
-- In the review call you'll walk us through your decisions and defend them.
+Carrier Pool is a deterministic, multi-tenant decision-support demo for freight
+brokers. For each broker-owned `ACTIVE` load, it provides:
 
-## The world
+1. An expected **carrier payment** with a range of comparable historical payments
+   and evidence quality.
+2. A **historical-fit call order** for that broker's carriers, with the completed
+   work behind each recommendation.
 
-A **freight broker** is a middleman:
+It is not an automated dispatcher. It does not claim a carrier is available,
+likely to accept, reliable, or optimal. Historical delivery proximity is evidence
+about a past delivery, not live truck location.
 
-- **Customers (shippers)** — companies that have goods to move.
-- **Carriers** — trucking companies that move the goods.
-- The customer pays the broker one amount (**customer rate**). The broker (ideally) pays the carrier a smaller amount (**carrier rate**). The broker keeps the difference (**margin**).
-
-Each shipment is called a **load**: a pickup place, a delivery place, the truck type needed (dry van, refrigerated, flatbed, etc.), dates, and weight.
-
-A load goes through statuses as it moves through real life:
-
-| Status | Plain meaning |
-|---|---|
-| `PLANNED` | The customer asked the broker to move this load; nothing has happened yet |
-| `ACTIVE` | The broker is now searching for a carrier to take it |
-| `COVERED` | A carrier said yes and is booked; the price the broker will pay them is now fixed |
-| `IN_TRANSIT` | The truck is on the road |
-| `DELIVERED` | The goods arrived |
-| `COMPLETED` | All paperwork is done and the final money amounts are confirmed |
-
-Loads can be updated or corrected at any point — freight data is messy.
-
-Two more concepts:
-
-- A **lane** is a from→to pair (for example "Dallas area → Houston area"). A carrier that has done many loads on or near a lane is likely a good fit for the next load on it.
-- But what counts as "the same lane" is tricky. Think of New York City and Newark, NJ: they are ~10 miles apart, so for a trucker, Chicago → NYC and Chicago → Newark are practically the same lane — yet they have different city names *and* different states, so grouping history by city or by state would treat them as unrelated. Going the other way, "Texas → Texas" as one lane is useless: Dallas → Houston is 240 miles, El Paso → Houston is 750. You will face the same issue at smaller scale inside the Texas Triangle (suburbs of one metro vs another).
-- **Deadhead** = empty miles a truck drives to reach a pickup. Carriers hate it. A truck that just delivered close to your new load's pickup is an easy yes.
-
-## The problem
-
-The platform you are building serves **multiple freight brokers**:
-
-- Each broker runs a **different TMS** (Transportation Management System — the software where all their loads, carriers, and customers live). So each broker's data arrives in a different shape.
-- Every day, each broker gets new loads (and sometimes new customers and carriers) *and* updates to existing ones.
-
-For a broker's `ACTIVE` load, your platform must answer two questions:
-
-1. **Which of my carriers should I call first, and why?**
-2. **What should I expect to pay a carrier for this load?**
-
-Both answers must come from the broker's own historical data. The broker must be able to see *why* — a bare score or price with no explanation is not useful.
-
-**Bonus — the shared carrier pool.** If you have the appetite: let brokers opt in to a shared carrier pool, so a load can also be matched with carriers known by *other* opted-in brokers. Sharing between competitors is sensitive — so if you attempt this, clearly define and indicate what data crosses the broker boundary (and what never does), and design the sharing around that.
-
-## Repository layout (your starting point)
-
-This repo is an empty shell — placeholder Dockerfiles, compose file, and frontend/backend stubs. You fill it in (or restructure it). The only thing that matters out of the box is `data/`.
-
-```
-README.md                       # this file
-docker-compose.yaml             # empty shell — yours to fill
-backend/                        # empty Dockerfile + pyproject.toml stub
-frontend/                       # empty Dockerfile + Vite-style stub
-data/
-  tms_a_freightflow/            # one directory per TMS
-    example_sync.jsonc          # commented schema example — READ THIS FIRST
-    example_sync_next.jsonc     # the following sync: same load, updated (how changes arrive)
-    2026-07-06T06-00_sync.json  # empty placeholder — shows the filename convention
-  tms_b_hauldesk/
-    example_sync.jsonc
-    2026-07-06T06-00_sync.json
-  tms_c_brokeros/
-    example_sync.jsonc
-    2026-07-06T06-00_sync.json
-```
-
-The `example_sync.jsonc` files are the schema documentation (comments included). The real sync files you generate are plain `.json`, named `{YYYY-MM-DD}T{HH-MM}_sync.json` (ISO-8601-style, so filenames sort chronologically).
-
-## Development
+## Review this project
 
 ### Prerequisites
 
-- Docker Desktop or Docker Engine with the Compose plugin running.
+- Docker Desktop, or Docker Engine with the Compose plugin, running.
 - Python 3.13 and [`uv`](https://docs.astral.sh/uv/).
 - Node.js 22 and [`pnpm` 11.3.0](https://pnpm.io/installation).
 
-Run commands from repository root:
-
-```bash
-make setup      # install locked backend and frontend dependencies
-make format     # apply backend and frontend formatting
-make db-up      # start local PostgreSQL
-make check      # formatting, lint, type checks, unit tests, and builds
-make down       # stop local Compose services
-```
-
-Use `make build`, `make lint`, `make typecheck`, or `make test-unit` to run one
-verification category. Copy `.env.example` to `.env` only when overriding the safe
-local defaults.
-
-### Command reference
-
-| Command | Purpose |
-| --- | --- |
-| `make setup` | Install locked backend and frontend dependencies. |
-| `make generate` / `make validate` | Deterministically generate and validate source sync files. |
-| `make db-up` / `make migrate` | Start PostgreSQL and apply migrations to the normal local database. |
-| `make ingest` / `make decisions` | Ingest the generated files chronologically, then persist Day 11 decisions. |
-| `make rebuild TENANT_ID=<uuid>` | Rebuild one tenant's current projections from immutable facts. |
-| `make backtest` | Reset the dedicated demo database, prepare deterministic data, and write rate/ranking backtest artifacts. |
-| `make test` / `make test-unit` / `make test-integration` / `make e2e` | Run all automated tests, focused unit tests, database integration tests, or browser tests. |
-| `make api-types` | Regenerate frontend types from the FastAPI OpenAPI document. |
-| `make check` | Run formatting, lint, type checks, unit tests, and production builds. |
-| `make reset` | Explicitly recreate **only** the dedicated `carrier_pool_demo` database. |
-| `make demo` | Build and start the complete deterministic review demo. |
-
-`make reset` never drops the normal `carrier_pool` database or any integration-test
-database; it has a fixed-name guard before issuing the database commands.
-
-### Review demo
-
-Run the complete deterministic demo from a clean checkout with:
+Run all commands from the repository root. No environment file is needed for the
+standard local demo. Copy `.env.example` to `.env` only to override its safe local
+defaults.
 
 ```bash
 make setup
 make demo
 ```
 
-`make demo` resets the dedicated `carrier_pool_demo` database (never the normal local
-or integration-test database), applies migrations, creates the three fixed fictional
-brokers (North Star Freight, Alamo Brokerage, and Gulf Bridge Logistics), generates
-and validates the source files, ingests them chronologically, persists the Day 11
-decisions, and starts the API/UI. The demo selector exposes only those three broker
-bindings. Open `http://localhost:5173` and choose a broker. Re-running the command
-recreates the same deterministic demo state.
+`make demo` is the one-command review path. It safely recreates only the dedicated
+`carrier_pool_demo` database, generates and validates the deterministic source data,
+applies migrations, seeds the demo brokers, ingests every sync chronologically,
+persists the Day 11 decisions, builds the containers, and starts the services.
 
-To run the focused correction proof against fresh generated scenarios:
+Open:
+
+- UI: <http://localhost:5173>
+- API documentation: <http://localhost:8000/docs>
+
+The broker selector contains only these demo brokers:
+
+| Broker | Source system | Day 11 review load |
+| --- | --- | --- |
+| North Star Freight | FreightFlow | `FF-9001`, Grand Prairie to Katy, dry van |
+| Alamo Brokerage | HaulDesk | `HD-9001`, Plano to Baytown, dry van |
+| Gulf Bridge Logistics | BrokerOS | `BO-9001`, Katy to San Antonio, reefer |
+
+Start with North Star Freight for rich, near-exact history. Then select Alamo
+Brokerage to see deliberately sparse local evidence blended with broader
+same-broker history. Gulf Bridge Logistics shows a separate, strong Houston to
+San Antonio reefer case. Selecting another broker clears the prior broker's data.
+
+### Verify it
 
 ```bash
-make correction-demo
+make check
+make backtest
 ```
 
-It verifies FreightFlow and BrokerOS replacement snapshots, HaulDesk's append-only
-adjustment semantics, immutable earlier decisions/backtests, a changed later Day 11
-estimate, and projection rebuild parity.
+`make check` runs formatting, backend and frontend linting, Pyright and TypeScript
+checks, unit and contract tests, and production builds. PostgreSQL integration and
+browser checks can also be run directly:
 
-## Constraints (the few we do impose)
+```bash
+make test-integration
+make e2e
+```
 
-**Starting point**
+`make backtest` rebuilds the deterministic demo database, ingests the source files,
+persists Day 11 decisions, and writes rolling rate and ranking evaluation artifacts:
 
-- Assume the data has already been downloaded from each TMS — the raw data sits in the `data/` directories, exactly as the TMS produced it. Don't build or fake the TMS APIs themselves.
-- **We provide the 3 fictional TMS schemas** — see `data/tms_a_freightflow/`, `data/tms_b_hauldesk/`, `data/tms_c_brokeros/`. How you get from their raw shapes to answers is yours to design.
-- Each TMS is synced **every 6 hours** (00:00, 06:00, 12:00, 18:00). Every sync produces one self-contained file in that TMS's directory, with the sync datetime in the filename. A sync contains **1–3 loads**: everything created or changed since the last sync.
+- `artifacts/backtest_metrics.json`
+- `artifacts/backtest_cases.csv`
+- `artifacts/ranking_metrics.json`
+- `artifacts/ranking_score_comparison.json`
 
-**Data (synthetic — you generate it; AI is good at this, but you own its sanity)**
+The artifacts are regression evidence, not a production-accuracy claim. They use
+synthetic outcomes and the eventual booked carrier only as a weak ranking proxy.
 
-- Geography: loads move within the **Texas Triangle** (Dallas–Fort Worth, Houston, San Antonio areas). Spread stops across nearby towns and suburbs, not just the three city centers.
-- Create the sync files for **10 simulated days** (4 syncs per TMS per day, following the provided schemas and examples). Use AI to write the files, but *direct* it — **design the data like test cases for your own system**, not random noise. Every behavior you want to show off should have data that demonstrates it.
-- At minimum, the data must contain these scenarios (how many and when is up to you):
-  1. Loads progressing through the **full lifecycle across syncs**, with money amounts appearing as they become known (e.g. the carrier rate gets fixed when a carrier is booked; final amounts confirmed at completion).
-  2. **Corrections** — loads whose *already-recorded* amount or detail changes to a new value in a later sync.
-  3. **Contrast**: lanes with rich history next to lanes with thin history; carriers with lots of experience next to carriers with almost none.
-- **Day 11** brings fresh loads that are still looking for a carrier — the ones your system must answer for, using days 1–10 as history. We should be able to look at your data and trace *why* your system gave each day-11 answer.
-- **Ingestion processes one sync file at a time, in chronological order** — like the real scheduled syncs would have. No loading everything in one shot.
+## What to inspect in the UI
 
-**Platform**
+Open any Day 11 load and review:
 
-- **Multi-tenant**: one broker's data must never leak into or influence another broker's answers — the bonus pool, if you build it, is the single deliberate opt-in exception.
-- **Stack**: use whatever you want. We recommend Python/TypeScript backend + TypeScript/React (and Postgres via docker compose) because that's what the shell hints at — but the stubs are optional, not a mandate.
-- **Frontend**: any working UI that shows a load list, and per load the price estimate plus the ranked carriers with their reasoning. Correctness and clarity count; visual polish counts for nothing.
-- **How to run**: document it. We will run your project ourselves — a short doc (README section or similar) with the command sequence to bring everything up and reproduce your results. An end-to-end check that exercises that path is a plus — we care that you thought about it, not which tool you picked.
+- Expected carrier rate, a **historical comparison range**, confidence, effective
+  evidence count, and the fallback used.
+- Comparable completed loads, including route, carrier payment, match tier,
+  endpoint distance, and completion date.
+- The ordered carrier call list, its evidence-backed component scores, and explicit
+  limits for sparse or unsupported history.
 
-## What we're looking for
+Useful demonstration cases are derived from the same catalog that generates the
+source files:
 
-Not feature count. We read for the problems you noticed and how you resolved them, for example:
+| Case | What it demonstrates |
+| --- | --- |
+| `SC-24` / `FF-9001` | Exact directional DFW to Houston history, rich carrier history, and a narrowest supported rate tier. |
+| `SC-25` / `BO-9001` | Nearby Houston to San Antonio reefer history and a high-evidence decision. |
+| `SC-26` / `HD-9001` | A small near-exact local group plus regional same-equipment history, yielding an explicitly disclosed blended estimate. |
+| `SC-05`, `SC-06`, `SC-07`, `SC-11` | Replacement-snapshot corrections to money, ZIP, equipment, or rate facts. |
+| `SC-09`, `SC-10` | HaulDesk append-only financial adjustments, including a negative adjustment. |
+| `SC-23` | The same MC/DOT under two brokers remains separate, tenant-owned carrier records. |
 
-- What happens to your analytics when yesterday's load is corrected today? Do you patch the derived numbers, or rebuild them from scratch — and what would break at millions of loads?
-- What is a "lane", exactly, when pickups are scattered across suburbs?
-- How does a scoring formula stay fair to a carrier with little history?
-- Where should a price estimate come from when the exact lane has little data?
-- (If you attempt the pool) what exactly is shared, and how do you prove nothing else leaks?
+The complete scenario list, source files, expected effects, and verification-test
+names are in [docs/DATA_SCENARIOS.md](docs/DATA_SCENARIOS.md). The generated,
+machine-readable companion is [data/scenarios.json](data/scenarios.json).
 
-Some of these have no single right answer — your reasoning is the deliverable as much as the code.
+## How the system works
 
-Include a short `DECISIONS.md`:
+The implementation is intentionally small and auditable:
 
-- The judgment calls you made and the alternatives you rejected.
-- What you'd do next with more time.
-- Honest limitations score better than hidden ones.
+```mermaid
+flowchart LR
+    SYNC[Generated TMS syncs] --> ADAPTERS[Source adapters and normalizers]
+    ADAPTERS --> IMMUTABLE[Immutable payloads, versions, and HaulDesk ledger entries]
+    IMMUTABLE --> CURRENT[Rebuildable tenant-scoped current projections]
+    IMMUTABLE --> ASOF[as_of comparable retrieval and carrier features]
+    ASOF --> PRICE[Historical carrier-pay estimate]
+    ASOF --> RANK[Historical-fit carrier ranking]
+    PRICE --> DECISION[Immutable decision with evidence]
+    RANK --> DECISION
+    DECISION --> UI[Tenant-safe API and UI]
+```
+
+Historical decisions read immutable evidence at their explicit `as_of` cutoff,
+never future-aware current projections.
+
+```mermaid
+flowchart LR
+    UI[Demo broker selector] --> HEADER[X-Tenant-ID]
+    HEADER --> ALLOW[Configured demo broker allowlist]
+    ALLOW --> REQUEST[Tenant-scoped API request]
+    REQUEST --> APP[Explicit tenant filters]
+    REQUEST --> CONTEXT[Transaction-local app.tenant_id]
+    APP --> RLS[PostgreSQL FORCE RLS, non-owner role]
+    CONTEXT --> RLS
+    RLS --> DATA[Tenant-owned rows and validated evidence]
+    DATA --> RESPONSE[Same-broker response, otherwise generic not found]
+```
+
+See [the detailed architecture and data-flow diagrams](docs/architecture/data-flow.md)
+for the as-of and deterministic scenario-generation flows.
+
+There are three source contracts:
+
+- **FreightFlow** and **BrokerOS** send complete changed-load snapshots. A later
+  snapshot can correct a prior total or detail while preserving both versions.
+- **HaulDesk** sends append-only rate rows. Its totals are rebuilt from its ledger,
+  including negative adjustments.
+
+Each generated historical day has four self-contained syncs per source, at 00:00,
+06:00, 12:00, and 18:00. Ingestion accepts only the strict generated filename
+pattern and processes one file at a time in chronological order. Reprocessing an
+unchanged file is a no-op.
+
+### Lanes and rate evidence
+
+The system uses bundled Texas Triangle ZIP centroids and Haversine endpoint distance,
+not runtime geocoding. Direction matters: Dallas to Houston and Houston to Dallas
+are different lanes. It begins with near-exact, same-equipment evidence, then widens
+through regional, metro-corridor, distance/equipment, and broker-level fallbacks
+only when needed. The shown range is a range of historical comparable payments, not
+a calibrated prediction interval.
+
+### Sparse carrier history
+
+Carrier ranking combines directional lane similarity, equipment history, recency,
+and last recorded delivery proximity. Limited independent history is shrunk toward
+a neutral score, and confidence is reported separately. Carriers without enough
+relevant evidence are shown as **More history needed**, not as a negative judgment.
+
+### Tenant isolation and time
+
+Every decision, comparable, carrier feature, API query, cache key, and evidence
+payload is scoped to one broker. PostgreSQL row-level security and application
+queries both enforce that boundary. A cross-broker identifier receives the same
+generic not-found response as an unknown identifier. Historical retrieval, pricing,
+ranking, stored decisions, and backtests require an explicit `as_of` timestamp and
+never use later corrections, assignments, or rates as earlier evidence.
+
+## Data and commands
+
+The data is authored scenario test data, not random or Faker-generated noise. It
+covers complete lifecycles, corrections, rich and thin lanes, high- and
+low-history carriers, stale and recent delivery evidence, and three fresh Day 11
+loads awaiting a carrier.
+
+```bash
+make generate             # rewrite only generated plain JSON sync files and data/scenarios.json
+make validate             # validate schedule, schemas, identities, timestamps, scenarios, and ZIPs
+make correction-demo      # prove correction behavior, immutable decisions, and projection rebuild parity
+make ingest               # ingest the generated data into the normal local database
+make decisions            # ingest, then persist decisions for active loads
+make rebuild TENANT_ID=<uuid>  # rebuild one tenant's projections from immutable facts
+make reset                # recreate only carrier_pool_demo, guarded by its fixed name
+make down                 # stop Compose services
+```
+
+The commented `data/*/example_sync*.jsonc` files are source-contract documentation.
+Generation never overwrites them; generated syncs are plain JSON files.
+
+## Main automated evidence
+
+The test suite includes:
+
+- Source parser and serializer contracts for all three TMS formats.
+- Deterministic generator, schedule, lifecycle, correction, manifest, and validator
+  tests.
+- Transactional ingestion, idempotency, current-projection rebuild, and
+  source-specific correction tests.
+- Direct-SQL RLS, API cross-broker not-found, prediction-invariance, evidence
+  isolation, and future-leakage tests.
+- Geography, pricing, ranking, sparse-history, and rolling-backtest tests.
+- Generated OpenAPI contract, React component, responsive UI, and Playwright review
+  tests.
+
+For the detailed engineering tradeoffs, rejected alternatives, model evaluation,
+and honest limitations, read [DECISIONS.md](DECISIONS.md).
+
+## Known limitations
+
+- The data and evaluation outcomes are synthetic. They prove deterministic behavior
+  and guard against regressions; they do **not** establish production pricing or
+  carrier-ranking accuracy.
+- No authentication UI, live TMS integration, real-time routing, traffic, truck
+  tracking, external geocoding, or shared carrier pool is included.
+- The ranking is historical fit only. It cannot measure live availability,
+  acceptance probability, service quality, or actual deadhead.
+- The pricing range is historical context, not a promise or prediction interval.
+
+See [DECISIONS.md](DECISIONS.md) for the conditions required before tuning weights
+or promoting a more complex model.

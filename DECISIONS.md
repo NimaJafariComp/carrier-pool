@@ -3,146 +3,165 @@
 ## What this product is for
 
 Carrier Pool is a small decision-support tool for freight brokers. For a load that
-is still looking for a carrier, it shows two things:
-
-1. A **call order** for that broker's known carriers, based on completed work in
-   the past.
-2. An **expected carrier payment**, with a range of comparable historical payments
-   and an indication of how much evidence supports it.
+is still looking for a carrier, it shows an expected carrier payment and a
+historical-fit call order for that broker's known carriers.
 
 It is deliberately a decision aid, not an automated dispatcher. A broker remains
 responsible for checking live capacity, service requirements, and the final price.
 
-## What the ranking means
+## Immutable history, current state, and time
 
-The carrier score is a **historical-fit score**. It asks: based on this broker's
-own completed loads, how closely does this carrier's past work resemble this load?
+**Decision:** retain every source payload, normalized version, and HaulDesk ledger
+entry immutably; derive current projections from those facts. Every historical
+question requires an explicit `as_of` cutoff.
 
-The score considers four equally documented kinds of historical evidence:
+This makes a correction auditable, lets projections be rebuilt without reading
+their previous values, and prevents a future assignment, rate, or correction from
+entering an earlier decision. Stored decisions retain their exact input version,
+time, model versions, parameters, warnings, and evidence IDs. The rebuild and
+temporal-leakage integration tests cover this behavior.
 
-- Similarity of the completed route, while preserving direction.
-- Match between the load's equipment and completed work.
-- How recently relevant completed work was observed.
-- How close the carrier's *last recorded historical delivery* was to this load's
-  pickup, including how old that record is.
+**Rejected:** overwrite-only current records and querying current projections for
+history. Both make corrections unauditable and leak future facts into backtests.
 
-The last item is not GPS, live truck location, availability, reliability, or a
-prediction that the carrier will accept. The interface says so wherever it is
-shown.
+## Source corrections and status regressions
 
-The product never claims that a carrier is available, likely to accept, reliable,
-or the objectively best dispatch choice. The source files do not contain outreach,
-declines, capacity, service outcomes, or complete candidate sets, so those claims
-would not be defensible.
+**Decision:** respect each source's correction contract. FreightFlow and BrokerOS
+are replacement snapshots: a later snapshot creates a new immutable version and
+can restate a prior total or detail. HaulDesk financial rows are append-only: its
+carrier total is the `PAY` ledger sum observed at the requested cutoff, including
+positive surcharges and negative adjustments.
 
-## How sparse evidence is treated fairly
+A later source observation with a lower lifecycle status may become current when
+its source timestamps make it newer. The system records
+`STATUS_REGRESSION_CORRECTION` rather than treating that correction as impossible.
+Out-of-order snapshots remain non-current and unchanged snapshots do not create
+redundant versions. Generated correction and precedence integration tests verify
+these cases.
 
-A carrier with only one relevant completed load should not look as certain as a
-carrier with many independent, similar completed loads. The score therefore starts
-from a neutral value of 50 and moves toward the observed fit only as independent
-history accumulates. Confidence is shown separately from the score.
+**Rejected:** one generic correction rule, status-monotonicity constraints, and
+silently discarding regressions. They would either double-count HaulDesk money or
+hide a valid source correction.
 
-The serving ranking model is `carrier-ranking-v5`. It counts each completed source
-version once, even when that one load supplies route, equipment, and recency facts.
-This avoids making one load look like several independent observations. There is no
-hard ceiling on the score: enough independent, recent, same-equipment route history
-can produce a genuinely strong score. Confidence still saturates rather than growing
-without bound.
+## Geography and lane definition
 
-Low-confidence or unsupported carriers are not given a call order in the UI. They
-appear under **More history needed**, rather than being presented as a negative
-judgment about the carrier.
+**Decision:** use the bundled Texas Triangle ZIP-centroid reference and Haversine
+endpoint distance as the business-facing metric. A lane is directional: origin to
+destination is not the reverse route. ZIP is coordinate authority; city is
+diagnostic text only.
 
-## Why v5 is the current ranking model
+The initial tiers are, in order: near-exact at origin and destination within 25
+miles, regional within 50 miles, same ordered metro corridor, comparable
+distance with matching equipment, tenant matching-equipment history, then a
+tenant-wide fallback. Comparable route length is within `max(25 mi, 15%)`, capped
+at 75 miles. H3 resolutions 8 and 6 are optional candidate-retrieval buckets only;
+they never choose a tier or replace the displayed Haversine distance.
 
-The earlier v4 calculation both counted overlapping evidence more than once and
-capped the amount of evidence used for score shrinkage. That could overstate a
-small history while making a very well-supported score impossible.
+**Rejected:** city/state equality, undirected routes, runtime geocoding, and H3 as
+the explanation of similarity. Those approaches respectively miss nearby suburbs,
+merge reverse lanes, add a network dependency, or make the evidence opaque.
 
-V5 removes both problems while retaining the protection against overreacting to
-small samples. On the current deterministic evaluation set, v4, v5, and a more
-aggressive v6 candidate produced the same ordering results: 24 scored temporal
-cases, 83.33% top-1 recall, 91.67% top-3 recall, 0.889 mean reciprocal rank, and
-11.6% close ties. V6 merely made numbers farther apart; it did not improve an
-ordering outcome, so it is not used.
+## Payment estimate and baselines
 
-The eventual booked carrier is only a weak evaluation proxy. It does not prove that
-the model predicts acceptance or that a higher score causes a better business
-outcome. The synthetic data can catch regressions; it cannot prove production
-accuracy.
+**Decision:** serve `pricing-hierarchical-v1`, a transparent, tenant-local,
+recency-weighted hierarchical estimate of total carrier pay. It uses completed
+carrier payments known at `as_of`, weighted medians/quantiles, effective sample
+size, and disclosed fallback blending. Its displayed range is a historical
+comparison range, never a calibrated prediction interval.
 
-## How the payment estimate works
+`make backtest` currently reports 57 labeled cases and 48 production scored cases:
+MAE `$91.76`, median absolute error `$40.00`, WAPE `6.69%`, and historical-range
+coverage `20.83%`. It compares tenant-wide median, equipment-plus-distance-band
+median, unshrunk nearest-lane weighted median, robust Huber regression, and
+quantile regression when enough rows exist. The artifacts show no promotion is
+eligible because deterministic demo outcomes are not independent operational data.
 
-The payment estimate uses only the selected broker's completed carrier payments
-that were known at the stated decision time. It first looks for the closest
-same-direction, same-equipment routes. If those are scarce, it expands in documented
-steps to nearby routes, metro corridors, similar-distance/equipment work, and then
-broader same-broker history.
+**Rejected:** a black-box serving model, rate-per-mile as the business target, and
+promoting the numerically lower synthetic-data baseline. The current artifacts are
+useful regression checks, but are insufficient to establish production accuracy or
+justify model complexity.
 
-Nearby evidence receives more weight than distant or old evidence. The estimate is
-a weighted historical middle value, not a black-box prediction. The displayed range
-is a range of comparable historical payments. It is **not** called a prediction
-interval, because the demo has not established calibrated future coverage.
+## Historical-fit ranking, shrinkage, and confidence
 
-FreightFlow and BrokerOS can replace a previously reported total. HaulDesk instead
-adds ledger entries, including negative adjustments. The system applies each source's
-own correction rules before using a final historical carrier payment.
+**Decision:** serve `carrier-ranking-v5`. It combines directional lane evidence,
+equipment history, relevant-work recency, and last historical delivery proximity.
+The adjusted score shrinks independent completed-load evidence toward a neutral
+50 using `ESS / (ESS + 6)`. V5 counts a completed version once even if it supports
+multiple components, and does not cap score ESS. Confidence is separate and
+saturates with evidence; it is not inferred from the score.
 
-## Time and corrections
+On the current same 57 temporal cases, v4, v5, and the v6 analysis candidate each
+have 32 supported scored cases, 50.0% top-1 recall, 90.625% top-3 recall, MRR
+0.6875, and a 5.26% top-fit tie rate. V6 only raises numeric margins by reducing
+the shrinkage constant from 6 to 4, so it remains analysis-only. The ranking
+artifact marks weight tuning ineligible because the booked-carrier outcome is a
+weak proxy and the demo is not an independent operational holdout.
 
-Every source file is processed one at a time in timestamp order. The raw file and
-each normalized version are retained. Current load screens are rebuilt from those
-versions, rather than overwriting the past.
+**Rejected:** v4's overlapping component counts and score-ESS cap, which could
+overstate one load while limiting genuinely deep history; v6 as serving behavior,
+because larger numbers without better ordering or tie behavior are not an
+improvement; and score-only certainty, because sparse evidence must remain visible.
 
-Each stored decision records its input version, decision time, model versions,
-parameters, warnings, and evidence IDs. A later correction can change a later
-decision, but it cannot change a decision that was already stored. Backtests also
-use only facts observed at or before each historical cutoff.
+## Booked-carrier labels and historical delivery proximity
 
-## Broker privacy and separation
+**Decision:** use the eventually booked carrier only as a weak retrospective
+ranking proxy. It is not an acceptance label, a causal result, or a measure of
+dispatch quality. Report no-rank cases and case counts instead of hiding them.
 
-Each broker is isolated. A decision, its comparable loads, and its carrier evidence
-come only from that broker's records. This is enforced in application queries and
-PostgreSQL row-level security. An ID belonging to another broker returns the same
-generic not-found response as an unknown ID.
+Last delivery proximity means the distance and time gap between a carrier's latest
+recorded completed delivery and the target pickup at `as_of`. It can inform
+historical fit, but does not claim a truck, driver, or equipment is currently
+there, available, reliable, or likely to accept.
 
-The same MC or DOT number may appear for two brokers, but it remains two separate
-broker-owned carrier records. No shared carrier pool is enabled.
+**Rejected:** training an acceptance model, calling historical proximity live
+deadhead, and reporting only top-1 recall. The source data has no complete call
+set, declines, capacity, live location, or service outcomes.
 
-## What the demo data proves
+## Tenant boundary and row-level security
 
-The generated demo has ten historical days, four time-stamped syncs per source per
-day, and three Day 11 loads awaiting a carrier. It includes complete load
-lifecycles, corrected totals and details, replacement snapshots, append-only ledger
-adjustments, rich and sparse histories, recent and stale delivery evidence, and
-tenant-local repeated carrier authorities.
+**Decision:** make tenant identity part of every entity, query, feature, cache
+key, unique source identity, decision, and evidence payload. PostgreSQL uses a
+non-owner application role with `FORCE ROW LEVEL SECURITY` and a transaction-local
+trusted tenant context; application queries still filter by tenant as defense in
+depth. Same MC/DOT values in different brokers remain separate carrier records.
 
-The dataset is designed as deterministic test data. It proves that ingestion,
-corrections, time cutoffs, privacy boundaries, explanations, and repeatable demo
-decisions behave as intended. It does not prove that the displayed estimates or
-rankings are accurate enough for real broker operations.
+Cross-broker load or carrier IDs return the same generic not-found response as an
+unknown ID. Direct-SQL RLS, prediction-invariance, API evidence-isolation, and
+same-authority tests verify the boundary.
 
-## Deliberate exclusions
+**Rejected:** application filters alone, global MC/DOT deduplication, and implicit
+cross-broker joins. Any of these could expose private history or alter a broker's
+private price/ranking baseline.
 
-- No login screen or production identity system. The demo uses a trusted broker
-  context; database and API isolation are still enforced.
-- No live TMS feeds, live routing, traffic, external geocoding, or truck tracking.
-- No external map tiles. Geography is bundled and deterministic.
-- No shared carrier pool.
-- No neural network, boosted-tree model, or LLM deciding rankings or prices.
+## Deliberate exclusions and shared pool
 
-These omissions keep the review focused on auditable source handling, time,
-isolation, and evidence rather than unsupported operational claims.
+**Decision:** keep the demo without an authentication UI, production identity
+system, live TMS feed, live routing/traffic, external geocoder, truck tracking,
+distributed job system, LLM decisioning, or neural/boosted serving model. The demo
+uses a trusted broker context while still enforcing API and database isolation.
 
-## Known limits and the threshold for change
+The shared carrier pool is deferred. No broker's private load, rate, customer, or
+facility facts are shared, and no external carrier can alter a private rate
+baseline. Phase 16 remains an optional future phase behind an explicit opt-in,
+coarsened-data, privacy-test gate.
 
-The demo uses authored synthetic scenarios and a small number of outcome labels.
-Before changing ranking weights or replacing the transparent payment estimator, the
-project requires leakage-safe, same-population evaluation with independent real
-outcomes and no degradation for sparse cases. A more complex model is not justified
-merely because it produces more dramatic scores.
+**Rejected:** adding these systems for presentation value. They would expand the
+security and operational surface before improving the assignment's core evidence,
+time, correction, or isolation guarantees.
 
-Useful next work is to broaden the authored carrier-history mix in the demo so each
-broker visibly demonstrates strong, moderate, sparse, stale, and unsupported
-historical-fit cases. That improves review coverage; it does not relax scoring,
-privacy, or time rules.
+## What would change the decision
+
+The highest-value next data is leakage-safe operational history: complete candidate
+call sets, outreach/decline outcomes, accepted and rejected quotes, carrier
+capacity, service outcomes, verified facility locations, and enough independent
+examples across lane, equipment, geography, and history-depth bands.
+
+At larger scale, retain immutable source facts, partition/index by tenant and
+observation time, and materialize only rebuildable projections or approved
+tenant-local retrieval aids. Any weight or model change needs pre-registered
+candidate parameters, identical-case comparison, independent outcomes, and no
+harm to sparse-history behavior. Complexity is not a substitute for better data.
+
+**Rejected:** tuning weights against Day 11 answers or a small synthetic holdout,
+and adopting a shared pool before its separate privacy contract is implemented and
+tested.

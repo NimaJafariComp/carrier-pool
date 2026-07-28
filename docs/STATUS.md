@@ -411,7 +411,7 @@ acceptance evidence has not yet been recorded.
   and temporal-leakage integration coverage passes together. It proves tenant-local
   present state and historical reconstruction remain isolated and correction-safe.
 
-## Phases 14–16 — In progress
+## Phases 14–15 — Complete
 
 - **Phase 14, Task 14.1 complete:** backend now uses a dependency-builder/runtime
   Dockerfile and both final application images run non-root. Compose has explicit
@@ -442,9 +442,23 @@ acceptance evidence has not yet been recorded.
 - **Phase 14 gate — Complete.** A clean environment reaches the UI, ingests data,
   computes decisions, runs checks, and writes backtest artifacts with documented
   commands only.
-- Phase 15: documentation and review preparation.
-- Phase 16: optional shared carrier pool.
-
+- **Phase 15, Task 15.1 complete:** rewrote `README.md` around the evaluator path,
+  including the one-command demo, exact prerequisites and URLs, three Day 11 review
+  cases, generated-data/manifest explanation, correction and isolation behavior,
+  test commands, and explicit model limitations. Verified `make demo`, `make check`,
+  and `make backtest` against the current deterministic dataset.
+- **Phase 15, Task 15.2 complete:** reconciled `DECISIONS.md` with the implemented
+  source semantics, geography tiers, v5 ranking, current backtest/ranking artifacts,
+  RLS boundary, deliberate exclusions, and scale-up criteria. Each major choice now
+  names the rejected alternative and why it is unsuitable.
+- **Phase 15, Task 15.3 complete:** added `docs/architecture/data-flow.md` with
+  Mermaid diagrams for ingestion/projections, as-of decisioning, tenant/RLS
+  enforcement, and deterministic scenario generation; linked it from the README.
+- **Phase 15, Task 15.4 complete:** added a local ten-minute reviewer runbook in
+  `docs/DEMO.md`, covering demo startup, all three source summaries, rich and
+  sparse Day 11 decisions, shrinkage, duplicate no-op handling, corrections,
+  RLS, backtesting, and service recovery.
+  
 ## Verification summary — 2026-07-28
 
 - **Reproducible demo:** a clean Docker volume completed `make setup`,
@@ -452,16 +466,16 @@ acceptance evidence has not yet been recorded.
   validated and ingested 123 source files, created three Day 11 decisions, and
   wrote the evaluation artifacts.
 - **Current decisioning:** `carrier-ranking-v5` is serving. On the current
-  57-case / 30-scored-case deterministic ranking evaluation, v4, v5, and v6 had
-  the same ordering metrics: 63.33% top-1, 93.33% top-3, 0.778 MRR, and 8.77%
-  close ties. V5 is retained because it removes the v4 evidence-counting defect
-  and score ceiling; v6 only widened margins.
+  57-case / 32-supported-case deterministic ranking evaluation, v4, v5, and v6
+  had the same ordering metrics: 50.0% top-1, 90.625% top-3, 0.6875 MRR, and
+  5.26% top-fit ties. V5 is retained because it removes the v4
+  evidence-counting defect and score ceiling; v6 only widened margins.
 - **Safety and correctness:** database tests cover RLS, generic cross-tenant
   not-found behavior, prediction isolation, source corrections, immutable
   decisions, rebuild parity, and historical `as_of` cutoffs. The demo retains
   rich and sparse Day 11 examples without claiming production accuracy.
 - **Most recent local checks:** `make check`, `make api-types-check`,
-  database-enabled backend tests (229 passed), generated-data validation,
+  database-enabled backend tests (231 passed), generated-data validation,
   chronological ingestion/decision persistence, and Playwright (4 passed).
   The GitHub workflow runs equivalent backend, PostgreSQL/RLS/data-smoke,
   frontend/OpenAPI, and browser-review jobs.

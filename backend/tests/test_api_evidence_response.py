@@ -7,6 +7,7 @@ def test_comparable_evidence_preserves_endpoint_distances_once() -> None:
     response = _comparable_load_response(
         {
             "load_external_id": "FF-1101",
+            "load_number": "FF-1101",
             "route": "Grand Prairie, TX → Katy, TX",
             "origin_distance_miles": 11.9,
             "destination_distance_miles": 22.6,
@@ -17,6 +18,7 @@ def test_comparable_evidence_preserves_endpoint_distances_once() -> None:
     )
 
     assert response.origin_distance_miles == 11.9
+    assert response.load_number == "FF-1101"
     assert response.destination_distance_miles == 22.6
     assert response.delivery_to_pickup_miles == 18.2
     assert response.delivery_to_pickup_gap_days == 1.75

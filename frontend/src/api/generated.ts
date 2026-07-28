@@ -146,6 +146,8 @@ export interface components {
       equipment?: string | null;
       /** Load External Id */
       load_external_id: string;
+      /** Load Number */
+      load_number?: string | null;
       /** Origin Distance Miles */
       origin_distance_miles?: number | null;
       /** Recency Days */
@@ -209,6 +211,8 @@ export interface components {
       equipment?: string | null;
       /** Load External Id */
       load_external_id: string;
+      /** Load Number */
+      load_number?: string | null;
       /** Origin Distance Miles */
       origin_distance_miles?: number | null;
       /** Route */
@@ -240,6 +244,8 @@ export interface components {
       external_id: string;
       /** Id */
       id: string;
+      /** Load Number */
+      load_number?: string | null;
       /** Observed At */
       observed_at: string;
       /** Status */

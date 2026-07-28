@@ -137,7 +137,8 @@ describe("App", () => {
     expect(
       await screen.findByRole("heading", { name: "Dallas, TX to Houston, TX" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("$1,250.00 expected rate")).toBeInTheDocument();
+    expect(screen.getByText("Expected rate")).toBeInTheDocument();
+    expect(screen.getAllByText("$1,250.00")).toHaveLength(1);
     expect(screen.getByText("Moderate evidence")).toBeInTheDocument();
     expect(
       screen.getByText("Choose an active load to view its rate and carrier evidence."),
@@ -246,9 +247,9 @@ describe("App", () => {
     expect(screen.getByText(/Delivery Jul 11, 2026/)).toBeInTheDocument();
     expect(screen.queryByText("Delivery timing pending")).not.toBeInTheDocument();
     expect(
-      screen.getByText("Planned dates only — no appointment times supplied"),
+      screen.getByText("Planned dates only, no appointment times supplied"),
     ).toBeInTheDocument();
-    expect(screen.getByText("$1,250.00")).toBeInTheDocument();
+    expect(screen.getAllByText("$1,250.00")).toHaveLength(2);
     expect(screen.getByText("$1,100.00–$1,300.00")).toBeInTheDocument();
     expect(screen.getByText("Strong evidence")).toBeInTheDocument();
     expect(screen.queryByText("Why this is not high evidence")).not.toBeInTheDocument();
@@ -352,6 +353,15 @@ describe("App", () => {
   });
 
   it("renders comparable history as a readable evidence table", async () => {
+    const brokerOsDecision = decision({
+      comparable_loads: [
+        {
+          ...decision().comparable_loads[0],
+          load_external_id: "a0jFB388F4DF5D2288",
+          load_number: "BO-3101",
+        },
+      ],
+    });
     vi.stubGlobal(
       "fetch",
       vi.fn((url: string) =>
@@ -361,7 +371,7 @@ describe("App", () => {
             url.endsWith("/tenants")
               ? [tenantA]
               : url.includes("/decision")
-                ? decision()
+                ? brokerOsDecision
                 : [activeLoad],
         }),
       ),
@@ -374,6 +384,8 @@ describe("App", () => {
     expect(screen.getByText("Dallas, TX → Houston, TX")).toBeInTheDocument();
     expect(screen.getByText("Same pickup & delivery area")).toBeInTheDocument();
     expect(screen.getByText("$1,180.00")).toBeInTheDocument();
+    expect(screen.getByText("BO-3101")).toBeInTheDocument();
+    expect(screen.queryByText("a0jFB388F4DF5D2288")).not.toBeInTheDocument();
   });
 
   it("shows a medium-confidence decision without overstating certainty", async () => {
@@ -523,7 +535,7 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "FF-1401 · Last recorded delivery · 12 mi from this pickup · recorded 18 hours earlier · Historical record only — not live truck location or availability.",
+        "FF-1401 · Last recorded delivery · 12 mi from this pickup · recorded 18 hours earlier · Historical record only, not live truck location or availability.",
       ),
     ).toBeInTheDocument();
   });
@@ -576,7 +588,7 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Limited history — this estimate is based on a small set of this broker’s completed loads, so certainty is lower.",
+        "Limited history, this estimate is based on a small set of this broker’s completed loads, so certainty is lower.",
       ),
     ).toBeInTheDocument();
     expect(screen.queryByText(/few close route matches were available/i)).not.toBeInTheDocument();

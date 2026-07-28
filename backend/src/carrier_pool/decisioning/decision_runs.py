@@ -433,6 +433,7 @@ def _evidence_summary(
                 if isinstance(city, str) and isinstance(state, str):
                     locations.append(f"{city.title()}, {state}")
     external_id = snapshot.get("external_id")
+    load_number = snapshot.get("load_number")
     result: dict[str, object] = {
         # Keep the immutable version identifier in the persisted audit payload so
         # the API can re-authorize this human-readable summary at read time.
@@ -440,6 +441,7 @@ def _evidence_summary(
         "load_version_id": str(version.id),
         # A missing source ID should be visibly incomplete, not fall back to a database UUID.
         "load_external_id": external_id if isinstance(external_id, str) else "Historical load",
+        "load_number": load_number if isinstance(load_number, str) else None,
         "route": (
             " → ".join((locations[0], locations[-1]))
             if len(locations) >= 2

@@ -176,7 +176,7 @@ test("reviews exact and sparse Day 11 decisions without tenant cache leakage", a
   ).toBeVisible();
   await expect(
     sparseDecision.getByText(
-      "Limited history — this estimate is based on a small set of this broker’s completed loads, so certainty is lower.",
+      "Limited history, this estimate is based on a small set of this broker’s completed loads, so certainty is lower.",
     ),
   ).toBeVisible();
 });
@@ -211,4 +211,38 @@ test("keeps the decision workspace inside a narrow viewport", async ({ page }) =
     scrollWidth: document.documentElement.scrollWidth,
   }));
   expect(pageWidths.scrollWidth).toBe(pageWidths.clientWidth);
+});
+
+test("keeps active-load controls inside their card without overlap", async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 844 });
+  await page.getByLabel("Broker").selectOption("hd-demo-tenant");
+
+  const card = page.getByLabel("Active load HD-9001");
+  const rate = card.getByText("$1,150.00", { exact: true });
+  const status = card.getByText("ACTIVE", { exact: true });
+  const action = card.getByRole("button", { name: "View decision for HD-9001" });
+  await expect(rate).toBeVisible();
+  await expect(status).toBeVisible();
+  await expect(action).toBeVisible();
+
+  const [cardBox, rateBox, statusBox, actionBox] = await Promise.all([
+    card.boundingBox(),
+    rate.boundingBox(),
+    status.boundingBox(),
+    action.boundingBox(),
+  ]);
+  expect(cardBox).not.toBeNull();
+  expect(rateBox).not.toBeNull();
+  expect(statusBox).not.toBeNull();
+  expect(actionBox).not.toBeNull();
+  if (!cardBox || !rateBox || !statusBox || !actionBox) return;
+
+  for (const box of [rateBox, statusBox, actionBox]) {
+    expect(box.x).toBeGreaterThanOrEqual(cardBox.x);
+    expect(box.y).toBeGreaterThanOrEqual(cardBox.y);
+    expect(box.x + box.width).toBeLessThanOrEqual(cardBox.x + cardBox.width);
+    expect(box.y + box.height).toBeLessThanOrEqual(cardBox.y + cardBox.height);
+  }
+  expect(actionBox.x).toBeGreaterThanOrEqual(rateBox.x + rateBox.width - 2);
+  expect(statusBox.x).toBeGreaterThanOrEqual(rateBox.x + rateBox.width - 2);
 });

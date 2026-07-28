@@ -652,6 +652,15 @@ acceptance evidence has not yet been recorded.
 
 ## Latest verification — 2026-07-28
 
+- **BrokerOS display labels:** UI/API evidence now presents the source `Name` load
+  number (for example, `BO-3101`) rather than its opaque CRM `Id`; the latter stays
+  the stable ingestion identity. API integration (`8 passed`) and frontend tests
+  (`14 passed`) pass, and a refreshed demo returned `BO-9001` / `BO-3201` labels.
+- **Active-load scan view:** removed schedule-source prose from load cards and
+  condensed each card to route, core load facts, expected rate, evidence strength,
+  status, and action. The selected decision retains the detailed schedule wording.
+  Frontend unit tests (`14 passed`), typecheck, lint, production build, and
+  Playwright (`3 passed`) pass.
 - **Clean evaluator path:** a disposable committed snapshot with an empty Docker
   volume passed `make setup`, `make demo`, `make check`, and `make backtest` using
   README instructions only. It reached healthy UI/API services, validated and

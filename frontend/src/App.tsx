@@ -35,6 +35,10 @@ function route(load: Load): string {
   return `${origin.city}, ${origin.state} to ${destination.city}, ${destination.state}`;
 }
 
+function loadLabel(load: Pick<Load, "external_id" | "load_number">): string {
+  return load.load_number ?? load.external_id;
+}
+
 function pickupDate(load: Load): string {
   const pickup = load.stops.find((stop) => stop.is_pickup);
   if (pickup?.scheduled_start_at) return formatDate(pickup.scheduled_start_at);
@@ -62,7 +66,7 @@ function scheduleSourceNote(load: Load): string {
     return "Appointment times supplied by source";
   }
   if (load.stops.some((stop) => stop.planned_date !== null)) {
-    return "Planned dates only — no appointment times supplied";
+    return "Planned dates only, no appointment times supplied";
   }
   return "No schedule supplied";
 }
@@ -74,7 +78,7 @@ function usd(value: string | null, label = "expected rate"): string {
 }
 
 function miles(value: string | null): string {
-  if (value === null) return "—";
+  if (value === null) return "N/A";
   return Number(value).toLocaleString("en-US", { maximumFractionDigits: 1 });
 }
 
@@ -169,7 +173,7 @@ function pricingWarnings(warnings: string[]): string[] {
   return [
     ...(hasSparseEvidence
       ? [
-          "Limited history — this estimate is based on a small set of this broker’s completed loads, so certainty is lower.",
+          "Limited history, this estimate is based on a small set of this broker’s completed loads, so certainty is lower.",
         ]
       : []),
     ...visibleWarnings.map(pricingWarning),
@@ -256,11 +260,11 @@ function componentEvidenceSummary(evidence: EvidenceLoad): string {
     evidence.delivery_to_pickup_gap_days !== undefined
   ) {
     return [
-      evidence.load_external_id,
+      evidence.load_number ?? evidence.load_external_id,
       "Last recorded delivery",
       `${Math.round(evidence.delivery_to_pickup_miles)} mi from this pickup`,
       `recorded ${historicalGap(evidence.delivery_to_pickup_gap_days)}`,
-      "Historical record only — not live truck location or availability.",
+      "Historical record only, not live truck location or availability.",
     ].join(" · ");
   }
   const geographyMatch =
@@ -274,7 +278,7 @@ function componentEvidenceSummary(evidence: EvidenceLoad): string {
         ? titleCase(evidence.tier)
         : null;
   const bits = [
-    evidence.load_external_id,
+    evidence.load_number ?? evidence.load_external_id,
     evidence.route,
     evidence.equipment ? titleCase(evidence.equipment) : null,
     evidence.completed_observed_at
@@ -476,7 +480,9 @@ function DecisionDetail({ decision }: { decision: Decision }) {
                   return (
                     <tr key={`${item.load_external_id}-${index}`}>
                       <td className="comparables__load-id">
-                        <span title={item.load_external_id}>{item.load_external_id}</span>
+                        <span title={item.load_external_id}>
+                          {item.load_number ?? item.load_external_id}
+                        </span>
                       </td>
                       <td className="comparables__route">
                         <div>
@@ -614,29 +620,37 @@ export function App() {
                   <li key={load.id}>
                     <article
                       className={`load-card${selectedLoadId === load.id ? " load-card--selected" : ""}`}
+                      aria-label={`Active load ${loadLabel(load)}`}
                     >
                       <div className="route-rail" aria-hidden="true" />
                       <div className="load-card__main">
-                        <p className="load-card__reference">{load.external_id}</p>
+                        <p className="load-card__reference">{loadLabel(load)}</p>
                         <h3>{route(load)}</h3>
                         <p>
                           {pickupDate(load)} · {load.equipment ?? "Equipment unknown"} ·{" "}
-                          {miles(load.distance_miles)} mi · {scheduleSourceNote(load)}
+                          {miles(load.distance_miles)} mi
                         </p>
                       </div>
                       <div className="load-card__decision">
-                        <strong>{usd(load.expected_rate_usd)}</strong>
-                        <span>
-                          {load.confidence ? evidenceStrength(load.confidence) : "Decision pending"}
-                        </span>
-                        <span className="status-badge">{load.status}</span>
-                        <button
-                          type="button"
-                          onClick={() => setSelectedLoadId(load.id)}
-                          aria-label={`View decision for ${load.external_id}`}
-                        >
-                          View decision
-                        </button>
+                        <div className="load-card__outcome">
+                          <span>Expected rate</span>
+                          <strong>{usd(load.expected_rate_usd, "").trim()}</strong>
+                          <span>
+                            {load.confidence
+                              ? evidenceStrength(load.confidence)
+                              : "Decision pending"}
+                          </span>
+                        </div>
+                        <div className="load-card__action">
+                          <span className="status-badge">{load.status}</span>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedLoadId(load.id)}
+                            aria-label={`View decision for ${loadLabel(load)}`}
+                          >
+                            View decision
+                          </button>
+                        </div>
                       </div>
                     </article>
                   </li>

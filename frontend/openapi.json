@@ -85,6 +85,17 @@
             "title": "Load External Id",
             "type": "string"
           },
+          "load_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Load Number"
+          },
           "origin_distance_miles": {
             "anyOf": [
               {
@@ -298,6 +309,17 @@
             "title": "Load External Id",
             "type": "string"
           },
+          "load_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Load Number"
+          },
           "origin_distance_miles": {
             "anyOf": [
               {
@@ -406,6 +428,17 @@
           "id": {
             "title": "Id",
             "type": "string"
+          },
+          "load_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Load Number"
           },
           "observed_at": {
             "title": "Observed At",

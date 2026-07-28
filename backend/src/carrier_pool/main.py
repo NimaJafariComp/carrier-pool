@@ -50,6 +50,7 @@ class StopResponse(BaseModel):
 class LoadResponse(BaseModel):
     id: str
     external_id: str
+    load_number: str | None = None
     status: str
     equipment: str | None
     distance_miles: str | None
@@ -82,6 +83,7 @@ class EvidenceLoadResponse(BaseModel):
     """A human-readable, tenant-local completed-load reference."""
 
     load_external_id: str
+    load_number: str | None = None
     route: str
     equipment: str | None = None
     completed_observed_at: str | None = None
@@ -424,6 +426,7 @@ def _evidence_load_response(entry: dict[str, object]) -> EvidenceLoadResponse:
         label = "Historical load"
     return EvidenceLoadResponse(
         load_external_id=label,
+        load_number=_string_or_none(entry.get("load_number")),
         route=_string_or_none(entry.get("route")) or "Route unavailable",
         equipment=_string_or_none(entry.get("equipment")),
         completed_observed_at=_string_or_none(entry.get("completed_observed_at")),
@@ -474,6 +477,7 @@ def _load_response(session: Session, tenant_id: UUID, load: Load) -> LoadRespons
     return LoadResponse(
         id=str(load.id),
         external_id=load.external_id,
+        load_number=load.load_number,
         status=load.status.value,
         equipment=None if load.equipment is None else load.equipment.value,
         distance_miles=None if load.distance_miles is None else str(load.distance_miles),

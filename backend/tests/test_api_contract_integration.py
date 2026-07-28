@@ -288,6 +288,7 @@ def test_active_loads_and_decision_contract_are_tenant_scoped(api_dataset: ApiDa
         "warnings",
     } <= set(body)
     assert body["pricing"]["currency"] == "USD"
+    assert body["load"]["load_number"] == "BO-9001"
     assert re.fullmatch(r"\d+(?:\.\d+)?", body["pricing"]["point_estimate_usd"])
     assert body["ranked_carriers"]
     assert all(
@@ -336,6 +337,7 @@ def test_active_loads_and_decision_contract_are_tenant_scoped(api_dataset: ApiDa
     assert body["comparable_loads"]
     assert all(
         item["load_external_id"]
+        and item["load_number"]
         and item["route"]
         and item["completed_observed_at"]
         and item["carrier_rate_usd"]

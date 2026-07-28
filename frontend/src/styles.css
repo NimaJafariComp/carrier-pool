@@ -219,7 +219,7 @@ h3 {
 }
 
 .load-card__main {
-  padding: 0.72rem 0.72rem 0.5rem;
+  padding: 0.7rem 0.72rem 0.35rem;
 }
 
 .load-card__main p:last-child,
@@ -237,36 +237,53 @@ h3 {
 }
 
 .load-card__decision {
+  grid-column: 2;
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 0.25rem 0.75rem;
-  align-items: center;
-  padding: 0 0.72rem 0.72rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.55rem;
+  align-items: end;
+  padding: 0 0.72rem 0.7rem;
 }
 
-.load-card__decision strong {
-  grid-column: 1 / -1;
+.load-card__outcome {
+  display: grid;
+  gap: 0.12rem;
+  min-width: 0;
+}
+
+.load-card__outcome > span:first-child {
+  color: #aaa79e;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.load-card__outcome strong {
   color: #f1bd68;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.83rem;
+  font-size: 0.98rem;
   font-weight: 650;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
-.load-card__decision > span {
-  justify-self: start;
+.load-card__outcome > span:last-child {
+  color: #aaa79e;
+  font-size: 0.72rem;
+  line-height: 1.3;
 }
 
-.load-card__decision > .status-badge {
-  justify-self: end;
+.load-card__action {
+  display: grid;
+  justify-items: end;
+  gap: 0.38rem;
 }
 
-.load-card__decision button {
-  grid-column: 1 / -1;
-  justify-self: stretch;
-  min-height: 2.25rem;
-  margin-top: 0.3rem;
+.load-card__action button {
+  min-height: 2rem;
+  padding: 0.38rem 0.7rem;
   border: 1px solid #5d5a52;
   border-radius: 2px;
   color: #eeece5;
@@ -275,7 +292,7 @@ h3 {
   font-weight: 700;
 }
 
-.load-card__decision button:hover {
+.load-card__action button:hover {
   border-color: #f1bd68;
   color: #f1bd68;
 }
@@ -716,7 +733,7 @@ h3 {
 }
 
 .carrier-card__evidence {
-  grid-column: 2 / -1;
+  grid-column: 1 / -1;
   color: #aaa79e;
   font-size: 0.75rem;
 }
@@ -819,11 +836,11 @@ h3 {
   }
 
   .load-card__decision {
-    grid-template-columns: 1fr;
+    gap: 0.45rem;
   }
 
-  .load-card__decision > span {
-    justify-self: start;
+  .load-card__action button {
+    min-width: 0;
   }
 
   .decision-metrics,
@@ -919,9 +936,33 @@ h3 {
   }
 
   .component-scores__group,
-  .carrier-card__bullets,
-  .carrier-card__evidence {
+  .carrier-card__bullets {
     grid-column: 2;
+  }
+
+  .carrier-card__evidence {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 420px) {
+  .load-card__decision {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .load-card__action {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    justify-items: stretch;
+  }
+
+  .load-card__action .status-badge {
+    justify-self: start;
+  }
+
+  .load-card__action button {
+    justify-self: end;
   }
 }
 

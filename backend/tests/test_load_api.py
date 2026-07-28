@@ -80,6 +80,7 @@ def test_load_api_returns_own_tenant_current_load() -> None:
     load = SimpleNamespace(
         id=load_id,
         external_id="demo-load",
+        load_number="FF-1101",
         status=SimpleNamespace(value="ACTIVE"),
         equipment=None,
         distance_miles=None,
@@ -93,6 +94,7 @@ def test_load_api_returns_own_tenant_current_load() -> None:
     app.dependency_overrides.clear()
     assert response.status_code == 200
     assert response.json()["id"] == str(load_id)
+    assert response.json()["load_number"] == "FF-1101"
 
 
 def test_mandatory_phase_11_routes_are_exported() -> None:

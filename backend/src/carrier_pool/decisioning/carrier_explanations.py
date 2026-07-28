@@ -39,10 +39,6 @@ def explain_rankings(
                 f"{feature.equipment_history_count} completed equipment-matching loads "
                 "are recorded."
             )
-        if feature.last_delivery_observed_at is not None:
-            bullets.append(
-                "A last known historical delivery is included as evidence, not live location."
-            )
         if feature.target_equipment_unknown:
             warnings.append("UNKNOWN_TARGET_EQUIPMENT")
             bullets.append("Target equipment is unknown, so equipment-fit confidence is limited.")

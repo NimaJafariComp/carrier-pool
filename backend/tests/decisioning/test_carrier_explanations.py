@@ -1,5 +1,6 @@
 """Structured carrier-ranking explanation contracts."""
 
+from datetime import UTC, datetime
 from uuid import uuid4
 
 from carrier_pool.decisioning.carrier_explanations import explain_rankings
@@ -73,3 +74,26 @@ def test_distance_equipment_evidence_is_not_described_as_directional() -> None:
     assert "similar trip length" in text
     assert "same equipment" in text
     assert "directional" not in text
+
+
+def test_last_delivery_limitation_is_not_repeated_on_every_carrier_card() -> None:
+    observed_at = datetime(2026, 7, 10, tzinfo=UTC)
+    feature = CarrierFeatureSet(
+        uuid4(),
+        "carrier-1",
+        (),
+        0,
+        0,
+        None,
+        observed_at,
+        None,
+        12.0,
+        1.0,
+        (),
+        False,
+    )
+    ranking = CarrierHistoricalFitScorer().score((feature,))
+
+    explanation = explain_rankings(ranking, (feature,))[0]
+
+    assert not any("live location" in bullet.lower() for bullet in explanation.evidence_bullets)

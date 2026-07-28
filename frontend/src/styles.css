@@ -800,6 +800,117 @@ h3 {
   overflow-wrap: anywhere;
 }
 
+.route-geography {
+  display: grid;
+  gap: 0.7rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid #35342f;
+}
+
+.route-geography__heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.route-geography__heading h3 {
+  margin: 0.24rem 0 0;
+  font-size: 0.92rem;
+}
+
+.route-geography__heading button {
+  flex: 0 0 auto;
+  padding: 0.35rem 0.48rem;
+  border: 1px solid #4b4943;
+  border-radius: 2px;
+  color: #cbc6b9;
+  background: transparent;
+  font-size: 0.68rem;
+}
+
+.route-geography__heading button:hover {
+  border-color: #8b8067;
+  color: #f7f5ef;
+}
+
+.route-geography__controls {
+  display: grid;
+  justify-items: end;
+  gap: 0.28rem;
+}
+
+.route-geography__controls span {
+  color: #77899a;
+  font-size: 0.62rem;
+  white-space: nowrap;
+}
+
+.route-geography__note,
+.route-geography--unavailable > div > p:last-child {
+  margin: 0;
+  color: #aaa79e;
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+.route-geography__scene {
+  aspect-ratio: 5 / 2;
+  height: auto;
+  overflow: hidden;
+  background: transparent;
+  touch-action: none;
+}
+
+.route-geography__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.route-geography__canvas:active {
+  cursor: grabbing;
+}
+
+.route-geography__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.32rem 0.75rem;
+  color: #cbc6b9;
+  font-size: 0.69rem;
+  line-height: 1.35;
+}
+
+.route-geography__legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+}
+
+.route-geography__marker {
+  width: 0.48rem;
+  height: 0.48rem;
+  border-radius: 50%;
+  background: #e8e6df;
+}
+
+.route-geography__marker--pickup {
+  background: #f1bd68;
+}
+
+.route-geography__note {
+  color: #87847c;
+  font-size: 0.68rem;
+}
+
+.route-geography--unavailable {
+  min-height: 7rem;
+  padding: 1rem;
+  border: 1px solid #3b3934;
+  background: #1c1b19;
+}
+
 @media (max-width: 900px) {
   .workbench {
     grid-template-columns: 1fr;
@@ -942,6 +1053,10 @@ h3 {
 
   .carrier-card__evidence {
     grid-column: 1 / -1;
+  }
+
+  .route-geography__scene {
+    aspect-ratio: 4 / 3;
   }
 }
 

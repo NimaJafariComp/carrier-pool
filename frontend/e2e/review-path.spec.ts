@@ -39,6 +39,9 @@ function load(
         city: origin,
         state: "TX",
         postal_code: "75001",
+        latitude: "32.9600",
+        longitude: "-96.8380",
+        geography_quality_flags: [],
         planned_date: "2026-07-11",
         scheduled_start_at: "2026-07-11T08:00:00+00:00",
       },
@@ -49,6 +52,9 @@ function load(
         city: destination,
         state: "TX",
         postal_code: "77001",
+        latitude: "29.8300",
+        longitude: "-95.4300",
+        geography_quality_flags: [],
         planned_date: "2026-07-11",
         scheduled_start_at: null,
       },
@@ -158,6 +164,8 @@ test("reviews exact and sparse Day 11 decisions without tenant cache leakage", a
   await expect(
     exactDecision.getByText("Last known delivery was 18 miles from pickup 2 days earlier."),
   ).toBeVisible();
+  await expect(exactDecision.getByText("Route geography", { exact: true })).toBeVisible();
+  await expect(exactDecision.locator(".route-geography__scene")).toBeVisible();
 
   await page.getByLabel("Broker").selectOption("hd-demo-tenant");
   await expect(

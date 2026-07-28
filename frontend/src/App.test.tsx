@@ -30,6 +30,9 @@ const activeLoad = {
       city: "Dallas",
       state: "TX",
       postal_code: "75201",
+      latitude: "32.7767",
+      longitude: "-96.7970",
+      geography_quality_flags: [],
       planned_date: "2026-07-11",
       scheduled_start_at: null,
     },
@@ -40,6 +43,9 @@ const activeLoad = {
       city: "Houston",
       state: "TX",
       postal_code: "77002",
+      latitude: "29.7604",
+      longitude: "-95.3698",
+      geography_quality_flags: [],
       planned_date: "2026-07-11",
       scheduled_start_at: null,
     },
@@ -259,6 +265,8 @@ describe("App", () => {
     expect(screen.getByText("$1,180.00")).toBeInTheDocument();
     expect(screen.getByText("As of")).toBeInTheDocument();
     expect(screen.getByText("pricing-hierarchical-v1")).toBeInTheDocument();
+    expect(screen.getByText("Route geography")).toBeInTheDocument();
+    expect(screen.getByText("240.0 mi")).toBeInTheDocument();
   });
 
   it("shows medium and low confidence with explicit evidence warnings", async () => {

@@ -43,6 +43,9 @@ class StopResponse(BaseModel):
     city: str
     state: str
     postal_code: str
+    latitude: str | None
+    longitude: str | None
+    geography_quality_flags: list[str] | None
     planned_date: str | None
     scheduled_start_at: str | None
 
@@ -492,6 +495,9 @@ def _load_response(session: Session, tenant_id: UUID, load: Load) -> LoadRespons
                 city=stop.city,
                 state=stop.state,
                 postal_code=stop.postal_code,
+                latitude=None if stop.latitude is None else str(stop.latitude),
+                longitude=None if stop.longitude is None else str(stop.longitude),
+                geography_quality_flags=stop.geography_quality_flags,
                 planned_date=planned_dates.get(stop.sequence),
                 scheduled_start_at=None
                 if stop.scheduled_start_at is None

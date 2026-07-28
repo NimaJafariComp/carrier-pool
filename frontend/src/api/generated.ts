@@ -317,10 +317,16 @@ export interface components {
     StopResponse: {
       /** City */
       city: string;
+      /** Geography Quality Flags */
+      geography_quality_flags: string[] | null;
       /** Is Dropoff */
       is_dropoff: boolean;
       /** Is Pickup */
       is_pickup: boolean;
+      /** Latitude */
+      latitude: string | null;
+      /** Longitude */
+      longitude: string | null;
       /** Planned Date */
       planned_date: string | null;
       /** Postal Code */

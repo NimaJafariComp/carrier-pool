@@ -685,6 +685,20 @@
             "title": "City",
             "type": "string"
           },
+          "geography_quality_flags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Geography Quality Flags"
+          },
           "is_dropoff": {
             "title": "Is Dropoff",
             "type": "boolean"
@@ -692,6 +706,28 @@
           "is_pickup": {
             "title": "Is Pickup",
             "type": "boolean"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude"
           },
           "planned_date": {
             "anyOf": [
@@ -735,6 +771,9 @@
           "city",
           "state",
           "postal_code",
+          "latitude",
+          "longitude",
+          "geography_quality_flags",
           "planned_date",
           "scheduled_start_at"
         ],

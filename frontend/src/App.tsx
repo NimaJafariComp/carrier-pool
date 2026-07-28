@@ -9,6 +9,7 @@ import {
   type Decision,
   type Load,
 } from "./api/client";
+import { RouteGeographyPanel } from "./components/route-geography/RouteGeographyPanel";
 
 const TENANT_STORAGE_KEY = "carrier-pool.demo-tenant-id";
 
@@ -532,6 +533,8 @@ function DecisionDetail({ decision }: { decision: Decision }) {
           </div>
         </dl>
       </details>
+
+      <RouteGeographyPanel load={decision.load} />
     </section>
   );
 }

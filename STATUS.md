@@ -652,6 +652,27 @@ acceptance evidence has not yet been recorded.
 
 ## Latest verification — 2026-07-28
 
+- **Offline route geography:** decision details now end with a continuous Three.js
+  globe that rotates toward Texas, zooms the same globe, then reveals the bundled
+  U.S. Census Texas boundary and the active route above its curved surface. Its
+  north-up, east-right endpoint markers and city labels use the exact tenant-scoped
+  ZIP centroids, while the connecting path uses bundled, directional OpenStreetMap
+  road geometry and route-direction arrows for the three Day 11 paths. The interaction
+  starts at a navy/slate wide globe, then immediately makes one slow, interruptible
+  transition to the active load's Texas route once at least 50% of the scene is visible.
+  Scrolling smoothly zooms and reorients to the active load's Texas route, even after
+  exploratory dragging; zooming out returns to the globe alone. Reset view immediately
+  replays the fixed-duration transition, regardless of viewport visibility or a
+  reduced-motion preference, because it is an explicit action. The scene is transparent
+  and floats on the decision surface rather
+  than introducing a competing map-panel backdrop, with a compact landscape viewport
+  rather than a tall map card. It uses a restrained high-contrast outline treatment
+  rather than a textured basemap, supports pan/zoom/reset, respects reduced motion for
+  passive display,
+  and explicitly disclaims live routing, traffic, and truck location. Attribution is
+  recorded beside the component. API
+  integration (`8 passed`), frontend tests
+  (`16 passed`), typecheck, lint, production build, and Playwright (`4 passed`) pass.
 - **BrokerOS display labels:** UI/API evidence now presents the source `Name` load
   number (for example, `BO-3101`) rather than its opaque CRM `Id`; the latter stays
   the stable ingestion identity. API integration (`8 passed`) and frontend tests

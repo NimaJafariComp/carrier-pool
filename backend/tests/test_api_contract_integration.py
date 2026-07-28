@@ -289,6 +289,12 @@ def test_active_loads_and_decision_contract_are_tenant_scoped(api_dataset: ApiDa
     } <= set(body)
     assert body["pricing"]["currency"] == "USD"
     assert body["load"]["load_number"] == "BO-9001"
+    assert all(
+        stop["latitude"] is not None
+        and stop["longitude"] is not None
+        and isinstance(stop["geography_quality_flags"], list)
+        for stop in body["load"]["stops"]
+    )
     assert re.fullmatch(r"\d+(?:\.\d+)?", body["pricing"]["point_estimate_usd"])
     assert body["ranked_carriers"]
     assert all(

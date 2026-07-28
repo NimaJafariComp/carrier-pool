@@ -1,8 +1,6 @@
 # Implementation Status
 
-Status is measured against `docs/IMPLEMENTATION_PLAN.md`. “Implemented” means
-code and focused tests exist; a phase gate is marked separately when its full
-acceptance evidence has not yet been recorded.
+“Implemented” means code and focused tests exist; a phase gate is marked separately when its full acceptance evidence has not yet been recorded.
 
 ## Post-phase evaluation work — Complete (external validation unavailable)
 

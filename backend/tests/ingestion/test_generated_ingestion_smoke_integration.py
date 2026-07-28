@@ -250,6 +250,20 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
 
             estimator = HierarchicalRateEstimator()
             decision_service = DecisionRunService()
+            # These are authored demo scenarios: each Day 11 target has both a
+            # credible call order and deliberately weaker completed histories.
+            # Do not let a future catalog edit turn most carrier records into
+            # invisible/dormant candidates again.
+            minimum_candidates = {
+                SourceSystem.FREIGHTFLOW: 5,
+                SourceSystem.HAULDESK: 8,
+                SourceSystem.BROKEROS: 8,
+            }
+            minimum_actionable_candidates = {
+                SourceSystem.FREIGHTFLOW: 2,
+                SourceSystem.HAULDESK: 2,
+                SourceSystem.BROKEROS: 3,
+            }
             for source_system, tenant_id in tenant_ids.items():
                 target = session.scalar(
                     select(Load).where(
@@ -281,6 +295,15 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
                 )
                 ranking = CarrierHistoricalFitScorer().score(candidate_features)
                 assert ranking
+                assert len(candidate_features) >= minimum_candidates[source_system]
+                assert (
+                    sum(
+                        item.evidence_status == "SUPPORTED"
+                        and item.confidence_score >= Decimal(".45")
+                        for item in ranking
+                    )
+                    >= minimum_actionable_candidates[source_system]
+                )
                 assert CarrierHistoricalFitScorer().score(candidate_features) == ranking
                 explanations = explain_rankings(ranking, candidate_features)
                 assert all(item.supporting_load_ids for item in explanations)

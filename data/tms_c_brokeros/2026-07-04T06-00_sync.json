@@ -2,6 +2,84 @@
   "records": [
     {
       "CreatedDate": "2026-07-04T06:00:00.000+0000",
+      "Id": "a0j94E3283398A8C6B",
+      "LastModifiedDate": "2026-07-04T06:00:00.000+0000",
+      "Name": "BO-2906",
+      "bos__Carrier_Rate__c": null,
+      "bos__Carrier__c": null,
+      "bos__Customer_Rate__c": 1825,
+      "bos__Customer__c": "0014DD806107C8FF73",
+      "bos__Distance_Miles__c": 190.4,
+      "bos__Equipment_Type__c": "Reefer",
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "General freight",
+          "bos__Pallet_Count__c": 18,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Weight__c": 24000
+        }
+      ],
+      "bos__Load_Status__c": "Ready to Book",
+      "bos__Stops__r": [
+        {
+          "bos__Arrival_Time__c": null,
+          "bos__Is_Dropoff__c": false,
+          "bos__Is_Pickup__c": true,
+          "bos__Location__c": "001F04A07EF8DE704D",
+          "bos__Number__c": 1,
+          "bos__Scheduled_Date__c": "2026-07-07"
+        },
+        {
+          "bos__Arrival_Time__c": null,
+          "bos__Is_Dropoff__c": true,
+          "bos__Is_Pickup__c": false,
+          "bos__Location__c": "001A06FC7BDA751406",
+          "bos__Number__c": 2,
+          "bos__Scheduled_Date__c": "2026-07-08"
+        }
+      ]
+    },
+    {
+      "CreatedDate": "2026-07-04T06:00:00.000+0000",
+      "Id": "a0j480063EBC723CD3",
+      "LastModifiedDate": "2026-07-04T06:00:00.000+0000",
+      "Name": "BO-2907",
+      "bos__Carrier_Rate__c": null,
+      "bos__Carrier__c": null,
+      "bos__Customer_Rate__c": 1560,
+      "bos__Customer__c": "0017F25C12B6C0E60C",
+      "bos__Distance_Miles__c": 275.6,
+      "bos__Equipment_Type__c": "Dry Van",
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "General freight",
+          "bos__Pallet_Count__c": 18,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Weight__c": 24000
+        }
+      ],
+      "bos__Load_Status__c": "Ready to Book",
+      "bos__Stops__r": [
+        {
+          "bos__Arrival_Time__c": null,
+          "bos__Is_Dropoff__c": false,
+          "bos__Is_Pickup__c": true,
+          "bos__Location__c": "001AE19313D2600FCA",
+          "bos__Number__c": 1,
+          "bos__Scheduled_Date__c": "2026-07-07"
+        },
+        {
+          "bos__Arrival_Time__c": null,
+          "bos__Is_Dropoff__c": true,
+          "bos__Is_Pickup__c": false,
+          "bos__Location__c": "001599B950DA4A43ED",
+          "bos__Number__c": 2,
+          "bos__Scheduled_Date__c": "2026-07-08"
+        }
+      ]
+    },
+    {
+      "CreatedDate": "2026-07-04T06:00:00.000+0000",
       "Id": "a0j317680A2F29EF30",
       "LastModifiedDate": "2026-07-04T06:00:00.000+0000",
       "Name": "BO-3002",
@@ -46,10 +124,29 @@
       "record_type": "Customer",
       "type": "Account"
     },
+    "001599B950DA4A43ED": {
+      "Name": "Dallas Facility",
+      "bos__City__c": "Dallas",
+      "bos__Postal_Code__c": "75201",
+      "bos__State__c": "TX",
+      "type": "Location"
+    },
+    "0017F25C12B6C0E60C": {
+      "Name": "Bayou Retail",
+      "record_type": "Customer",
+      "type": "Account"
+    },
     "001A06FC7BDA751406": {
       "Name": "Schertz Facility",
       "bos__City__c": "Schertz",
       "bos__Postal_Code__c": "78154",
+      "bos__State__c": "TX",
+      "type": "Location"
+    },
+    "001AE19313D2600FCA": {
+      "Name": "San Antonio Facility",
+      "bos__City__c": "San Antonio",
+      "bos__Postal_Code__c": "78205",
       "bos__State__c": "TX",
       "type": "Location"
     },

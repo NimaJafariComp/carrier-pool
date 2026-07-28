@@ -67,6 +67,24 @@ def test_early_anchor_completes_before_later_loads_first_become_active() -> None
         )
 
 
+def test_anchor_catalog_represents_diverse_completed_carrier_history() -> None:
+    """Demo candidates must have authored work, not merely carrier master records."""
+    catalog = build_catalog()
+    completed_carriers: dict[str, set[str]] = {}
+    for sync in build_schedule(catalog):
+        for event in sync.events:
+            if (
+                isinstance(event, LifecycleEvent)
+                and event.status is LoadStatus.COMPLETED
+                and event.carrier_id is not None
+            ):
+                completed_carriers.setdefault(sync.tenant_id, set()).add(event.carrier_id)
+
+    assert len(completed_carriers["ff-broker"]) >= 5
+    assert len(completed_carriers["hd-broker"]) >= 7
+    assert len(completed_carriers["bo-broker"]) == 8
+
+
 def test_hauldesk_load_emits_one_booking_linehaul_not_status_adjustments() -> None:
     schedule = build_schedule(build_catalog())
     entries = tuple(

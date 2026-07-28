@@ -104,10 +104,14 @@ intervening appearances repeat only the source's normal changed-load snapshot.
 
 1. Each source begins with three early anchors. Their six lifecycle observations
    occupy the first six historical slots. Every ordinary historical load first
-   becomes `ACTIVE` only after those three anchors are completed. FreightFlow adds
-   seven more same-carrier anchors in later spare file capacity to demonstrate a
-   strong Day 11 FreightFlow historical fit. These are supporting history for
-   `SC-24`, not a separate required scenario.
+   becomes `ACTIVE` only after those three anchors are completed. Later spare
+   capacity carries seven more FreightFlow anchors and seven varied anchors for
+   each of HaulDesk and BrokerOS. FreightFlow retains nine or more independent
+   same-carrier exact/return observations for its strong Day 11 fit; the other
+   anchors deliberately distribute completed work across lane, equipment, and
+   history-depth profiles so the demo does not present dormant carrier records as
+   a candidate roster. These are supporting history, not separate required
+   scenarios.
 2. Each source has six ordinary historical lifecycle loads. The first 36 source slots run
    their ordered six-stage lifecycle blocks; the final four slots carry three
    authored rolling-holdout loads through `PLANNED`, `ACTIVE`, `COVERED`, and

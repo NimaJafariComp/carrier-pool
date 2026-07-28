@@ -1,6 +1,24 @@
 {
   "carriers": [
     {
+      "carrier_id": 927919,
+      "carrier_name": "Guadalupe Transport",
+      "dot_no": "3900404",
+      "home_city": "Dallas",
+      "home_state": "TX",
+      "mc_no": "1350404",
+      "phone": "(214) 555-0101"
+    },
+    {
+      "carrier_id": 608439,
+      "carrier_name": "Mission Van",
+      "dot_no": "3900405",
+      "home_city": "Dallas",
+      "home_state": "TX",
+      "mc_no": "1350405",
+      "phone": "(214) 555-0101"
+    },
+    {
       "carrier_id": 884814,
       "carrier_name": "Delta Prime",
       "dot_no": "3900401",
@@ -11,6 +29,50 @@
     }
   ],
   "loads": [
+    {
+      "carrier_ref": 927919,
+      "customer_code": "HD-CUST-302",
+      "customer_name": "Hill Country Produce",
+      "del_arrived_at": null,
+      "del_city": "Houston",
+      "del_date": "2026-07-08",
+      "del_state": "TX",
+      "del_zip": "77002",
+      "dist_km": 385.921,
+      "entered_at": "2026-07-03 13:00:00",
+      "equip": "V",
+      "load_num": "HD-1904",
+      "pu_city": "Dallas",
+      "pu_date": "2026-07-07",
+      "pu_departed_at": null,
+      "pu_state": "TX",
+      "pu_zip": "75201",
+      "status_code": 90,
+      "updated_at": "2026-07-03 13:00:00",
+      "weight_kg": 10886.21688024085
+    },
+    {
+      "carrier_ref": 608439,
+      "customer_code": "HD-CUST-301",
+      "customer_name": "Alamo Building Supply",
+      "del_arrived_at": null,
+      "del_city": "Katy",
+      "del_date": "2026-07-08",
+      "del_state": "TX",
+      "del_zip": "77449",
+      "dist_km": 385.277,
+      "entered_at": "2026-07-03 13:00:00",
+      "equip": "V",
+      "load_num": "HD-1905",
+      "pu_city": "Grand Prairie",
+      "pu_date": "2026-07-07",
+      "pu_departed_at": null,
+      "pu_state": "TX",
+      "pu_zip": "75050",
+      "status_code": 90,
+      "updated_at": "2026-07-03 13:00:00",
+      "weight_kg": 10886.21688024085
+    },
     {
       "carrier_ref": 884814,
       "customer_code": "HD-CUST-302",

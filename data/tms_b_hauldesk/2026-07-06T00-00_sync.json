@@ -1,6 +1,24 @@
 {
   "carriers": [
     {
+      "carrier_id": 320562,
+      "carrier_name": "Alamo Refrigerated",
+      "dot_no": "3900403",
+      "home_city": "Dallas",
+      "home_state": "TX",
+      "mc_no": "1350403",
+      "phone": "(214) 555-0101"
+    },
+    {
+      "carrier_id": 233984,
+      "carrier_name": "River City Freight",
+      "dot_no": "3900408",
+      "home_city": "Dallas",
+      "home_state": "TX",
+      "mc_no": "1350408",
+      "phone": "(214) 555-0101"
+    },
+    {
       "carrier_id": 884814,
       "carrier_name": "Delta Prime",
       "dot_no": "3900401",
@@ -11,6 +29,50 @@
     }
   ],
   "loads": [
+    {
+      "carrier_ref": 320562,
+      "customer_code": "HD-CUST-301",
+      "customer_name": "Alamo Building Supply",
+      "del_arrived_at": null,
+      "del_city": "Schertz",
+      "del_date": "2026-07-08",
+      "del_state": "TX",
+      "del_zip": "78154",
+      "dist_km": 306.419,
+      "entered_at": "2026-07-05 19:00:00",
+      "equip": "R",
+      "load_num": "HD-1908",
+      "pu_city": "Sugar Land",
+      "pu_date": "2026-07-07",
+      "pu_departed_at": null,
+      "pu_state": "TX",
+      "pu_zip": "77478",
+      "status_code": 30,
+      "updated_at": "2026-07-05 19:00:00",
+      "weight_kg": 10886.21688024085
+    },
+    {
+      "carrier_ref": 233984,
+      "customer_code": "HD-CUST-302",
+      "customer_name": "Hill Country Produce",
+      "del_arrived_at": null,
+      "del_city": "Katy",
+      "del_date": "2026-07-08",
+      "del_state": "TX",
+      "del_zip": "77449",
+      "dist_km": 385.277,
+      "entered_at": "2026-07-05 19:00:00",
+      "equip": "V",
+      "load_num": "HD-1909",
+      "pu_city": "Grand Prairie",
+      "pu_date": "2026-07-07",
+      "pu_departed_at": null,
+      "pu_state": "TX",
+      "pu_zip": "75050",
+      "status_code": 30,
+      "updated_at": "2026-07-05 19:00:00",
+      "weight_kg": 10886.21688024085
+    },
     {
       "carrier_ref": 884814,
       "customer_code": "HD-CUST-301",
@@ -35,6 +97,22 @@
     }
   ],
   "rates": [
+    {
+      "amount_usd": 1570,
+      "code": "LINEHAUL",
+      "created_at": "2026-07-05 19:00:00",
+      "load_num": "HD-1908",
+      "rate_id": 193717,
+      "side": "pay"
+    },
+    {
+      "amount_usd": 1210,
+      "code": "LINEHAUL",
+      "created_at": "2026-07-05 19:00:00",
+      "load_num": "HD-1909",
+      "rate_id": 350022,
+      "side": "pay"
+    },
     {
       "amount_usd": 1250,
       "code": "LINEHAUL",

@@ -4,6 +4,20 @@ Status is measured against `docs/IMPLEMENTATION_PLAN.md`. “Implemented” mean
 code and focused tests exist; a phase gate is marked separately when its full
 acceptance evidence has not yet been recorded.
 
+## Current verified state — 2026-07-28
+
+- `carrier-ranking-v5` is the serving historical-fit model. It fixes v4's
+  duplicate-evidence counting and hard score ceiling; v6 is analysis-only because
+  it widened numeric margins without improving ordering results.
+- Local CI-equivalent checks most recently passed: `make check`,
+  `make api-types-check`, the database-enabled backend suite (`228 passed`),
+  deterministic generation/validation (`123` files), chronological ingestion with
+  three Day 11 decisions, and Playwright (`4 passed`).
+- The generated demo deliberately contains both strong and sparse evidence cases.
+  A remaining demo-data quality follow-up is to broaden carrier-history diversity
+  per broker, so the review UI more visibly demonstrates strong, moderate, sparse,
+  stale, and unsupported candidates without weakening ranking safeguards.
+
 ## Post-phase evaluation work — Complete (external validation unavailable)
 
 - `docs/gaps.md` evaluation implementation complete: rate artifacts now contain
@@ -134,12 +148,18 @@ acceptance evidence has not yet been recorded.
   per day for ten days across all sources) plus three Day 11 active-load files.
   `carrier-pool generate` and `make generate` write only known plain-JSON paths,
   preserve JSONC schema examples, and rerun byte-for-byte identically.
-- Each source starts with a hand-authored anchor full lifecycle (`FF-1001`,
-  `HD-2001`, `BO-3001`) and completes it before any later source load first
+- Each source starts with three hand-authored anchor lifecycles (`FF-0901…0903`,
+  `HD-1901…1903`, `BO-2901…2903`) and completes them before any later source load first
   becomes ACTIVE. Six historical loads per tenant now provide same-tenant
   near-exact/rich, regional, metro-corridor, thin/sparse, and
   distance/equipment fallback evidence while Day 11 target loads remain
   unchanged.
+- Demo-carrier history is intentionally distributed rather than concentrated in
+  dormant master records: the Day 11 targets now have 5 FreightFlow, 8 HaulDesk,
+  and 8 BrokerOS carriers with completed tenant-local history, including 2, 2,
+  and 3 supported call-order candidates respectively. Generator and ingestion
+  smoke tests protect those minimums while retaining weaker histories for the
+  sparse-evidence UI state.
 - HaulDesk lifecycle snapshots no longer manufacture ledger adjustments: a
   generated load emits its single linehaul row at booking unless an explicit
   financial scenario adds another row. Generated ingestion verifies `HD-2101`
@@ -653,10 +673,10 @@ acceptance evidence has not yet been recorded.
 ## Latest verification — 2026-07-28
 
 - **Ranking model selection:** `carrier-ranking-v5` is now serving. It counts each
-  completed version once and removes v4's score-ESS ceiling. On the same 43 temporal
-  cases and 24 scored cases, v4, v5, and v6 all produced 83.33% top-1, 91.67% top-3,
-  0.889 MRR, 11.6% tie rate, and 29 clear tops. V6's lower shrinkage constant only
-  enlarged numeric margins, so it remains analysis-only. The Day 11 FreightFlow
+  completed version once and removes v4's score-ESS ceiling. On the regenerated
+  57-case, 30-scored-case evaluation population, v4, v5, and v6 all produced
+  66.67% top-1, 100% top-3, 0.806 MRR, and a 12.28% tie rate. V6's lower shrinkage
+  constant only enlarged numeric margins, so it remains analysis-only. The Day 11 FreightFlow
   scenario asserts a 75+ High-confidence v5 score from nine independent exact-lane
   histories and a recent historical return delivery. `make backtest`, focused
   decisioning tests, the PostgreSQL smoke test, Ruff, and Pyright pass.

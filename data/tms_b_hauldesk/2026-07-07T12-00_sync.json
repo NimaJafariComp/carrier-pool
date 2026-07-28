@@ -1,6 +1,15 @@
 {
   "carriers": [
     {
+      "carrier_id": 141389,
+      "carrier_name": "Crossroads Carrier",
+      "dot_no": "3901001",
+      "home_city": "Dallas",
+      "home_state": "TX",
+      "mc_no": "1350101",
+      "phone": "(214) 555-0101"
+    },
+    {
       "carrier_id": 393580,
       "carrier_name": "Bexar Logistics",
       "dot_no": "3900407",
@@ -11,6 +20,28 @@
     }
   ],
   "loads": [
+    {
+      "carrier_ref": 141389,
+      "customer_code": "HD-CUST-302",
+      "customer_name": "Hill Country Produce",
+      "del_arrived_at": null,
+      "del_city": "Grand Prairie",
+      "del_date": "2026-07-08",
+      "del_state": "TX",
+      "del_zip": "75050",
+      "dist_km": 385.277,
+      "entered_at": "2026-07-07 07:00:00",
+      "equip": "V",
+      "load_num": "HD-1910",
+      "pu_city": "Katy",
+      "pu_date": "2026-07-07",
+      "pu_departed_at": null,
+      "pu_state": "TX",
+      "pu_zip": "77449",
+      "status_code": 30,
+      "updated_at": "2026-07-07 07:00:00",
+      "weight_kg": 10886.21688024085
+    },
     {
       "carrier_ref": 393580,
       "customer_code": "HD-CUST-303",
@@ -35,6 +66,14 @@
     }
   ],
   "rates": [
+    {
+      "amount_usd": 1230,
+      "code": "LINEHAUL",
+      "created_at": "2026-07-07 07:00:00",
+      "load_num": "HD-1910",
+      "rate_id": 352909,
+      "side": "pay"
+    },
     {
       "amount_usd": 1480,
       "code": "LINEHAUL",

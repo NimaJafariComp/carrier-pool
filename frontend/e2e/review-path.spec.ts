@@ -179,9 +179,8 @@ test("reviews exact and sparse Day 11 decisions without tenant cache leakage", a
   await expect(
     sparseDecision.getByText("Regional lane, blended with metro corridor"),
   ).toBeVisible();
-  await expect(
-    sparseDecision.getByText("Limited completed history pulls the score toward a neutral prior."),
-  ).toBeVisible();
+  await expect(sparseDecision.getByText("More history needed")).toBeVisible();
+  await expect(sparseDecision.getByText("No call order")).toBeVisible();
   await expect(
     sparseDecision.getByText(
       "Limited history, this estimate is based on a small set of this broker’s completed loads, so certainty is lower.",

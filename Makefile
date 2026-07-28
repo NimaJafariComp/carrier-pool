@@ -57,8 +57,12 @@ rebuild-projections:
 
 rebuild: rebuild-projections
 
-backtest: decisions
-	cd backend && DATABASE_URL="$(DATABASE_URL)" uv run carrier-pool rate-backtest --artifacts-dir ../artifacts
+backtest: demo-reset generate validate
+	cd backend && DATABASE_URL="$(DEMO_DATABASE_URL)" uv run alembic upgrade head
+	cd backend && DATABASE_URL="$(DEMO_DATABASE_URL)" uv run carrier-pool seed-demo-tenants
+	cd backend && DATABASE_URL="$(DEMO_DATABASE_URL)" uv run carrier-pool ingest-all --data-root ../data --freightflow-tenant-id "$(FREIGHTFLOW_TENANT_ID)" --hauldesk-tenant-id "$(HAULDESK_TENANT_ID)" --brokeros-tenant-id "$(BROKEROS_TENANT_ID)"
+	cd backend && DATABASE_URL="$(DEMO_DATABASE_URL)" uv run carrier-pool decide-active
+	cd backend && DATABASE_URL="$(DEMO_DATABASE_URL)" uv run carrier-pool rate-backtest --artifacts-dir ../artifacts
 
 api-types:
 	cd backend && uv run python scripts/export_openapi.py ../frontend/openapi.json

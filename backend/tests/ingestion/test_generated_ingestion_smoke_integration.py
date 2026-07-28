@@ -13,6 +13,7 @@ from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import Session
 
 from carrier_pool.db.models import (
+    Carrier,
     CarrierRecommendation,
     DecisionRun,
     IngestionFile,
@@ -198,6 +199,27 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
             assert delivery_observed_at[-1] > delivery_observed_at[0]
             assert all(item.target_equipment_unknown is False for item in ff_features)
             fixed_ranking = CarrierHistoricalFitScorer().score(ff_features)
+            rich_demo_carrier = session.scalar(
+                select(Carrier).where(
+                    Carrier.tenant_id == ff_day11_target.tenant_id,
+                    Carrier.name == "Lone Star Van",
+                )
+            )
+            assert rich_demo_carrier is not None
+            rich_demo_fit = next(
+                item
+                for item in CarrierHistoricalFitScorer(history_mode="identity").score(ff_features)
+                if item.carrier_external_id == rich_demo_carrier.external_id
+            )
+            serving_demo_fit = next(
+                item
+                for item in fixed_ranking
+                if item.carrier_external_id == rich_demo_carrier.external_id
+            )
+            assert rich_demo_fit.effective_history >= Decimal(9)
+            assert rich_demo_fit.adjusted_score >= Decimal(75)
+            assert rich_demo_fit.confidence == "HIGH"
+            assert serving_demo_fit.adjusted_score >= Decimal(75)
             other_tenant_target = session.scalar(
                 select(Load).where(
                     Load.tenant_id == tenant_ids[SourceSystem.BROKEROS],
@@ -428,6 +450,11 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
             assert ranking_report.with_deadhead.scored_case_count > 0
             assert ranking_report.with_deadhead.by_history_depth["RICH"].case_count >= 1
             assert ranking_report.with_deadhead.by_history_depth["SPARSE"].case_count >= 1
+            identity_ranking_report = RankingBacktestHarness(
+                scorer=CarrierHistoricalFitScorer(history_mode="identity")
+            ).run(session, tuple(tenant_ids.values()))
+            assert identity_ranking_report.with_deadhead.by_history_depth["RICH"].case_count >= 1
+            assert identity_ranking_report.with_deadhead.by_history_depth["SPARSE"].case_count >= 1
             assert ranking_report.all_candidates_with_deadhead.case_count == (
                 ranking_report.with_deadhead.case_count
             )

@@ -1,15 +1,6 @@
 {
   "carriers": [
     {
-      "carrier_id": 927919,
-      "carrier_name": "Guadalupe Transport",
-      "dot_no": "3900404",
-      "home_city": "Dallas",
-      "home_state": "TX",
-      "mc_no": "1350404",
-      "phone": "(214) 555-0101"
-    },
-    {
       "carrier_id": 884814,
       "carrier_name": "Delta Prime",
       "dot_no": "3900401",
@@ -30,7 +21,7 @@
   ],
   "loads": [
     {
-      "carrier_ref": 927919,
+      "carrier_ref": 884814,
       "customer_code": "HD-CUST-302",
       "customer_name": "Hill Country Produce",
       "del_arrived_at": null,

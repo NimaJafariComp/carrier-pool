@@ -1,34 +1,34 @@
 {
   "carriers": [
     {
-      "carrier_id": 668390,
-      "carrier_name": "Central Haul",
-      "dot_no": "3900402",
+      "carrier_id": 393580,
+      "carrier_name": "Bexar Logistics",
+      "dot_no": "3900407",
       "home_city": "Dallas",
       "home_state": "TX",
-      "mc_no": "1350402",
+      "mc_no": "1350407",
       "phone": "(214) 555-0101"
     }
   ],
   "loads": [
     {
-      "carrier_ref": 668390,
+      "carrier_ref": 393580,
       "customer_code": "HD-CUST-303",
       "customer_name": "Mission Foods",
       "del_arrived_at": null,
-      "del_city": "San Antonio",
+      "del_city": "Fort Worth",
       "del_date": "2026-07-08",
       "del_state": "TX",
-      "del_zip": "78205",
-      "dist_km": 318.328,
+      "del_zip": "76102",
+      "dist_km": 439.512,
       "entered_at": "2026-07-07 07:00:00",
-      "equip": "R",
-      "load_num": "HD-2005",
-      "pu_city": "Houston",
+      "equip": "F",
+      "load_num": "HD-2004",
+      "pu_city": "San Antonio",
       "pu_date": "2026-07-07",
       "pu_departed_at": null,
       "pu_state": "TX",
-      "pu_zip": "77002",
+      "pu_zip": "78205",
       "status_code": 30,
       "updated_at": "2026-07-07 07:00:00",
       "weight_kg": 10886.21688024085
@@ -36,11 +36,11 @@
   ],
   "rates": [
     {
-      "amount_usd": 1600,
+      "amount_usd": 1480,
       "code": "LINEHAUL",
       "created_at": "2026-07-07 07:00:00",
-      "load_num": "HD-2005",
-      "rate_id": 262299,
+      "load_num": "HD-2004",
+      "rate_id": 435657,
       "side": "pay"
     }
   ],

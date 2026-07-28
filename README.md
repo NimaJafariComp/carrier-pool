@@ -106,7 +106,7 @@ local defaults.
 | `make db-up` / `make migrate` | Start PostgreSQL and apply migrations to the normal local database. |
 | `make ingest` / `make decisions` | Ingest the generated files chronologically, then persist Day 11 decisions. |
 | `make rebuild TENANT_ID=<uuid>` | Rebuild one tenant's current projections from immutable facts. |
-| `make backtest` | Prepare deterministic local data and write rate-backtest artifacts. |
+| `make backtest` | Reset the dedicated demo database, prepare deterministic data, and write rate/ranking backtest artifacts. |
 | `make test` / `make test-unit` / `make test-integration` / `make e2e` | Run all automated tests, focused unit tests, database integration tests, or browser tests. |
 | `make api-types` | Regenerate frontend types from the FastAPI OpenAPI document. |
 | `make check` | Run formatting, lint, type checks, unit tests, and production builds. |

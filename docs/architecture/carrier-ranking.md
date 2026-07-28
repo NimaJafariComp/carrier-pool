@@ -2,7 +2,11 @@
 
 ## Scope and claim
 
-`carrier-ranking-v4` orders a tenant's own known carriers for an ACTIVE target
+`carrier-ranking-v5` is the serving model. It replaces v4's overlapping,
+capped score-history calculation with identity-aware, uncapped score shrinkage.
+`carrier-ranking-v6` is analysis-only: lowering the shrinkage prior increased
+numeric margins without improving ordering or tie behavior on the same temporal
+holdouts. All versions order a tenant's own known carriers for an ACTIVE target
 load using historical fit evidence available at an explicit `as_of` timestamp.
 It answers “which carriers have the strongest supported historical fit to call
 first?” It is not an acceptance-probability, live-capacity, availability,
@@ -119,23 +123,32 @@ Starting weights are lane `.40`, equipment `.20`, deadhead evidence `.20`, and
 recency `.20`. They are model-versioned defaults, tunable only through
 leakage-safe evaluation and documented parameter changes.
 
-Use a component-neutral prior of `50` and a combined effective history:
+### V5 serving model: identity-aware score shrinkage
+
+Use a component-neutral prior of `50` and an identity-aware effective history:
 
 ```text
-ESS_total = min(8, ESS_lane + 0.5 * exact_equipment_count + 0.5 * relevant_count)
-alpha = ESS_total / (ESS_total + 6)
+For each unique completed load version, retain its strongest applicable
+lane/equipment/relevance weight. Do not add separate lane, equipment, and recency
+counts for the same version.
+
+ESS_independent = Kish ESS over those unique version weights
+alpha = ESS_independent / (ESS_independent + 6)
 adjusted_score = alpha * raw_0_100 + (1 - alpha) * 50
 ```
 
-`ESS_lane` is Kish effective sample size over lane weights:
+The unique-version effective sample size uses the same Kish calculation:
 
 ```text
 ESS_lane = (sum(w_i)^2) / sum(w_i^2)
 ```
 
-Thus a single highly similar historical load can inform ordering but cannot
-produce an extreme score. A carrier with no usable evidence has no default rank;
-if explicitly included, it is score `50`, confidence LOW, and marked as such.
+Thus a single highly similar historical load can inform ordering but cannot produce
+an extreme score. Unlike v4, v5 does not cap score ESS at eight:
+sufficiently independent exact, recent, same-equipment history may move materially
+above neutral. The cap remains in the confidence term below, where saturation is
+appropriate. A carrier with no usable evidence has no default rank; if explicitly
+included, it is score `50`, confidence LOW, and marked as such.
 
 ## Confidence is separate
 
@@ -143,7 +156,7 @@ Score measures adjusted historical fit; confidence measures how much evidence
 supports it. Starting confidence score:
 
 ```text
-confidence = .45 * min(1, ESS_total / 6)
+confidence = .45 * min(1, min(8, ESS_independent) / 6)
            + .20 * lane_quality
            + .15 * recency_fit
            + .10 * equipment_coverage
@@ -154,9 +167,17 @@ confidence = .45 * min(1, ESS_total / 6)
 evidence coverage, not equipment-fit quality; equipment fit remains a score term.
 
 `HIGH >= .75`, `MEDIUM >= .45`, otherwise `LOW`. Unknown target equipment,
-missing pickup geography, or `ESS_total < 1` caps confidence at LOW. Return raw
+missing pickup geography, or `ESS_independent < 1` caps confidence at LOW. Return raw
 counts, ESS, component availability, caps, and warning codes; never use a high
 score as a proxy for high confidence.
+
+### V6 analysis candidate: lower prior strength
+
+V6 uses the same identity-aware evidence calculation but changes the shrinkage
+constant from `6` to `4`. It remains analysis-only. On the same 43 temporal cases,
+it preserved top-1 recall, top-3 recall, MRR, tie rate, and clear-top count exactly;
+it merely increased displayed score margins. That is insufficient evidence to tune
+the serving score scale, so v5 remains the simpler calibrated choice.
 
 ## Deterministic ordering
 
@@ -164,7 +185,7 @@ Sort candidates by:
 
 1. Descending adjusted score, rounded only for display (full Decimal value sorts).
 2. Descending confidence score.
-3. Descending `ESS_total`.
+3. Descending `ESS_independent`.
 4. Most recent relevant completion timestamp.
 5. Stable tenant-local carrier external ID ascending.
 
@@ -183,8 +204,9 @@ the API and renders as “No evidence”, never as a zero score.
 ## Evaluation acceptance
 
 Generated temporal holdout needs at least 24 authored cases and 14 scored cases,
-with at least three scored cases per source. Rich means `ESS_total >= 3`; lower
-effective history is sparse.
+with at least three scored cases per source. A generated rich case must have at
+least three distinct, exact-lane, same-equipment carrier loads completed before its
+cutoff, and `ESS_independent >= 3`. Lower effective history is sparse.
 It must include rich and sparse history; near-exact, broader-lane,
 distance/equipment, limited-candidate, and close-score-tie cases; at least one
 tie; and at least three clearly separated supported tops. These are coverage and

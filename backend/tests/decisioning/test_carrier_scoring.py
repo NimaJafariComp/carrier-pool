@@ -2,10 +2,15 @@
 
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
+from decimal import Decimal
 from uuid import uuid4
 
 from carrier_pool.decisioning.carrier_features import CarrierFeatureSet
-from carrier_pool.decisioning.carrier_scoring import CarrierHistoricalFitScorer, ScoringWeights
+from carrier_pool.decisioning.carrier_scoring import (
+    V6_SHRINKAGE_STRENGTH,
+    CarrierHistoricalFitScorer,
+    ScoringWeights,
+)
 from carrier_pool.geography.comparables import ComparableLoadEvidence, LaneTier
 
 NOW = datetime(2026, 7, 11, tzinfo=UTC)
@@ -167,3 +172,96 @@ def test_component_ablation_uses_zero_weight_without_changing_evidence_status() 
     assert all(item.evidence_status == "SUPPORTED" for item in without_deadhead)
     assert by_id["near"].component_scores["deadhead"] is not None
     assert with_deadhead != without_deadhead
+
+
+def test_one_completed_load_is_counted_once_across_lane_equipment_and_recency() -> None:
+    repeated_id = uuid4()
+    single_load = replace(
+        feature("single", history=4),
+        lane_history=(
+            ComparableLoadEvidence(
+                load_id=uuid4(),
+                load_external_id="history",
+                version_id=repeated_id,
+                equipment=None,
+                tier=LaneTier.NEAR_EXACT,
+                origin_distance_miles=0,
+                destination_distance_miles=0,
+                route_mile_difference=Decimal(0),
+                recency_days=0,
+                evidence_ids=(str(repeated_id),),
+            ),
+        ),
+        equipment_history_count=4,
+        relevant_completed_count=4,
+        equipment_history_version_ids=(repeated_id,) * 4,
+        relevant_completed_version_ids=(repeated_id,),
+        completed_history_version_ids=(repeated_id,) * 4,
+    )
+
+    scored = CarrierHistoricalFitScorer(history_mode="identity").score((single_load,))[0]
+
+    assert scored.effective_history == Decimal(1)
+    assert scored.adjusted_score < Decimal(60)
+
+
+def test_many_unique_exact_recent_loads_can_escape_sparse_prior() -> None:
+    version_ids = tuple(uuid4() for _ in range(12))
+    strong = replace(
+        feature("strong", history=12, delivery_miles=0, delivery_days=0, relevant_days=0),
+        lane_history=tuple(
+            ComparableLoadEvidence(
+                load_id=uuid4(),
+                load_external_id=f"history-{index}",
+                version_id=version_id,
+                equipment=None,
+                tier=LaneTier.NEAR_EXACT,
+                origin_distance_miles=0,
+                destination_distance_miles=0,
+                route_mile_difference=Decimal(0),
+                recency_days=0,
+                evidence_ids=(str(version_id),),
+            )
+            for index, version_id in enumerate(version_ids)
+        ),
+        equipment_history_count=12,
+        relevant_completed_count=12,
+        equipment_history_version_ids=version_ids,
+        relevant_completed_version_ids=version_ids,
+        completed_history_version_ids=version_ids,
+        equipment_history_age_days=(0.0,) * 12,
+        completed_history_age_days=(0.0,) * 12,
+    )
+
+    scored = CarrierHistoricalFitScorer(history_mode="identity").score((strong,))[0]
+
+    assert scored.effective_history == Decimal(12)
+    assert scored.adjusted_score > Decimal(80)
+
+
+def test_v6_candidate_reduces_shrinkage_without_weakening_one_load_protection() -> None:
+    sparse = feature("sparse", history=1, delivery_miles=0, delivery_days=0, relevant_days=0)
+    rich = replace(
+        feature("rich", history=8, delivery_miles=0, delivery_days=0, relevant_days=0),
+        lane_history=tuple(
+            replace(sparse.lane_history[0], load_id=uuid4(), version_id=uuid4()) for _ in range(8)
+        ),
+        equipment_history_count=8,
+        relevant_completed_count=8,
+        equipment_history_version_ids=tuple(uuid4() for _ in range(8)),
+        relevant_completed_version_ids=tuple(uuid4() for _ in range(8)),
+        completed_history_version_ids=tuple(uuid4() for _ in range(8)),
+        equipment_history_age_days=(0.0,) * 8,
+        completed_history_age_days=(0.0,) * 8,
+    )
+    v5 = CarrierHistoricalFitScorer(history_mode="identity").score((sparse, rich))
+    v6 = CarrierHistoricalFitScorer(
+        history_mode="identity", shrinkage_strength=V6_SHRINKAGE_STRENGTH
+    ).score((sparse, rich))
+    v5_by_id = {item.carrier_external_id: item for item in v5}
+    v6_by_id = {item.carrier_external_id: item for item in v6}
+
+    assert v6_by_id["rich"].adjusted_score > v5_by_id["rich"].adjusted_score
+    assert v6_by_id["sparse"].adjusted_score < Decimal(70)
+    assert v6_by_id["sparse"].warnings == v5_by_id["sparse"].warnings
+    assert v6_by_id["rich"].model_version == "carrier-ranking-v6"

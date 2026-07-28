@@ -129,6 +129,7 @@ class GeneratorLoad:
     distance_miles: Decimal
     day11_target: bool = False
     evaluation_probe: bool = False
+    history_anchor: bool = False
 
     def __post_init__(self) -> None:
         _required(self.logical_id, "logical_id")

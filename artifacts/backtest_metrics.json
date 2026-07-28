@@ -1,50 +1,50 @@
 {
   "by_equipment": {
     "DRY_VAN": {
-      "case_count": 13,
+      "case_count": 22,
       "metrics": {
-        "mae_usd": "88.01602032135049626172646038",
-        "median_absolute_error_usd": "55.00",
-        "range_coverage": "0.2307692307692307692307692308",
-        "wape": "0.07171471414462904740848912473"
+        "mae_usd": "50.39510411873973998566327741",
+        "median_absolute_error_usd": "27.50",
+        "range_coverage": "0.2727272727272727272727272727",
+        "wape": "0.04126134315639279046090778202"
       }
     },
     "FLATBED": {
       "case_count": 2,
       "metrics": {
-        "mae_usd": "177.50",
-        "median_absolute_error_usd": "177.50",
+        "mae_usd": "165.00",
+        "median_absolute_error_usd": "165.00",
         "range_coverage": "0",
-        "wape": "0.1167763157894736842105263158"
+        "wape": "0.1085526315789473684210526316"
       }
     },
     "REEFER": {
-      "case_count": 9,
+      "case_count": 10,
       "metrics": {
-        "mae_usd": "180.4635182037423838729891903",
-        "median_absolute_error_usd": "110.00",
-        "range_coverage": "0",
-        "wape": "0.1095932296783860630807626662"
+        "mae_usd": "157.8162182020535990325851822",
+        "median_absolute_error_usd": "85.00",
+        "range_coverage": "0.1",
+        "wape": "0.09640575333051533233511617728"
       }
     }
   },
   "by_history_depth": {
     "RICH": {
-      "case_count": 10,
+      "case_count": 26,
       "metrics": {
-        "mae_usd": "128.5710574096361421843699921",
-        "median_absolute_error_usd": "94.382023760803953334723357",
-        "range_coverage": "0.1",
-        "wape": "0.09495646780623053337102658205"
+        "mae_usd": "103.1482489474157796157863048",
+        "median_absolute_error_usd": "47.50",
+        "range_coverage": "0.1538461538461538461538461538",
+        "wape": "0.07614578286862039381063157084"
       }
     },
     "SPARSE": {
-      "case_count": 14,
+      "case_count": 8,
       "metrics": {
-        "mae_usd": "131.2620967082054631725461984",
-        "median_absolute_error_usd": "84.652625700182970321379064",
-        "range_coverage": "0.1428571428571428571428571429",
-        "wape": "0.09063720611170784140151155497"
+        "mae_usd": "41.875",
+        "median_absolute_error_usd": "27.50",
+        "range_coverage": "0.375",
+        "wape": "0.03028933092224231464737793852"
       }
     }
   },
@@ -52,10 +52,10 @@
     "DISTANCE_EQUIPMENT": {
       "case_count": 1,
       "metrics": {
-        "mae_usd": "35.00",
-        "median_absolute_error_usd": "35.00",
+        "mae_usd": "45.00",
+        "median_absolute_error_usd": "45.00",
         "range_coverage": "0",
-        "wape": "0.02978723404255319148936170213"
+        "wape": "0.03879310344827586206896551724"
       }
     },
     "METRO_CORRIDOR": {
@@ -68,12 +68,12 @@
       }
     },
     "NEAR_EXACT": {
-      "case_count": 17,
+      "case_count": 27,
       "metrics": {
-        "mae_usd": "79.61058400066105330937333518",
-        "median_absolute_error_usd": "83.351819756885149313474395",
-        "range_coverage": "0.1764705882352941176470588235",
-        "wape": "0.05709259346176915866945145320"
+        "mae_usd": "48.77238787528926925964607130",
+        "median_absolute_error_usd": "30.00",
+        "range_coverage": "0.2592592592592592592592592593",
+        "wape": "0.03639227504857842393285736977"
       }
     },
     "REGIONAL": {
@@ -88,31 +88,40 @@
     "TENANT_ALL_EQUIPMENT": {
       "case_count": 4,
       "metrics": {
-        "mae_usd": "392.50",
-        "median_absolute_error_usd": "385.00",
+        "mae_usd": "372.50",
+        "median_absolute_error_usd": "332.50",
         "range_coverage": "0",
-        "wape": "0.2595041322314049586776859504"
+        "wape": "0.2462809917355371900826446281"
       }
     }
   },
   "calibration": {
     "confidence_levels": {
-      "LOW": {
-        "case_count": 7,
+      "HIGH": {
+        "case_count": 11,
         "metrics": {
-          "mae_usd": "252.8571428571428571428571429",
-          "median_absolute_error_usd": "315.00",
+          "mae_usd": "33.63636363636363636363636364",
+          "median_absolute_error_usd": "30.00",
+          "range_coverage": "0.2727272727272727272727272727",
+          "wape": "0.02666666666666666666666666667"
+        }
+      },
+      "LOW": {
+        "case_count": 3,
+        "metrics": {
+          "mae_usd": "391.6666666666666666666666667",
+          "median_absolute_error_usd": "350.00",
           "range_coverage": "0",
-          "wape": "0.1750741839762611275964391691"
+          "wape": "0.2442827442827442827442827443"
         }
       },
       "MEDIUM": {
-        "case_count": 17,
+        "case_count": 20,
         "metrics": {
-          "mae_usd": "79.61058400066105330937333518",
-          "median_absolute_error_usd": "83.351819756885149313474395",
-          "range_coverage": "0.1764705882352941176470588235",
-          "wape": "0.05709259346176915866945145320"
+          "mae_usd": "73.59272363164051350052219625",
+          "median_absolute_error_usd": "40.00",
+          "range_coverage": "0.2",
+          "wape": "0.05333772323365864359523261189"
         }
       }
     },
@@ -122,10 +131,10 @@
       "DISTANCE_EQUIPMENT": {
         "case_count": 1,
         "metrics": {
-          "mae_usd": "35.00",
-          "median_absolute_error_usd": "35.00",
+          "mae_usd": "45.00",
+          "median_absolute_error_usd": "45.00",
           "range_coverage": "0",
-          "wape": "0.02978723404255319148936170213"
+          "wape": "0.03879310344827586206896551724"
         }
       },
       "METRO_CORRIDOR": {
@@ -138,12 +147,12 @@
         }
       },
       "NEAR_EXACT": {
-        "case_count": 17,
+        "case_count": 27,
         "metrics": {
-          "mae_usd": "79.61058400066105330937333518",
-          "median_absolute_error_usd": "83.351819756885149313474395",
-          "range_coverage": "0.1764705882352941176470588235",
-          "wape": "0.05709259346176915866945145320"
+          "mae_usd": "48.77238787528926925964607130",
+          "median_absolute_error_usd": "30.00",
+          "range_coverage": "0.2592592592592592592592592593",
+          "wape": "0.03639227504857842393285736977"
         }
       },
       "REGIONAL": {
@@ -158,21 +167,21 @@
       "TENANT_ALL_EQUIPMENT": {
         "case_count": 4,
         "metrics": {
-          "mae_usd": "392.50",
-          "median_absolute_error_usd": "385.00",
+          "mae_usd": "372.50",
+          "median_absolute_error_usd": "332.50",
           "range_coverage": "0",
-          "wape": "0.2595041322314049586776859504"
+          "wape": "0.2462809917355371900826446281"
         }
       }
     },
     "warning": "Confidence is evidence quality and this range is historical comparison only; neither is calibrated with this deterministic demo dataset."
   },
-  "case_count": 27,
+  "case_count": 43,
   "metrics": {
-    "mae_usd": "130.1408303338015794274727791",
-    "median_absolute_error_usd": "84.652625700182970321379064",
-    "range_coverage": "0.125",
-    "wape": "0.09236669903922040237348356345"
+    "mae_usd": "88.73101390096500794148364485",
+    "median_absolute_error_usd": "42.50",
+    "range_coverage": "0.2058823529411764705882352941",
+    "wape": "0.06518700243372537316357916865"
   },
   "model_selection_policy": {
     "blocker": "Deterministic demo outcomes are not independent operational data.",
@@ -188,21 +197,21 @@
   },
   "models": {
     "equipment_distance_band_median": {
-      "case_count": 20,
+      "case_count": 30,
       "metrics": {
-        "mae_usd": "77.75",
-        "median_absolute_error_usd": "50.00",
+        "mae_usd": "54.50",
+        "median_absolute_error_usd": "40.00",
         "range_coverage": null,
-        "wape": "0.05600576265081937691338015487"
+        "wape": "0.04064131245339299030574198359"
       }
     },
     "pricing-hierarchical-v1": {
-      "case_count": 24,
+      "case_count": 34,
       "metrics": {
-        "mae_usd": "130.1408303338015794274727791",
-        "median_absolute_error_usd": "84.652625700182970321379064",
-        "range_coverage": "0.125",
-        "wape": "0.09236669903922040237348356345"
+        "mae_usd": "88.73101390096500794148364485",
+        "median_absolute_error_usd": "42.50",
+        "range_coverage": "0.2058823529411764705882352941",
+        "wape": "0.06518700243372537316357916865"
       }
     },
     "quantile_regression": {
@@ -215,95 +224,95 @@
       }
     },
     "robust_huber_regression": {
-      "case_count": 0,
+      "case_count": 16,
       "metrics": {
-        "mae_usd": null,
-        "median_absolute_error_usd": null,
+        "mae_usd": "98.40948037494255625",
+        "median_absolute_error_usd": "61.4709068326579",
         "range_coverage": null,
-        "wape": null
+        "wape": "0.07264367640134167935409457901"
       }
     },
     "tenant_wide_median": {
-      "case_count": 24,
+      "case_count": 34,
       "metrics": {
-        "mae_usd": "159.5833333333333333333333333",
-        "median_absolute_error_usd": "85.00",
+        "mae_usd": "112.50",
+        "median_absolute_error_usd": "45.00",
         "range_coverage": null,
-        "wape": "0.1132633446695253585686825373"
+        "wape": "0.08264909248055315471045808124"
       }
     },
     "unshrunk_nearest_lane_weighted_median": {
-      "case_count": 24,
+      "case_count": 34,
       "metrics": {
-        "mae_usd": "132.9166666666666666666666667",
-        "median_absolute_error_usd": "57.50",
+        "mae_usd": "89.85294117647058823529411765",
+        "median_absolute_error_usd": "42.50",
         "range_coverage": null,
-        "wape": "0.09433683276652373207156587313"
+        "wape": "0.06601123595505617977528089888"
       }
     }
   },
   "same_population_comparisons": {
     "equipment_distance_band_median": {
       "baseline_metrics": {
-        "mae_usd": "77.75",
-        "median_absolute_error_usd": "50.00",
+        "mae_usd": "54.50",
+        "median_absolute_error_usd": "40.00",
         "range_coverage": null,
-        "wape": "0.05600576265081937691338015487"
+        "wape": "0.04064131245339299030574198359"
       },
       "by_history_depth": {
         "RICH": {
           "baseline_metrics": {
-            "mae_usd": "51.875",
-            "median_absolute_error_usd": "45.00",
+            "mae_usd": "59.09090909090909090909090909",
+            "median_absolute_error_usd": "42.50",
             "range_coverage": null,
-            "wape": "0.03869463869463869463869463869"
+            "wape": "0.04456633527596846074734316078"
           },
-          "case_count": 8,
+          "case_count": 22,
           "production_metrics": {
-            "mae_usd": "64.46382176204517773046249012",
-            "median_absolute_error_usd": "64.1759098784425746567371975",
-            "range_coverage": "0.125",
-            "wape": "0.04808490201364675261945920009"
+            "mae_usd": "54.17520330149137590956563295",
+            "median_absolute_error_usd": "35.00",
+            "range_coverage": "0.1818181818181818181818181818",
+            "wape": "0.04085891232885876825541460147"
           }
         },
         "SPARSE": {
           "baseline_metrics": {
-            "mae_usd": "95.00",
-            "median_absolute_error_usd": "70.00",
+            "mae_usd": "41.875",
+            "median_absolute_error_usd": "27.50",
             "range_coverage": null,
-            "wape": "0.06690140845070422535211267606"
+            "wape": "0.03028933092224231464737793852"
           },
-          "case_count": 12,
+          "case_count": 8,
           "production_metrics": {
-            "mae_usd": "86.47244615957304036797056475",
-            "median_absolute_error_usd": "69.652625700182970321379064",
-            "range_coverage": "0.1666666666666666666666666667",
-            "wape": "0.06089608884476974673800743996"
+            "mae_usd": "41.875",
+            "median_absolute_error_usd": "27.50",
+            "range_coverage": "0.375",
+            "wape": "0.03028933092224231464737793852"
           }
         }
       },
       "by_tier": {
         "DISTANCE_EQUIPMENT": {
           "baseline_metrics": {
-            "mae_usd": "35.00",
-            "median_absolute_error_usd": "35.00",
+            "mae_usd": "45.00",
+            "median_absolute_error_usd": "45.00",
             "range_coverage": null,
-            "wape": "0.02978723404255319148936170213"
+            "wape": "0.03879310344827586206896551724"
           },
           "case_count": 1,
           "production_metrics": {
-            "mae_usd": "35.00",
-            "median_absolute_error_usd": "35.00",
+            "mae_usd": "45.00",
+            "median_absolute_error_usd": "45.00",
             "range_coverage": "0",
-            "wape": "0.02978723404255319148936170213"
+            "wape": "0.03879310344827586206896551724"
           }
         },
         "METRO_CORRIDOR": {
           "baseline_metrics": {
-            "mae_usd": "140.00",
-            "median_absolute_error_usd": "140.00",
+            "mae_usd": "110.00",
+            "median_absolute_error_usd": "110.00",
             "range_coverage": null,
-            "wape": "0.08433734939759036144578313253"
+            "wape": "0.06626506024096385542168674699"
           },
           "case_count": 1,
           "production_metrics": {
@@ -315,25 +324,25 @@
         },
         "NEAR_EXACT": {
           "baseline_metrics": {
-            "mae_usd": "77.94117647058823529411764706",
-            "median_absolute_error_usd": "45.00",
+            "mae_usd": "53.14814814814814814814814815",
+            "median_absolute_error_usd": "30.00",
             "range_coverage": null,
-            "wape": "0.05589538072136680025311115798"
+            "wape": "0.03965731656763852425037999171"
           },
-          "case_count": 17,
+          "case_count": 27,
           "production_metrics": {
-            "mae_usd": "79.61058400066105330937333518",
-            "median_absolute_error_usd": "83.351819756885149313474395",
-            "range_coverage": "0.1764705882352941176470588235",
-            "wape": "0.05709259346176915866945145320"
+            "mae_usd": "48.77238787528926925964607130",
+            "median_absolute_error_usd": "30.00",
+            "range_coverage": "0.2592592592592592592592592593",
+            "wape": "0.03639227504857842393285736977"
           }
         },
         "REGIONAL": {
           "baseline_metrics": {
-            "mae_usd": "55.00",
-            "median_absolute_error_usd": "55.00",
+            "mae_usd": "45.00",
+            "median_absolute_error_usd": "45.00",
             "range_coverage": null,
-            "wape": "0.04489795918367346938775510204"
+            "wape": "0.03673469387755102040816326531"
           },
           "case_count": 1,
           "production_metrics": {
@@ -344,12 +353,12 @@
           }
         }
       },
-      "case_count": 20,
+      "case_count": 30,
       "production_metrics": {
-        "mae_usd": "77.6689964005618953129673349",
-        "median_absolute_error_usd": "69.1759098784425746567371975",
-        "range_coverage": "0.15",
-        "wape": "0.05594741321848506775650447319"
+        "mae_usd": "50.89514908776034233368146417",
+        "median_absolute_error_usd": "35.00",
+        "range_coverage": "0.2333333333333333333333333333",
+        "wape": "0.03795313131078325304525090542"
       }
     },
     "quantile_regression": {
@@ -371,82 +380,144 @@
     },
     "robust_huber_regression": {
       "baseline_metrics": {
-        "mae_usd": null,
-        "median_absolute_error_usd": null,
+        "mae_usd": "98.40948037494255625",
+        "median_absolute_error_usd": "61.4709068326579",
         "range_coverage": null,
-        "wape": null
+        "wape": "0.07264367640134167935409457901"
       },
-      "by_history_depth": {},
-      "by_tier": {},
-      "case_count": 0,
+      "by_history_depth": {
+        "RICH": {
+          "baseline_metrics": {
+            "mae_usd": "100.0869922299491076923076923",
+            "median_absolute_error_usd": "57.3690606311839",
+            "range_coverage": null,
+            "wape": "0.07642472240759696916299559471"
+          },
+          "case_count": 13,
+          "production_metrics": {
+            "mae_usd": "76.82248389325186766804554638",
+            "median_absolute_error_usd": "45.00",
+            "range_coverage": "0.1538461538461538461538461538",
+            "wape": "0.05866034012406897384344153322"
+          }
+        },
+        "SPARSE": {
+          "baseline_metrics": {
+            "mae_usd": "91.14026233658083333333333333",
+            "median_absolute_error_usd": "99.4192910943893",
+            "range_coverage": null,
+            "wape": "0.05880016924940698924731182796"
+          },
+          "case_count": 3,
+          "production_metrics": {
+            "mae_usd": "85.00",
+            "median_absolute_error_usd": "100.00",
+            "range_coverage": "0",
+            "wape": "0.05483870967741935483870967742"
+          }
+        }
+      },
+      "by_tier": {
+        "NEAR_EXACT": {
+          "baseline_metrics": {
+            "mae_usd": "58.4119025963986",
+            "median_absolute_error_usd": "58.342721742999",
+            "range_coverage": null,
+            "wape": "0.04385277972702597597597597598"
+          },
+          "case_count": 15,
+          "production_metrics": {
+            "mae_usd": "47.91281937415161864563947353",
+            "median_absolute_error_usd": "45.00",
+            "range_coverage": "0.1333333333333333333333333333",
+            "wape": "0.03597058511572944342765726241"
+          }
+        },
+        "TENANT_ALL_EQUIPMENT": {
+          "baseline_metrics": {
+            "mae_usd": "698.3731470531019",
+            "median_absolute_error_usd": "698.3731470531019",
+            "range_coverage": null,
+            "wape": "0.4120195557835409439528023599"
+          },
+          "case_count": 1,
+          "production_metrics": {
+            "mae_usd": "535.00",
+            "median_absolute_error_usd": "535.00",
+            "range_coverage": "0",
+            "wape": "0.3156342182890855457227138643"
+          }
+        }
+      },
+      "case_count": 16,
       "production_metrics": {
-        "mae_usd": null,
-        "median_absolute_error_usd": null,
-        "range_coverage": null,
-        "wape": null
+        "mae_usd": "78.35576816326714248028700644",
+        "median_absolute_error_usd": "47.50",
+        "range_coverage": "0.125",
+        "wape": "0.05784047476873237737875857453"
       }
     },
     "tenant_wide_median": {
       "baseline_metrics": {
-        "mae_usd": "159.5833333333333333333333333",
-        "median_absolute_error_usd": "85.00",
+        "mae_usd": "112.50",
+        "median_absolute_error_usd": "45.00",
         "range_coverage": null,
-        "wape": "0.1132633446695253585686825373"
+        "wape": "0.08264909248055315471045808124"
       },
       "by_history_depth": {
         "RICH": {
           "baseline_metrics": {
-            "mae_usd": "108.00",
-            "median_absolute_error_usd": "75.00",
+            "mae_usd": "103.8461538461538461538461538",
+            "median_absolute_error_usd": "45.00",
             "range_coverage": null,
-            "wape": "0.07976366322008862629246676514"
+            "wape": "0.07666098807495741056218057922"
           },
-          "case_count": 10,
+          "case_count": 26,
           "production_metrics": {
-            "mae_usd": "128.5710574096361421843699921",
-            "median_absolute_error_usd": "94.382023760803953334723357",
-            "range_coverage": "0.1",
-            "wape": "0.09495646780623053337102658205"
+            "mae_usd": "103.1482489474157796157863048",
+            "median_absolute_error_usd": "47.50",
+            "range_coverage": "0.1538461538461538461538461538",
+            "wape": "0.07614578286862039381063157084"
           }
         },
         "SPARSE": {
           "baseline_metrics": {
-            "mae_usd": "196.4285714285714285714285714",
-            "median_absolute_error_usd": "135.00",
+            "mae_usd": "140.625",
+            "median_absolute_error_usd": "30.00",
             "range_coverage": null,
-            "wape": "0.1356350184956843403205918619"
+            "wape": "0.1017179023508137432188065099"
           },
-          "case_count": 14,
+          "case_count": 8,
           "production_metrics": {
-            "mae_usd": "131.2620967082054631725461984",
-            "median_absolute_error_usd": "84.652625700182970321379064",
-            "range_coverage": "0.1428571428571428571428571429",
-            "wape": "0.09063720611170784140151155497"
+            "mae_usd": "41.875",
+            "median_absolute_error_usd": "27.50",
+            "range_coverage": "0.375",
+            "wape": "0.03028933092224231464737793852"
           }
         }
       },
       "by_tier": {
         "DISTANCE_EQUIPMENT": {
           "baseline_metrics": {
-            "mae_usd": "35.00",
-            "median_absolute_error_usd": "35.00",
+            "mae_usd": "45.00",
+            "median_absolute_error_usd": "45.00",
             "range_coverage": null,
-            "wape": "0.02978723404255319148936170213"
+            "wape": "0.03879310344827586206896551724"
           },
           "case_count": 1,
           "production_metrics": {
-            "mae_usd": "35.00",
-            "median_absolute_error_usd": "35.00",
+            "mae_usd": "45.00",
+            "median_absolute_error_usd": "45.00",
             "range_coverage": "0",
-            "wape": "0.02978723404255319148936170213"
+            "wape": "0.03879310344827586206896551724"
           }
         },
         "METRO_CORRIDOR": {
           "baseline_metrics": {
-            "mae_usd": "140.00",
-            "median_absolute_error_usd": "140.00",
+            "mae_usd": "110.00",
+            "median_absolute_error_usd": "110.00",
             "range_coverage": null,
-            "wape": "0.08433734939759036144578313253"
+            "wape": "0.06626506024096385542168674699"
           },
           "case_count": 1,
           "production_metrics": {
@@ -458,25 +529,25 @@
         },
         "NEAR_EXACT": {
           "baseline_metrics": {
-            "mae_usd": "128.8235294117647058823529412",
-            "median_absolute_error_usd": "80.00",
+            "mae_usd": "82.77777777777777777777777778",
+            "median_absolute_error_usd": "30.00",
             "range_coverage": null,
-            "wape": "0.09238557266399493777684032904"
+            "wape": "0.06176592510708857261296117176"
           },
-          "case_count": 17,
+          "case_count": 27,
           "production_metrics": {
-            "mae_usd": "79.61058400066105330937333518",
-            "median_absolute_error_usd": "83.351819756885149313474395",
-            "range_coverage": "0.1764705882352941176470588235",
-            "wape": "0.05709259346176915866945145320"
+            "mae_usd": "48.77238787528926925964607130",
+            "median_absolute_error_usd": "30.00",
+            "range_coverage": "0.2592592592592592592592592593",
+            "wape": "0.03639227504857842393285736977"
           }
         },
         "REGIONAL": {
           "baseline_metrics": {
-            "mae_usd": "55.00",
-            "median_absolute_error_usd": "55.00",
+            "mae_usd": "45.00",
+            "median_absolute_error_usd": "45.00",
             "range_coverage": null,
-            "wape": "0.04489795918367346938775510204"
+            "wape": "0.03673469387755102040816326531"
           },
           "case_count": 1,
           "production_metrics": {
@@ -488,81 +559,81 @@
         },
         "TENANT_ALL_EQUIPMENT": {
           "baseline_metrics": {
-            "mae_usd": "352.50",
-            "median_absolute_error_usd": "317.50",
+            "mae_usd": "347.50",
+            "median_absolute_error_usd": "310.00",
             "range_coverage": null,
-            "wape": "0.2330578512396694214876033058"
+            "wape": "0.2297520661157024793388429752"
           },
           "case_count": 4,
           "production_metrics": {
-            "mae_usd": "392.50",
-            "median_absolute_error_usd": "385.00",
+            "mae_usd": "372.50",
+            "median_absolute_error_usd": "332.50",
             "range_coverage": "0",
-            "wape": "0.2595041322314049586776859504"
+            "wape": "0.2462809917355371900826446281"
           }
         }
       },
-      "case_count": 24,
+      "case_count": 34,
       "production_metrics": {
-        "mae_usd": "130.1408303338015794274727791",
-        "median_absolute_error_usd": "84.652625700182970321379064",
-        "range_coverage": "0.125",
-        "wape": "0.09236669903922040237348356345"
+        "mae_usd": "88.73101390096500794148364485",
+        "median_absolute_error_usd": "42.50",
+        "range_coverage": "0.2058823529411764705882352941",
+        "wape": "0.06518700243372537316357916865"
       }
     },
     "unshrunk_nearest_lane_weighted_median": {
       "baseline_metrics": {
-        "mae_usd": "132.9166666666666666666666667",
-        "median_absolute_error_usd": "57.50",
+        "mae_usd": "89.85294117647058823529411765",
+        "median_absolute_error_usd": "42.50",
         "range_coverage": null,
-        "wape": "0.09433683276652373207156587313"
+        "wape": "0.06601123595505617977528089888"
       },
       "by_history_depth": {
         "RICH": {
           "baseline_metrics": {
-            "mae_usd": "119.50",
-            "median_absolute_error_usd": "47.50",
+            "mae_usd": "104.6153846153846153846153846",
+            "median_absolute_error_usd": "45.00",
             "range_coverage": null,
-            "wape": "0.08825701624815361890694239291"
+            "wape": "0.07722884724588302101078932425"
           },
-          "case_count": 10,
+          "case_count": 26,
           "production_metrics": {
-            "mae_usd": "128.5710574096361421843699921",
-            "median_absolute_error_usd": "94.382023760803953334723357",
-            "range_coverage": "0.1",
-            "wape": "0.09495646780623053337102658205"
+            "mae_usd": "103.1482489474157796157863048",
+            "median_absolute_error_usd": "47.50",
+            "range_coverage": "0.1538461538461538461538461538",
+            "wape": "0.07614578286862039381063157084"
           }
         },
         "SPARSE": {
           "baseline_metrics": {
-            "mae_usd": "142.50",
-            "median_absolute_error_usd": "92.50",
+            "mae_usd": "41.875",
+            "median_absolute_error_usd": "27.50",
             "range_coverage": null,
-            "wape": "0.09839704069050554870530209618"
+            "wape": "0.03028933092224231464737793852"
           },
-          "case_count": 14,
+          "case_count": 8,
           "production_metrics": {
-            "mae_usd": "131.2620967082054631725461984",
-            "median_absolute_error_usd": "84.652625700182970321379064",
-            "range_coverage": "0.1428571428571428571428571429",
-            "wape": "0.09063720611170784140151155497"
+            "mae_usd": "41.875",
+            "median_absolute_error_usd": "27.50",
+            "range_coverage": "0.375",
+            "wape": "0.03028933092224231464737793852"
           }
         }
       },
       "by_tier": {
         "DISTANCE_EQUIPMENT": {
           "baseline_metrics": {
-            "mae_usd": "35.00",
-            "median_absolute_error_usd": "35.00",
+            "mae_usd": "45.00",
+            "median_absolute_error_usd": "45.00",
             "range_coverage": null,
-            "wape": "0.02978723404255319148936170213"
+            "wape": "0.03879310344827586206896551724"
           },
           "case_count": 1,
           "production_metrics": {
-            "mae_usd": "35.00",
-            "median_absolute_error_usd": "35.00",
+            "mae_usd": "45.00",
+            "median_absolute_error_usd": "45.00",
             "range_coverage": "0",
-            "wape": "0.02978723404255319148936170213"
+            "wape": "0.03879310344827586206896551724"
           }
         },
         "METRO_CORRIDOR": {
@@ -582,17 +653,17 @@
         },
         "NEAR_EXACT": {
           "baseline_metrics": {
-            "mae_usd": "83.52941176470588235294117647",
-            "median_absolute_error_usd": "50.00",
+            "mae_usd": "50.18518518518518518518518519",
+            "median_absolute_error_usd": "30.00",
             "range_coverage": null,
-            "wape": "0.05990297405610630668635309007"
+            "wape": "0.03744645571369351941412187370"
           },
-          "case_count": 17,
+          "case_count": 27,
           "production_metrics": {
-            "mae_usd": "79.61058400066105330937333518",
-            "median_absolute_error_usd": "83.351819756885149313474395",
-            "range_coverage": "0.1764705882352941176470588235",
-            "wape": "0.05709259346176915866945145320"
+            "mae_usd": "48.77238787528926925964607130",
+            "median_absolute_error_usd": "30.00",
+            "range_coverage": "0.2592592592592592592592592593",
+            "wape": "0.03639227504857842393285736977"
           }
         },
         "REGIONAL": {
@@ -612,28 +683,28 @@
         },
         "TENANT_ALL_EQUIPMENT": {
           "baseline_metrics": {
-            "mae_usd": "392.50",
-            "median_absolute_error_usd": "385.00",
+            "mae_usd": "372.50",
+            "median_absolute_error_usd": "332.50",
             "range_coverage": null,
-            "wape": "0.2595041322314049586776859504"
+            "wape": "0.2462809917355371900826446281"
           },
           "case_count": 4,
           "production_metrics": {
-            "mae_usd": "392.50",
-            "median_absolute_error_usd": "385.00",
+            "mae_usd": "372.50",
+            "median_absolute_error_usd": "332.50",
             "range_coverage": "0",
-            "wape": "0.2595041322314049586776859504"
+            "wape": "0.2462809917355371900826446281"
           }
         }
       },
-      "case_count": 24,
+      "case_count": 34,
       "production_metrics": {
-        "mae_usd": "130.1408303338015794274727791",
-        "median_absolute_error_usd": "84.652625700182970321379064",
-        "range_coverage": "0.125",
-        "wape": "0.09236669903922040237348356345"
+        "mae_usd": "88.73101390096500794148364485",
+        "median_absolute_error_usd": "42.50",
+        "range_coverage": "0.2058823529411764705882352941",
+        "wape": "0.06518700243372537316357916865"
       }
     }
   },
-  "scored_case_count": 24
+  "scored_case_count": 34
 }

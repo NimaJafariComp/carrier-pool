@@ -2,14 +2,14 @@
   "records": [
     {
       "CreatedDate": "2026-07-05T18:00:00.000+0000",
-      "Id": "a0j71905B1A95DF4B0",
+      "Id": "a0j2EB4FB795A6EDFD",
       "LastModifiedDate": "2026-07-05T18:00:00.000+0000",
-      "Name": "BO-3004",
+      "Name": "BO-3003",
       "bos__Carrier_Rate__c": null,
       "bos__Carrier__c": null,
-      "bos__Customer_Rate__c": 2160,
-      "bos__Customer__c": "0014DD806107C8FF73",
-      "bos__Distance_Miles__c": 214.7,
+      "bos__Customer_Rate__c": 1910,
+      "bos__Customer__c": "0017F25C12B6C0E60C",
+      "bos__Distance_Miles__c": 237.9,
       "bos__Equipment_Type__c": "Reefer",
       "bos__Line_Items__r": [
         {
@@ -25,53 +25,38 @@
           "bos__Arrival_Time__c": null,
           "bos__Is_Dropoff__c": false,
           "bos__Is_Pickup__c": true,
-          "bos__Location__c": "001F04A07EF8DE704D",
+          "bos__Location__c": "001B982E8C6B92D48E",
           "bos__Number__c": 1,
           "bos__Scheduled_Date__c": "2026-07-07"
         },
         {
           "bos__Arrival_Time__c": null,
-          "bos__Is_Dropoff__c": false,
-          "bos__Is_Pickup__c": false,
-          "bos__Location__c": "0013C3DBA5ED1B5F8C",
-          "bos__Number__c": 2,
-          "bos__Scheduled_Date__c": "2026-07-08"
-        },
-        {
-          "bos__Arrival_Time__c": null,
           "bos__Is_Dropoff__c": true,
           "bos__Is_Pickup__c": false,
-          "bos__Location__c": "001A06FC7BDA751406",
-          "bos__Number__c": 3,
-          "bos__Scheduled_Date__c": "2026-07-09"
+          "bos__Location__c": "001AE19313D2600FCA",
+          "bos__Number__c": 2,
+          "bos__Scheduled_Date__c": "2026-07-08"
         }
       ]
     }
   ],
   "referenced_records": {
-    "0013C3DBA5ED1B5F8C": {
-      "Name": "Houston Facility",
-      "bos__City__c": "Houston",
-      "bos__Postal_Code__c": "77002",
-      "bos__State__c": "TX",
-      "type": "Location"
-    },
-    "0014DD806107C8FF73": {
-      "Name": "Gulf Coast Foods",
+    "0017F25C12B6C0E60C": {
+      "Name": "Bayou Retail",
       "record_type": "Customer",
       "type": "Account"
     },
-    "001A06FC7BDA751406": {
-      "Name": "Schertz Facility",
-      "bos__City__c": "Schertz",
-      "bos__Postal_Code__c": "78154",
+    "001AE19313D2600FCA": {
+      "Name": "San Antonio Facility",
+      "bos__City__c": "San Antonio",
+      "bos__Postal_Code__c": "78205",
       "bos__State__c": "TX",
       "type": "Location"
     },
-    "001F04A07EF8DE704D": {
-      "Name": "Sugar Land Facility",
-      "bos__City__c": "Sugar Land",
-      "bos__Postal_Code__c": "77478",
+    "001B982E8C6B92D48E": {
+      "Name": "Galveston Facility",
+      "bos__City__c": "Galveston",
+      "bos__Postal_Code__c": "77550",
       "bos__State__c": "TX",
       "type": "Location"
     }

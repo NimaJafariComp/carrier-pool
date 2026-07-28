@@ -652,6 +652,14 @@ acceptance evidence has not yet been recorded.
 
 ## Latest verification — 2026-07-28
 
+- **Ranking model selection:** `carrier-ranking-v5` is now serving. It counts each
+  completed version once and removes v4's score-ESS ceiling. On the same 43 temporal
+  cases and 24 scored cases, v4, v5, and v6 all produced 83.33% top-1, 91.67% top-3,
+  0.889 MRR, 11.6% tie rate, and 29 clear tops. V6's lower shrinkage constant only
+  enlarged numeric margins, so it remains analysis-only. The Day 11 FreightFlow
+  scenario asserts a 75+ High-confidence v5 score from nine independent exact-lane
+  histories and a recent historical return delivery. `make backtest`, focused
+  decisioning tests, the PostgreSQL smoke test, Ruff, and Pyright pass.
 - **Offline route geography:** decision details now end with a continuous Three.js
   globe that rotates toward Texas, zooms the same globe, then reveals the bundled
   U.S. Census Texas boundary and the active route above its curved surface. Its

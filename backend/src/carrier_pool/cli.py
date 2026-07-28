@@ -13,11 +13,16 @@ from sqlalchemy.orm import Session
 from carrier_pool.db.models import Load
 from carrier_pool.db.tenant import set_tenant_context
 from carrier_pool.decisioning.backtest import RateBacktestHarness, write_backtest_artifacts
+from carrier_pool.decisioning.carrier_scoring import (
+    V6_SHRINKAGE_STRENGTH,
+    CarrierHistoricalFitScorer,
+)
 from carrier_pool.decisioning.decision_runs import DecisionRunService
 from carrier_pool.decisioning.ranking_evaluation import (
     RankingBacktestHarness,
     ranking_acceptance_failures,
     write_ranking_artifacts,
+    write_ranking_formula_comparison,
 )
 from carrier_pool.demo import DEMO_TENANTS, seed_demo_tenants
 from carrier_pool.domain.types import LoadStatus, SourceSystem
@@ -191,11 +196,24 @@ def rate_backtest(
     try:
         with Session(engine) as session:
             report = RateBacktestHarness().run(session)
-            ranking_report = RankingBacktestHarness().run(session)
+            ranking_report = RankingBacktestHarness(
+                scorer=CarrierHistoricalFitScorer(history_mode="identity")
+            ).run(session)
+            legacy_ranking_report = RankingBacktestHarness(
+                scorer=CarrierHistoricalFitScorer(history_mode="legacy")
+            ).run(session)
+            calibrated_ranking_report = RankingBacktestHarness(
+                scorer=CarrierHistoricalFitScorer(
+                    history_mode="identity", shrinkage_strength=V6_SHRINKAGE_STRENGTH
+                )
+            ).run(session)
     finally:
         engine.dispose()
     metrics_path, cases_path = write_backtest_artifacts(report, artifacts_dir)
     ranking_metrics_path = write_ranking_artifacts(ranking_report, artifacts_dir)
+    ranking_comparison_path = write_ranking_formula_comparison(
+        ranking_report, legacy_ranking_report, artifacts_dir, calibrated_ranking_report
+    )
     ranking_failures = ranking_acceptance_failures(ranking_report)
     if ranking_failures:
         typer.echo("ranking evaluation acceptance failed: " + "; ".join(ranking_failures))
@@ -208,6 +226,7 @@ def rate_backtest(
                 "metrics_path": str(metrics_path),
                 "cases_path": str(cases_path),
                 "ranking_metrics_path": str(ranking_metrics_path),
+                "ranking_comparison_path": str(ranking_comparison_path),
             },
             sort_keys=True,
         )

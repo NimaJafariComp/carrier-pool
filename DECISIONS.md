@@ -73,6 +73,45 @@ Rejected: opaque ML as default (including neural/boosted models). Revisit a more
 complex model only if leakage-free backtesting materially improves results, remains
 explainable, and sufficient real-world training labels exist.
 
+## Carrier historical-fit score calibration
+
+Serving `carrier-ranking-v5` calculates effective history from unique immutable
+completed-load versions, retaining each version's strongest applicable lane,
+equipment, or relevance weight. Use that identity-aware Kish ESS without a hard cap
+for neutral-prior score shrinkage: `alpha = ESS / (ESS + 6)`. Retain a capped ESS of
+8 only for confidence saturation.
+
+Reason: v4 adds lane ESS, equipment count, and relevant-work count even when the
+same completed version supplied all three facts, and then capped that total at 8.
+The cap made scores above 78.6 mathematically impossible even with perfect evidence,
+while the overlapping counts could overstate a small history. V5 preserves the
+essential sparse-history pull toward neutral 50, permits genuinely independent
+history to escape it, and keeps confidence separate.
+
+Selection rule: `make backtest` must produce a same-case
+`ranking_score_comparison.json` for v4, v5, and any calibration candidate, with no
+acceptance-gate regression in coverage, sparse-case behavior, or tie presentation.
+The eventual booking remains a weak proxy only; synthetic holdouts can detect
+regressions but cannot establish real-world carrier acceptance or dispatch quality.
+
+2026-07-28 evaluation result: promote v5. On the clean, resettable demo database,
+v4, v5, and v6 use the same 43 temporal cases and 24 scored cases. All have
+identical top-1 recall (83.33%), top-3 recall (91.67%), MRR (0.889), tie rate
+(11.6%), and 29 clear top recommendations. V5 becomes serving because it removes
+v4's duplicate-evidence inflation and hard score ceiling with no measured
+regression. V6 uses a lower shrinkage constant (`4` rather than `6`) and only
+increases numeric margins, so it is not promoted.
+
+The prior rich-holdout defect is fixed without weakening its definition. Each rich
+probe now has three distinct, exact-lane, same-equipment anchor loads completed for
+its booked carrier before activation, and reaches `ESS_independent >= 3`. The
+FreightFlow Day 11 demonstration adds nine exact-lane anchors plus a later historical
+return delivery for a strong, honest historical-fit example. `make backtest` resets and evaluates
+the dedicated demo database so stale local ingestion data cannot distort this comparison.
+
+Rejected: training a serving ranking model on generated booking labels. Synthetic
+labels encode fixture authorship, not independent operational outcomes.
+
 ### Baseline comparison policy
 
 Backtesting includes analysis-only tenant-wide median, equipment-plus-distance-band

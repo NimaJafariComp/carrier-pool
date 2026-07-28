@@ -103,23 +103,32 @@ function evidenceStrength(level: string | null | undefined): string {
 function tierDescription(decision: Decision): string {
   const local = decision.pricing.local_tier;
   if (!local) return "Tenant historical evidence";
-  const labels: Record<string, string> = {
-    NEAR_EXACT: "Near exact lane",
-    REGIONAL: "Regional lane",
-    METRO_CORRIDOR: "Metro corridor",
-    DISTANCE_EQUIPMENT: "Distance and equipment",
-    TENANT_EQUIPMENT: "Tenant equipment",
-    TENANT_ALL_EQUIPMENT: "Tenant all-equipment",
-  };
-  const localText = labels[local] ?? titleCase(local);
+  const localText = tierLabel(local, "summary");
   const broaderText = decision.pricing.broader_tier
-    ? (
-        labels[decision.pricing.broader_tier] ?? titleCase(decision.pricing.broader_tier)
-      ).toLowerCase()
+    ? tierLabel(decision.pricing.broader_tier, "summary").toLowerCase()
     : null;
-  return broaderText
-    ? `${localText} matches, blended with ${broaderText} matches`
-    : `${localText} matches`;
+  return broaderText ? `${localText}, blended with ${broaderText}` : localText;
+}
+
+function tierLabel(tier: string, context: "summary" | "table" = "table"): string {
+  const labels: Record<string, { summary: string; table: string }> = {
+    NEAR_EXACT: { summary: "Near-exact lane", table: "Near-exact geography" },
+    REGIONAL: { summary: "Regional lane", table: "Regional route" },
+    METRO_CORRIDOR: { summary: "Metro corridor", table: "Metro-corridor route" },
+    DISTANCE_EQUIPMENT: {
+      summary: "Nearby route, same equipment",
+      table: "Nearby route, same equipment",
+    },
+    TENANT_EQUIPMENT: {
+      summary: "Same equipment, broader broker history",
+      table: "Same equipment, broader history",
+    },
+    TENANT_ALL_EQUIPMENT: {
+      summary: "Broader broker history",
+      table: "Broader broker history",
+    },
+  };
+  return labels[tier]?.[context] ?? titleCase(tier);
 }
 
 function comparableMatch(item: Decision["comparable_loads"][number]): {
@@ -138,7 +147,7 @@ function comparableMatch(item: Decision["comparable_loads"][number]): {
   };
 
   return {
-    tier: item.tier ? titleCase(item.tier) : "Match details unavailable",
+    tier: item.tier ? tierLabel(item.tier) : "Match details unavailable",
     endpoints:
       sameOrigin && sameDestination
         ? "Same pickup & delivery area"
@@ -274,9 +283,9 @@ function componentEvidenceSummary(evidence: EvidenceLoad): string {
     evidence.origin_distance_miles !== undefined &&
     evidence.destination_distance_miles !== null &&
     evidence.destination_distance_miles !== undefined
-      ? `${titleCase(evidence.tier).replace("Near Exact", "Near-exact")} geography · ${Math.round(evidence.origin_distance_miles)} mi from pickup · ${Math.round(evidence.destination_distance_miles)} mi from delivery`
+      ? `${tierLabel(evidence.tier)} · ${Math.round(evidence.origin_distance_miles)} mi from pickup · ${Math.round(evidence.destination_distance_miles)} mi from delivery`
       : evidence.tier
-        ? titleCase(evidence.tier)
+        ? tierLabel(evidence.tier)
         : null;
   const bits = [
     evidence.load_number ?? evidence.load_external_id,
@@ -294,10 +303,13 @@ function componentEvidenceSummary(evidence: EvidenceLoad): string {
 function CarrierRankings({ carriers }: { carriers: Decision["ranked_carriers"] }) {
   const orderedCarriers = [...carriers].sort((left, right) => left.rank - right.rank);
   if (orderedCarriers.length === 0) return null;
-  const supported = orderedCarriers.filter((carrier) => carrier.evidence_status === "SUPPORTED");
-  const limited = orderedCarriers.filter((carrier) => carrier.evidence_status !== "SUPPORTED");
+  const callOrder = orderedCarriers.filter(
+    (carrier) =>
+      carrier.evidence_status === "SUPPORTED" && Number(carrier.confidence_score) >= 0.45,
+  );
+  const moreHistoryNeeded = orderedCarriers.filter((carrier) => !callOrder.includes(carrier));
   const tieGroupCounts = new Map<number, number>();
-  for (const carrier of supported) {
+  for (const carrier of callOrder) {
     if (carrier.tie_group !== null) {
       tieGroupCounts.set(carrier.tie_group, (tieGroupCounts.get(carrier.tie_group) ?? 0) + 1);
     }
@@ -309,11 +321,11 @@ function CarrierRankings({ carriers }: { carriers: Decision["ranked_carriers"] }
         <div>
           <h3 id="carrier-rankings-title">Carriers to review first</h3>
         </div>
-        <p>Historical evidence only</p>
+        <p>Completed-work history, not availability</p>
       </div>
-      {supported.length > 0 && (
+      {callOrder.length > 0 && (
         <ol className="carrier-rankings__list">
-          {supported.map((carrier) => {
+          {callOrder.map((carrier) => {
             const isTie =
               carrier.tie_group !== null && (tieGroupCounts.get(carrier.tie_group) ?? 0) > 1;
             const bullets = [
@@ -379,23 +391,17 @@ function CarrierRankings({ carriers }: { carriers: Decision["ranked_carriers"] }
           })}
         </ol>
       )}
-      {limited.length > 0 && (
+      {moreHistoryNeeded.length > 0 && (
         <section className="limited-carriers" aria-labelledby="limited-carriers-title">
-          <h4 id="limited-carriers-title">Limited relevant history</h4>
-          <p>
-            These carriers have completed work, but not enough matching lane or equipment evidence
-            to set a call order.
-          </p>
+          <h4 id="limited-carriers-title">More history needed</h4>
+          <p>Not enough matching completed work to set a call order.</p>
           <ol className="carrier-rankings__list">
-            {limited.map((carrier) => (
+            {moreHistoryNeeded.map((carrier) => (
               <li key={carrier.carrier_id} className="carrier-card carrier-card--limited">
                 <div className="carrier-card__rank">No call order</div>
                 <div className="carrier-card__summary">
                   <h4>{carrier.carrier_name}</h4>
-                  <p>
-                    <strong>{Number(carrier.adjusted_score).toFixed(1)} / 100</strong> · Low
-                    confidence
-                  </p>
+                  <p>Limited historical evidence</p>
                 </div>
               </li>
             ))}
@@ -435,17 +441,17 @@ function DecisionDetail({ decision }: { decision: Decision }) {
           <strong>{rateRange.value}</strong>
         </div>
         <div>
-          <span>Evidence strength</span>
+          <span>Confidence</span>
           <strong>{evidenceStrength(decision.confidence.level)}</strong>
         </div>
       </div>
 
       <div className="decision-evidence">
         <div>
-          <span>Historical evidence</span>
+          <span>Based on</span>
           <strong>
             {tierDescription(decision).replace(" matches", "")} · {pricing.raw_evidence_count}{" "}
-            completed loads · {roundedEffectiveEvidence(pricing.effective_evidence_count)} effective
+            completed loads
           </strong>
         </div>
       </div>
@@ -522,6 +528,13 @@ function DecisionDetail({ decision }: { decision: Decision }) {
           <div>
             <dt>As of</dt>
             <dd>{formatDateTime(decision.as_of)}</dd>
+          </div>
+          <div>
+            <dt>Weighted evidence</dt>
+            <dd>
+              {pricing.raw_evidence_count} completed loads,{" "}
+              {roundedEffectiveEvidence(pricing.effective_evidence_count)} weighted matches
+            </dd>
           </div>
           <div>
             <dt>Pricing model</dt>

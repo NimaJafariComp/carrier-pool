@@ -10,7 +10,7 @@
       "equipment": "53 ft Van | Dry",
       "lastModifiedDate": "2026-07-02T13:00:00-05:00",
       "mileage": 239.4,
-      "shipmentId": 352333,
+      "shipmentId": 753921,
       "status": "Booking",
       "stops": [
         {
@@ -33,7 +33,79 @@
         }
       ],
       "totalBuy": null,
-      "totalSell": 1490,
+      "totalSell": 1500,
+      "weightTotal": 24000
+    },
+    {
+      "carrier": null,
+      "createdDate": "2026-07-02T13:00:00-05:00",
+      "customer": {
+        "customerId": 493634,
+        "name": "Lone Star Beverages"
+      },
+      "equipment": "53 ft Van | Dry",
+      "lastModifiedDate": "2026-07-02T13:00:00-05:00",
+      "mileage": 239.4,
+      "shipmentId": 811866,
+      "status": "Booking",
+      "stops": [
+        {
+          "actualDepartureDateTime": null,
+          "city": "GRAND PRAIRIE",
+          "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
+          "state": "TX",
+          "stopType": "First Pickup",
+          "zipCode": "75050"
+        },
+        {
+          "actualDepartureDateTime": null,
+          "city": "KATY",
+          "estimatedCloseDateTime": "2026-07-08T23:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-08T15:00:00-05:00",
+          "state": "TX",
+          "stopType": "Last Drop",
+          "zipCode": "77449"
+        }
+      ],
+      "totalBuy": null,
+      "totalSell": 1480,
+      "weightTotal": 24000
+    },
+    {
+      "carrier": null,
+      "createdDate": "2026-07-02T13:00:00-05:00",
+      "customer": {
+        "customerId": 149401,
+        "name": "Prairie Foods"
+      },
+      "equipment": "53 ft Van | Dry",
+      "lastModifiedDate": "2026-07-02T13:00:00-05:00",
+      "mileage": 243.2,
+      "shipmentId": 393490,
+      "status": "Booking",
+      "stops": [
+        {
+          "actualDepartureDateTime": null,
+          "city": "HOUSTON",
+          "estimatedCloseDateTime": "2026-07-07T16:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-07T08:00:00-05:00",
+          "state": "TX",
+          "stopType": "First Pickup",
+          "zipCode": "77002"
+        },
+        {
+          "actualDepartureDateTime": null,
+          "city": "GRAND PRAIRIE",
+          "estimatedCloseDateTime": "2026-07-08T23:00:00-05:00",
+          "estimatedReadyDateTime": "2026-07-08T15:00:00-05:00",
+          "state": "TX",
+          "stopType": "Last Drop",
+          "zipCode": "75050"
+        }
+      ],
+      "totalBuy": null,
+      "totalSell": 1440,
       "weightTotal": 24000
     }
   ],

@@ -40,6 +40,7 @@ class CarrierFeatureSet:
     completed_history_age_days: tuple[float, ...] = ()
     equipment_history_version_ids: tuple[UUID, ...] = ()
     relevant_completed_version_ids: tuple[UUID, ...] = ()
+    completed_history_version_ids: tuple[UUID, ...] = ()
 
 
 class CarrierFeatureService:
@@ -180,6 +181,7 @@ class CarrierFeatureService:
                     ),
                     tuple(value.id for value in equipment_history),
                     tuple(sorted(relevant_versions, key=str)),
+                    tuple(value.id for value in history),
                 )
             )
         return tuple(sorted(result, key=lambda item: item.carrier_external_id))

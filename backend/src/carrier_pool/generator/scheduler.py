@@ -39,15 +39,31 @@ _STATUSES = (
     LoadStatus.COMPLETED,
 )
 ANCHOR_LOAD_IDS = {
-    SourceSystem.FREIGHTFLOW: "FF-1001",
-    SourceSystem.HAULDESK: "HD-2001",
-    SourceSystem.BROKEROS: "BO-3001",
+    SourceSystem.FREIGHTFLOW: ("FF-0901", "FF-0902", "FF-0903"),
+    SourceSystem.HAULDESK: ("HD-1901", "HD-1902", "HD-1903"),
+    SourceSystem.BROKEROS: ("BO-2901", "BO-2902", "BO-2903"),
 }
 
 # Hand-authored booking and eventually corrected carrier-pay totals. These are
 # intentionally not a formula of lifecycle position: they encode lane, equipment,
 # time, and exceptional-final-payment variation for leakage-safe rate evaluation.
 _RATE_OUTCOMES: dict[str, tuple[Decimal, Decimal]] = {
+    "FF-0901": (Decimal("1190"), Decimal("1190")),
+    "FF-0902": (Decimal("1215"), Decimal("1215")),
+    "FF-0903": (Decimal("1205"), Decimal("1205")),
+    "FF-0904": (Decimal("1220"), Decimal("1220")),
+    "FF-0905": (Decimal("1200"), Decimal("1200")),
+    "FF-0906": (Decimal("1215"), Decimal("1215")),
+    "FF-0907": (Decimal("1195"), Decimal("1195")),
+    "FF-0908": (Decimal("1230"), Decimal("1230")),
+    "FF-0909": (Decimal("1210"), Decimal("1210")),
+    "FF-0990": (Decimal("1185"), Decimal("1185")),
+    "HD-1901": (Decimal("1260"), Decimal("1260")),
+    "HD-1902": (Decimal("1285"), Decimal("1285")),
+    "HD-1903": (Decimal("1270"), Decimal("1270")),
+    "BO-2901": (Decimal("1540"), Decimal("1540")),
+    "BO-2902": (Decimal("1560"), Decimal("1560")),
+    "BO-2903": (Decimal("1555"), Decimal("1555")),
     # FreightFlow: DFW→Houston dry-van history, reefer premium, and corrections.
     "FF-1001": (Decimal("1180"), Decimal("1180")),
     "FF-1101": (Decimal("1210"), Decimal("1265")),
@@ -80,6 +96,38 @@ _RATE_OUTCOMES: dict[str, tuple[Decimal, Decimal]] = {
     "BO-3203": (Decimal("1300"), Decimal("1340")),
 }
 
+_ANCHOR_CARRIERS = {
+    "FF-0901": "FF-C-201",
+    "FF-0902": "FF-C-201",
+    "FF-0903": "FF-C-201",
+    "FF-0904": "FF-C-201",
+    "FF-0905": "FF-C-201",
+    "FF-0906": "FF-C-201",
+    "FF-0907": "FF-C-201",
+    "FF-0908": "FF-C-201",
+    "FF-0909": "FF-C-201",
+    "FF-0990": "FF-C-201",
+    "HD-1901": "HD-C-401",
+    "HD-1902": "HD-C-401",
+    "HD-1903": "HD-C-401",
+    "BO-2901": "BO-C-601",
+    "BO-2902": "BO-C-601",
+    "BO-2903": "BO-C-601",
+}
+
+# Keep the two delivery-proximity examples intentionally distinct: Heritage finishes
+# early enough to be stale by Day 11, while Metro finishes late and remains recent.
+_ORDINARY_LIFECYCLE_ORDER = {
+    SourceSystem.FREIGHTFLOW: (
+        "FF-1402",
+        "FF-1001",
+        "FF-1101",
+        "FF-1301",
+        "FF-1201",
+        "FF-1401",
+    ),
+}
+
 
 def build_schedule(catalog: ScenarioCatalog) -> tuple[ScheduledSync, ...]:
     """Create all 120 historical slots and three explicit Day 11 active-load slots."""
@@ -87,12 +135,25 @@ def build_schedule(catalog: ScenarioCatalog) -> tuple[ScheduledSync, ...]:
         source: tuple(
             load
             for load in catalog.loads
-            if load.source_system is source and not load.day11_target and not load.evaluation_probe
+            if (
+                load.source_system is source
+                and not load.day11_target
+                and not load.evaluation_probe
+                and not load.history_anchor
+            )
         )
         for source in SourceSystem
     }
-    if any(not loads for loads in historical_loads.values()):
-        raise ValueError("catalog requires at least one historical load per source.")
+    anchor_loads: dict[SourceSystem, tuple[GeneratorLoad, ...]] = {
+        source: tuple(
+            load for load in catalog.loads if load.source_system is source and load.history_anchor
+        )
+        for source in SourceSystem
+    }
+    if any(len(loads) != 6 for loads in historical_loads.values()):
+        raise ValueError("catalog requires six ordinary historical loads per source.")
+    if any(len(loads) < 3 for loads in anchor_loads.values()):
+        raise ValueError("catalog requires at least three history anchors per source.")
 
     schedule: list[ScheduledSync] = []
     for day_offset in range(HISTORICAL_DAYS):
@@ -104,11 +165,22 @@ def build_schedule(catalog: ScenarioCatalog) -> tuple[ScheduledSync, ...]:
             slot = day_offset * len(SYNC_HOURS) + SYNC_HOURS.index(hour)
             for source in SourceSystem:
                 if slot < len(historical_loads[source]) * len(_STATUSES):
-                    load, occurrence = _scheduled_historical_load(
-                        source, historical_loads[source], slot
+                    events = _historical_events_for_slot(
+                        catalog,
+                        source,
+                        historical_loads[source],
+                        anchor_loads[source],
+                        sync_at,
+                        slot,
                     )
                     schedule.append(
-                        _historical_sync(catalog, source, load.logical_id, sync_at, occurrence)
+                        ScheduledSync(
+                            sync_id=f"{source.value}-{sync_at:%Y%m%dT%H%M}",
+                            tenant_id=historical_loads[source][0].tenant_id,
+                            source_system=source,
+                            sync_at=sync_at,
+                            events=events,
+                        )
                     )
                 else:
                     schedule.append(_holdout_probe_sync(catalog, source, sync_at, slot))
@@ -135,12 +207,13 @@ def build_schedule(catalog: ScenarioCatalog) -> tuple[ScheduledSync, ...]:
 def _scheduled_historical_load(
     source: SourceSystem, loads: tuple[GeneratorLoad, ...], slot: int
 ) -> tuple[GeneratorLoad, int]:
-    """Return a six-stage lifecycle block; anchor block always runs first."""
-    ordered = tuple(
-        sorted(
-            loads,
-            key=lambda load: (load.logical_id != ANCHOR_LOAD_IDS[source], load.logical_id),
-        )
+    """Return a six-stage lifecycle block for one ordinary historical load."""
+    declared_order = _ORDINARY_LIFECYCLE_ORDER.get(source)
+    by_id = {load.logical_id: load for load in loads}
+    ordered = (
+        tuple(by_id[load_id] for load_id in declared_order)
+        if declared_order is not None
+        else tuple(sorted(loads, key=lambda load: load.logical_id))
     )
     if len(ordered) != 6:
         raise ValueError(f"{source.value} requires exactly six historical loads.")
@@ -148,6 +221,68 @@ def _scheduled_historical_load(
     if slot < lifecycle_slots:
         return ordered[slot // len(_STATUSES)], slot % len(_STATUSES)
     raise ValueError("historical lifecycle slots exhausted.")
+
+
+def _historical_events_for_slot(
+    catalog: ScenarioCatalog,
+    source: SourceSystem,
+    ordinary_loads: tuple[GeneratorLoad, ...],
+    anchors: tuple[GeneratorLoad, ...],
+    sync_at: datetime,
+    slot: int,
+) -> tuple[LifecycleEvent | FinancialEvent, ...]:
+    """Schedule batches of anchors without exceeding three changed loads per sync."""
+    anchor_events = tuple(
+        event
+        for start_slot, batch in _anchor_batches(anchors)
+        if start_slot <= slot < start_slot + len(_STATUSES)
+        for load in batch
+        for event in _historical_sync(
+            catalog, source, load.logical_id, sync_at, slot - start_slot
+        ).events
+    )
+    ordinary_events = (
+        ()
+        if slot < len(_STATUSES)
+        else tuple(
+            event
+            for event_index in _ordinary_event_indexes(slot)
+            for event in _historical_event(catalog, source, ordinary_loads, sync_at, event_index)
+        )
+    )
+    return anchor_events + ordinary_events
+
+
+def _anchor_batches(
+    anchors: tuple[GeneratorLoad, ...],
+) -> tuple[tuple[int, tuple[GeneratorLoad, ...]], ...]:
+    """Use three initial anchors, then two per lifecycle window alongside ordinary loads."""
+    batches: list[tuple[int, tuple[GeneratorLoad, ...]]] = [(0, anchors[:3])]
+    batches.extend(
+        (6 * ((index - 1) // 2), anchors[index : index + 2]) for index in range(3, len(anchors), 2)
+    )
+    return tuple(batches)
+
+
+def _historical_event(
+    catalog: ScenarioCatalog,
+    source: SourceSystem,
+    loads: tuple[GeneratorLoad, ...],
+    sync_at: datetime,
+    event_index: int,
+) -> tuple[LifecycleEvent | FinancialEvent, ...]:
+    load, occurrence = _scheduled_historical_load(source, loads, event_index)
+    return _historical_sync(catalog, source, load.logical_id, sync_at, occurrence).events
+
+
+def _ordinary_event_indexes(slot: int) -> tuple[int, ...]:
+    """Fit six ordinary lifecycles after the three-load anchor block."""
+    if 6 <= slot < 30:
+        return (slot - 6,)
+    if 30 <= slot < 36:
+        stage = slot - 30
+        return 24 + stage, 30 + stage
+    raise ValueError("ordinary lifecycle slot is outside the historical window.")
 
 
 def write_sync_files(data_root: Path, catalog: ScenarioCatalog | None = None) -> tuple[Path, ...]:
@@ -206,7 +341,7 @@ def _historical_sync(
             FinancialEvent(
                 load_id=load_id,
                 occurred_at=sync_at,
-                entry_id=f"HD-RATE-{sync_at:%Y%m%d%H%M}-{occurrence}",
+                entry_id=f"HD-RATE-{load_id}-{sync_at:%Y%m%d%H%M}-{occurrence}",
                 side=FinancialSide.PAY,
                 code="LINEHAUL",
                 amount=Money(booking_rate),
@@ -222,7 +357,7 @@ def _historical_sync(
             FinancialEvent(
                 load_id=load_id,
                 occurred_at=sync_at,
-                entry_id=f"HD-FINAL-{sync_at:%Y%m%d%H%M}-{occurrence}",
+                entry_id=f"HD-FINAL-{load_id}-{sync_at:%Y%m%d%H%M}-{occurrence}",
                 side=FinancialSide.PAY,
                 code="ADJUSTMENT",
                 amount=Money(final_rate - booking_rate),
@@ -245,7 +380,12 @@ def _holdout_probe_sync(
         tuple(
             load
             for load in catalog.loads
-            if load.source_system is source and not load.day11_target and not load.evaluation_probe
+            if (
+                load.source_system is source
+                and not load.day11_target
+                and not load.evaluation_probe
+                and not load.history_anchor
+            )
         )
     ) * len(_STATUSES)
     stage = slot - base_slots
@@ -319,6 +459,8 @@ def _holdout_probe_sync(
 
 
 def _holdout_carrier(catalog: ScenarioCatalog, load_id: str) -> str:
+    if load_id in _ANCHOR_CARRIERS:
+        return _ANCHOR_CARRIERS[load_id]
     try:
         return next(
             holdout.booked_carrier_id

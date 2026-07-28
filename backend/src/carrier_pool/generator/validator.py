@@ -108,35 +108,47 @@ def validate_schedule_backtest_readiness(
         historical_ids = {
             load.logical_id
             for load in catalog.loads
-            if load.source_system is source and not load.day11_target and not load.evaluation_probe
+            if (
+                load.source_system is source
+                and not load.day11_target
+                and not load.evaluation_probe
+                and not load.history_anchor
+            )
         }
+        anchor_ids = ANCHOR_LOAD_IDS[source]
         lifecycle_events = tuple(
             (sync.sync_at, event)
             for sync in schedule
             if sync.source_system is source
             for event in sync.events
-            if isinstance(event, LifecycleEvent) and event.load_id in historical_ids
+            if isinstance(event, LifecycleEvent) and event.load_id in (*historical_ids, *anchor_ids)
         )
         completed_at: dict[str, datetime] = {}
         for sync_at, event in lifecycle_events:
             if event.status is LoadStatus.COMPLETED:
                 completed_at.setdefault(event.load_id, sync_at)
-        if len(completed_at) < MINIMUM_COMPLETED_HISTORY_LOADS_PER_SOURCE:
+        if len(set(completed_at) & historical_ids) < MINIMUM_COMPLETED_HISTORY_LOADS_PER_SOURCE:
             errors.append(
                 f"{source.value} requires six completed historical loads for rolling backtests"
             )
             continue
-        anchor_id = ANCHOR_LOAD_IDS[source]
-        anchor_completed_at = completed_at.get(anchor_id)
-        if anchor_completed_at is None:
-            errors.append(f"{source.value} anchor {anchor_id} must complete")
+        anchor_completed_at = {anchor_id: completed_at.get(anchor_id) for anchor_id in anchor_ids}
+        if any(value is None for value in anchor_completed_at.values()):
+            errors.append(f"{source.value} early history anchors must complete")
             continue
         first_active_at: dict[str, datetime] = {}
         for sync_at, event in lifecycle_events:
-            if event.status is LoadStatus.ACTIVE and event.load_id != anchor_id:
+            if event.status is LoadStatus.ACTIVE and event.load_id not in anchor_ids:
                 first_active_at.setdefault(event.load_id, sync_at)
-        if any(anchor_completed_at >= active_at for active_at in first_active_at.values()):
-            errors.append(f"{source.value} anchor must complete before later loads become ACTIVE")
+        if any(
+            completed_at is not None and completed_at >= active_at
+            for completed_at in anchor_completed_at.values()
+            for active_at in first_active_at.values()
+        ):
+            errors.append(
+                f"{source.value} early history anchors must complete before later loads "
+                "become ACTIVE"
+            )
     if errors:
         raise GeneratedDataValidationError("\n".join(errors))
 

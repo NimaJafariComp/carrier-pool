@@ -4,11 +4,17 @@ from dataclasses import dataclass, replace
 from datetime import datetime
 from decimal import Decimal
 from math import exp
+from typing import Literal
+from uuid import UUID
 
 from carrier_pool.decisioning.carrier_features import CarrierFeatureSet
 from carrier_pool.geography.comparables import ComparableLoadEvidence, LaneTier
 
-MODEL_VERSION = "carrier-ranking-v4"
+MODEL_VERSION = "carrier-ranking-v5"
+LEGACY_MODEL_VERSION = "carrier-ranking-v4"
+CALIBRATED_CANDIDATE_MODEL_VERSION = "carrier-ranking-v6"
+DEFAULT_SHRINKAGE_STRENGTH = Decimal(6)
+V6_SHRINKAGE_STRENGTH = Decimal(4)
 TIE_SCORE_MARGIN = Decimal("2")
 _TIER: dict[LaneTier, Decimal] = {
     LaneTier.NEAR_EXACT: Decimal("1.00"),
@@ -67,8 +73,18 @@ class CarrierHistoricalFit:
 class CarrierHistoricalFitScorer:
     """Score supplied immutable features with documented shrinkage and tie-breakers."""
 
-    def __init__(self, weights: ScoringWeights | None = None) -> None:
+    def __init__(
+        self,
+        weights: ScoringWeights | None = None,
+        *,
+        history_mode: Literal["identity", "legacy"] = "identity",
+        shrinkage_strength: Decimal = DEFAULT_SHRINKAGE_STRENGTH,
+    ) -> None:
         self._weights = weights or ScoringWeights()
+        self._history_mode = history_mode
+        if shrinkage_strength <= 0:
+            raise ValueError("shrinkage_strength must be positive.")
+        self._shrinkage_strength = shrinkage_strength
 
     def score(self, candidates: tuple[CarrierFeatureSet, ...]) -> tuple[CarrierHistoricalFit, ...]:
         results = tuple(self._score(item) for item in candidates)
@@ -122,15 +138,14 @@ class CarrierHistoricalFitScorer:
             if available
             else Decimal(50)
         )
-        lane_ess = _kish_ess(lane_weights)
-        ess = min(
-            Decimal(8),
-            lane_ess
-            + Decimal(".5") * item.equipment_history_count
-            + Decimal(".5") * item.relevant_completed_count,
+        ess = (
+            _legacy_effective_history(item, lane_weights)
+            if self._history_mode == "legacy"
+            else _identity_effective_history(item, lane_weights)
         )
-        alpha = ess / (ess + Decimal(6))
+        alpha = ess / (ess + self._shrinkage_strength)
         adjusted = alpha * raw + (Decimal(1) - alpha) * Decimal(50)
+        confidence_ess = min(Decimal(8), ess)
         geography_completeness = Decimal(
             any(
                 evidence.origin_distance_miles is not None
@@ -144,7 +159,7 @@ class CarrierHistoricalFitScorer:
             else min(Decimal(1), Decimal(item.equipment_history_count) / Decimal(3))
         )
         confidence_score = (
-            Decimal(".45") * min(Decimal(1), ess / Decimal(6))
+            Decimal(".45") * min(Decimal(1), confidence_ess / Decimal(6))
             + Decimal(".2") * (lane or Decimal(0))
             + Decimal(".15") * (recency or Decimal(0))
             + Decimal(".1") * equipment_coverage
@@ -183,8 +198,17 @@ class CarrierHistoricalFitScorer:
             ess,
             tuple(warnings),
             evidence_status,
+            model_version=self.model_version,
             relevant_completed_observed_at=item.relevant_completed_observed_at,
         )
+
+    @property
+    def model_version(self) -> str:
+        if self._history_mode == "legacy":
+            return LEGACY_MODEL_VERSION
+        if self._shrinkage_strength == V6_SHRINKAGE_STRENGTH:
+            return CALIBRATED_CANDIDATE_MODEL_VERSION
+        return MODEL_VERSION
 
 
 def _lane_score(
@@ -221,6 +245,36 @@ def _kish_ess(weights: tuple[Decimal, ...]) -> Decimal:
     total = sum(weights, Decimal(0))
     squared_total = sum((weight * weight for weight in weights), Decimal(0))
     return total**2 / squared_total
+
+
+def _legacy_effective_history(
+    item: CarrierFeatureSet, lane_weights: tuple[Decimal, ...]
+) -> Decimal:
+    """Pre-v5 aggregation, retained for same-case calibration comparisons only."""
+    return min(
+        Decimal(8),
+        _kish_ess(lane_weights)
+        + Decimal(".5") * item.equipment_history_count
+        + Decimal(".5") * item.relevant_completed_count,
+    )
+
+
+def _identity_effective_history(
+    item: CarrierFeatureSet, lane_weights: tuple[Decimal, ...]
+) -> Decimal:
+    """Kish ESS over unique completed versions, never counting a load per component."""
+    weights: dict[UUID, Decimal] = {}
+    for evidence, weight in zip(item.lane_history, lane_weights, strict=True):
+        weights[evidence.version_id] = max(weights.get(evidence.version_id, Decimal(0)), weight)
+    if item.equipment_history_version_ids:
+        for version_id, age_days in zip(
+            item.equipment_history_version_ids, item.equipment_history_age_days, strict=True
+        ):
+            weight = _decimal(exp(-age_days / 45))
+            weights[version_id] = max(weights.get(version_id, Decimal(0)), weight)
+    for version_id in item.relevant_completed_version_ids:
+        weights.setdefault(version_id, _decimal(exp(-(item.relevant_completed_age_days or 0) / 30)))
+    return _kish_ess(tuple(weights.values()))
 
 
 def _equipment_fit(item: CarrierFeatureSet) -> Decimal | None:

@@ -259,9 +259,8 @@ describe("App", () => {
     expect(screen.getByText("$1,100.00–$1,300.00")).toBeInTheDocument();
     expect(screen.getByText("Strong evidence")).toBeInTheDocument();
     expect(screen.queryByText("Why this is not high evidence")).not.toBeInTheDocument();
-    expect(
-      screen.getByText("Near exact lane · 6 completed loads · 5.3 effective"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Near-exact lane · 6 completed loads")).toBeInTheDocument();
+    expect(screen.getByText("6 completed loads, 5.3 weighted matches")).toBeInTheDocument();
     expect(screen.getByText("$1,180.00")).toBeInTheDocument();
     expect(screen.getByText("As of")).toBeInTheDocument();
     expect(screen.getByText("pricing-hierarchical-v1")).toBeInTheDocument();
@@ -302,9 +301,7 @@ describe("App", () => {
 
     expect(await screen.findByText("Limited evidence")).toBeInTheDocument();
     expect(
-      screen.getByText(
-        "Regional lane, blended with metro corridor matches · 2 completed loads · 1.4 effective",
-      ),
+      screen.getByText("Regional lane, blended with metro corridor · 2 completed loads"),
     ).toBeInTheDocument();
     expect(
       screen.getByText(
@@ -367,6 +364,9 @@ describe("App", () => {
           ...decision().comparable_loads[0],
           load_external_id: "a0jFB388F4DF5D2288",
           load_number: "BO-3101",
+          tier: "DISTANCE_EQUIPMENT",
+          origin_distance_miles: 18,
+          destination_distance_miles: 22,
         },
       ],
     });
@@ -390,7 +390,8 @@ describe("App", () => {
 
     expect(screen.getByRole("columnheader", { name: "Carrier pay" })).toBeInTheDocument();
     expect(screen.getByText("Dallas, TX → Houston, TX")).toBeInTheDocument();
-    expect(screen.getByText("Same pickup & delivery area")).toBeInTheDocument();
+    expect(screen.getByText("Nearby route, same equipment")).toBeInTheDocument();
+    expect(screen.getByText("18 mi pickup · 22 mi delivery")).toBeInTheDocument();
     expect(screen.getByText("$1,180.00")).toBeInTheDocument();
     expect(screen.getByText("BO-3101")).toBeInTheDocument();
     expect(screen.queryByText("a0jFB388F4DF5D2288")).not.toBeInTheDocument();
@@ -591,9 +592,9 @@ describe("App", () => {
 
     await userEvent.setup().click(await screen.findByRole("button", { name: /view decision/i }));
 
-    expect(
-      await screen.findByText("Limited completed history pulls the score toward a neutral prior."),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("More history needed")).toBeInTheDocument();
+    expect(screen.getByText("Limited historical evidence")).toBeInTheDocument();
+    expect(screen.queryByText("52.1 / 100")).not.toBeInTheDocument();
     expect(
       screen.getByText(
         "Limited history, this estimate is based on a small set of this broker’s completed loads, so certainty is lower.",
@@ -601,7 +602,7 @@ describe("App", () => {
     ).toBeInTheDocument();
     expect(screen.queryByText(/few close route matches were available/i)).not.toBeInTheDocument();
     expect(
-      screen.getByText("No historical delivery-to-pickup distance is available for this carrier."),
+      screen.getByText("Not enough matching completed work to set a call order."),
     ).toBeInTheDocument();
     expect(screen.queryByText(/carrier.*available|accept|reliable/i)).not.toBeInTheDocument();
   });

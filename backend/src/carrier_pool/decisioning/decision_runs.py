@@ -16,7 +16,7 @@ from carrier_pool.db.models import Carrier, CarrierRecommendation, DecisionRun, 
 from carrier_pool.db.tenant import set_tenant_context
 from carrier_pool.decisioning.carrier_explanations import RankedCarrierExplanation, explain_rankings
 from carrier_pool.decisioning.carrier_features import CarrierFeatureService, CarrierFeatureSet
-from carrier_pool.decisioning.carrier_scoring import CarrierHistoricalFitScorer
+from carrier_pool.decisioning.carrier_scoring import MODEL_VERSION, CarrierHistoricalFitScorer
 from carrier_pool.decisioning.pricing import HierarchicalRateEstimator, RateEstimate
 from carrier_pool.domain.types import LoadStatus
 
@@ -106,7 +106,7 @@ class DecisionRunService:
             load_id,
             input_version.id,
             as_of,
-            rankings[0].model_version if rankings else "carrier-ranking-v4",
+            rankings[0].model_version if rankings else MODEL_VERSION,
             estimate.model_version,
             parameters,
         )
@@ -119,7 +119,7 @@ class DecisionRunService:
             load_id=load_id,
             input_version_id=input_version.id,
             as_of=as_of,
-            ranking_model_version=rankings[0].model_version if rankings else "carrier-ranking-v4",
+            ranking_model_version=rankings[0].model_version if rankings else MODEL_VERSION,
             pricing_model_version=estimate.model_version,
             model_parameters=parameters,
             price_estimate=_price_json(estimate),
@@ -140,7 +140,7 @@ class DecisionRunService:
                     str(load_id),
                     str(input_version.id),
                     as_of.isoformat(),
-                    rankings[0].model_version if rankings else "carrier-ranking-v4",
+                    rankings[0].model_version if rankings else MODEL_VERSION,
                     estimate.model_version,
                     parameters,
                 ),

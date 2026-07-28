@@ -4,324 +4,332 @@
       "by_history_depth": {
         "RICH": {
           "by_history_depth": {},
-          "case_count": 4,
-          "clear_top_count": 1,
+          "case_count": 16,
+          "clear_top_count": 15,
           "coverage_counts": {
-            "BROADER_LANE": 3,
-            "CLOSE_SCORE_TIE": 3,
-            "DISTANCE_EQUIPMENT": 1,
-            "KNOWN_EQUIPMENT": 4,
-            "NEAR_EXACT": 4,
-            "RICH": 4
+            "BROADER_LANE": 5,
+            "CLOSE_SCORE_TIE": 1,
+            "DISTANCE_EQUIPMENT": 6,
+            "KNOWN_EQUIPMENT": 16,
+            "NEAR_EXACT": 16,
+            "RICH": 16
           },
           "limited_candidate_count": 6,
-          "mean_reciprocal_rank": "0.7083333333333333333333333332",
-          "mean_top_score_margin": "1.063755850982185973727850175",
+          "mean_reciprocal_rank": "1",
+          "mean_top_score_margin": "11.26078730796871027043327268",
           "no_rank_count": 0,
           "no_rank_reason_counts": {},
-          "scored_case_count": 4,
+          "scored_case_count": 16,
           "scored_case_count_by_source": {
-            "BROKEROS": 1,
-            "FREIGHTFLOW": 1,
-            "HAULDESK": 2
+            "BROKEROS": 4,
+            "FREIGHTFLOW": 8,
+            "HAULDESK": 4
           },
-          "supported_candidate_count": 11,
-          "top_1_recall": "0.5",
+          "supported_candidate_count": 32,
+          "top_1_recall": "1",
           "top_3_recall": "1",
-          "top_fit_tie_count": 3,
-          "top_fit_tie_rate": "0.75",
+          "top_fit_tie_count": 1,
+          "top_fit_tie_rate": "0.0625",
           "top_supported_confidence_counts": {
+            "HIGH": 12,
             "MEDIUM": 4
           }
         },
         "SPARSE": {
           "by_history_depth": {},
-          "case_count": 23,
-          "clear_top_count": 7,
+          "case_count": 27,
+          "clear_top_count": 14,
           "coverage_counts": {
-            "BROADER_LANE": 6,
-            "CLOSE_SCORE_TIE": 13,
-            "DISTANCE_EQUIPMENT": 3,
-            "KNOWN_EQUIPMENT": 10,
+            "BROADER_LANE": 5,
+            "CLOSE_SCORE_TIE": 4,
+            "DISTANCE_EQUIPMENT": 6,
+            "KNOWN_EQUIPMENT": 8,
             "LIMITED_CANDIDATE": 10,
-            "NEAR_EXACT": 13,
-            "SPARSE": 20
+            "NEAR_EXACT": 11,
+            "SPARSE": 18
           },
-          "limited_candidate_count": 17,
-          "mean_reciprocal_rank": "0.5749999999999999999999999999",
-          "mean_top_score_margin": "1.001425787160036945164219439",
-          "no_rank_count": 13,
+          "limited_candidate_count": 15,
+          "mean_reciprocal_rank": "0.625",
+          "mean_top_score_margin": "11.56488607625725908813937282",
+          "no_rank_count": 19,
           "no_rank_reason_counts": {
             "BOOKED_CARRIER_NOT_CANDIDATE_AT_CUTOFF": 10,
-            "NO_CANDIDATES_AT_CUTOFF": 3
+            "NO_CANDIDATES_AT_CUTOFF": 9
           },
-          "scored_case_count": 10,
+          "scored_case_count": 8,
           "scored_case_count_by_source": {
-            "BROKEROS": 4,
-            "FREIGHTFLOW": 3,
-            "HAULDESK": 3
+            "BROKEROS": 2,
+            "FREIGHTFLOW": 4,
+            "HAULDESK": 2
           },
-          "supported_candidate_count": 42,
-          "top_1_recall": "0.3",
-          "top_3_recall": "0.9",
-          "top_fit_tie_count": 13,
-          "top_fit_tie_rate": "0.5652173913043478260869565217",
+          "supported_candidate_count": 40,
+          "top_1_recall": "0.375",
+          "top_3_recall": "1",
+          "top_fit_tie_count": 4,
+          "top_fit_tie_rate": "0.1481481481481481481481481481",
           "top_supported_confidence_counts": {
-            "LOW": 3,
-            "MEDIUM": 17
+            "HIGH": 9,
+            "LOW": 7,
+            "MEDIUM": 2
           }
         }
       },
-      "case_count": 27,
-      "clear_top_count": 8,
+      "case_count": 43,
+      "clear_top_count": 29,
       "coverage_counts": {
-        "BROADER_LANE": 9,
-        "CLOSE_SCORE_TIE": 16,
-        "DISTANCE_EQUIPMENT": 4,
-        "KNOWN_EQUIPMENT": 14,
+        "BROADER_LANE": 10,
+        "CLOSE_SCORE_TIE": 5,
+        "DISTANCE_EQUIPMENT": 12,
+        "KNOWN_EQUIPMENT": 24,
         "LIMITED_CANDIDATE": 10,
-        "NEAR_EXACT": 17,
-        "RICH": 4,
-        "SPARSE": 20
+        "NEAR_EXACT": 27,
+        "RICH": 16,
+        "SPARSE": 18
       },
-      "limited_candidate_count": 23,
-      "mean_reciprocal_rank": "0.613095238095238095238095238",
-      "mean_top_score_margin": "1.015276912453847840400581824",
-      "no_rank_count": 13,
+      "limited_candidate_count": 21,
+      "mean_reciprocal_rank": "0.875",
+      "mean_top_score_margin": "11.41283669211298467928632275",
+      "no_rank_count": 19,
       "no_rank_reason_counts": {
         "BOOKED_CARRIER_NOT_CANDIDATE_AT_CUTOFF": 10,
-        "NO_CANDIDATES_AT_CUTOFF": 3
+        "NO_CANDIDATES_AT_CUTOFF": 9
       },
-      "scored_case_count": 14,
+      "scored_case_count": 24,
       "scored_case_count_by_source": {
-        "BROKEROS": 5,
-        "FREIGHTFLOW": 4,
-        "HAULDESK": 5
+        "BROKEROS": 6,
+        "FREIGHTFLOW": 12,
+        "HAULDESK": 6
       },
-      "supported_candidate_count": 53,
-      "top_1_recall": "0.3571428571428571428571428571",
-      "top_3_recall": "0.9285714285714285714285714286",
-      "top_fit_tie_count": 16,
-      "top_fit_tie_rate": "0.5925925925925925925925925926",
+      "supported_candidate_count": 72,
+      "top_1_recall": "0.7916666666666666666666666667",
+      "top_3_recall": "1",
+      "top_fit_tie_count": 5,
+      "top_fit_tie_rate": "0.1162790697674418604651162791",
       "top_supported_confidence_counts": {
-        "LOW": 3,
-        "MEDIUM": 21
+        "HIGH": 21,
+        "LOW": 7,
+        "MEDIUM": 6
       }
     },
     "without_lane": {
       "by_history_depth": {
         "RICH": {
           "by_history_depth": {},
-          "case_count": 4,
-          "clear_top_count": 0,
+          "case_count": 16,
+          "clear_top_count": 12,
           "coverage_counts": {
-            "BROADER_LANE": 3,
+            "BROADER_LANE": 5,
             "CLOSE_SCORE_TIE": 4,
-            "DISTANCE_EQUIPMENT": 1,
-            "KNOWN_EQUIPMENT": 4,
-            "NEAR_EXACT": 4,
-            "RICH": 4
+            "DISTANCE_EQUIPMENT": 6,
+            "KNOWN_EQUIPMENT": 16,
+            "NEAR_EXACT": 16,
+            "RICH": 16
           },
           "limited_candidate_count": 6,
-          "mean_reciprocal_rank": "0.7083333333333333333333333332",
-          "mean_top_score_margin": "1.447669710683755189509679922",
+          "mean_reciprocal_rank": "1",
+          "mean_top_score_margin": "4.401959115129148708935369026",
           "no_rank_count": 0,
           "no_rank_reason_counts": {},
-          "scored_case_count": 4,
+          "scored_case_count": 16,
           "scored_case_count_by_source": {
-            "BROKEROS": 1,
-            "FREIGHTFLOW": 1,
-            "HAULDESK": 2
+            "BROKEROS": 4,
+            "FREIGHTFLOW": 8,
+            "HAULDESK": 4
           },
-          "supported_candidate_count": 11,
-          "top_1_recall": "0.5",
+          "supported_candidate_count": 32,
+          "top_1_recall": "1",
           "top_3_recall": "1",
           "top_fit_tie_count": 4,
-          "top_fit_tie_rate": "1",
+          "top_fit_tie_rate": "0.25",
           "top_supported_confidence_counts": {
+            "HIGH": 12,
             "MEDIUM": 4
           }
         },
         "SPARSE": {
           "by_history_depth": {},
-          "case_count": 23,
-          "clear_top_count": 12,
+          "case_count": 27,
+          "clear_top_count": 17,
           "coverage_counts": {
-            "BROADER_LANE": 6,
-            "CLOSE_SCORE_TIE": 8,
-            "DISTANCE_EQUIPMENT": 3,
-            "KNOWN_EQUIPMENT": 10,
+            "BROADER_LANE": 5,
+            "CLOSE_SCORE_TIE": 1,
+            "DISTANCE_EQUIPMENT": 6,
+            "KNOWN_EQUIPMENT": 8,
             "LIMITED_CANDIDATE": 10,
-            "NEAR_EXACT": 13,
-            "SPARSE": 20
+            "NEAR_EXACT": 11,
+            "SPARSE": 18
           },
-          "limited_candidate_count": 17,
-          "mean_reciprocal_rank": "0.6416666666666666666666666666",
-          "mean_top_score_margin": "2.71919160244928174470735131",
-          "no_rank_count": 13,
+          "limited_candidate_count": 15,
+          "mean_reciprocal_rank": "0.625",
+          "mean_top_score_margin": "9.82770464545710412213632565",
+          "no_rank_count": 19,
           "no_rank_reason_counts": {
             "BOOKED_CARRIER_NOT_CANDIDATE_AT_CUTOFF": 10,
-            "NO_CANDIDATES_AT_CUTOFF": 3
+            "NO_CANDIDATES_AT_CUTOFF": 9
           },
-          "scored_case_count": 10,
+          "scored_case_count": 8,
           "scored_case_count_by_source": {
-            "BROKEROS": 4,
-            "FREIGHTFLOW": 3,
-            "HAULDESK": 3
+            "BROKEROS": 2,
+            "FREIGHTFLOW": 4,
+            "HAULDESK": 2
           },
-          "supported_candidate_count": 42,
-          "top_1_recall": "0.4",
-          "top_3_recall": "0.9",
-          "top_fit_tie_count": 8,
-          "top_fit_tie_rate": "0.3478260869565217391304347826",
+          "supported_candidate_count": 40,
+          "top_1_recall": "0.375",
+          "top_3_recall": "1",
+          "top_fit_tie_count": 1,
+          "top_fit_tie_rate": "0.03703703703703703703703703704",
           "top_supported_confidence_counts": {
-            "LOW": 2,
-            "MEDIUM": 18
+            "HIGH": 10,
+            "LOW": 4,
+            "MEDIUM": 4
           }
         }
       },
-      "case_count": 27,
-      "clear_top_count": 12,
+      "case_count": 43,
+      "clear_top_count": 29,
       "coverage_counts": {
-        "BROADER_LANE": 9,
-        "CLOSE_SCORE_TIE": 12,
-        "DISTANCE_EQUIPMENT": 4,
-        "KNOWN_EQUIPMENT": 14,
+        "BROADER_LANE": 10,
+        "CLOSE_SCORE_TIE": 5,
+        "DISTANCE_EQUIPMENT": 12,
+        "KNOWN_EQUIPMENT": 24,
         "LIMITED_CANDIDATE": 10,
-        "NEAR_EXACT": 17,
-        "RICH": 4,
-        "SPARSE": 20
+        "NEAR_EXACT": 27,
+        "RICH": 16,
+        "SPARSE": 18
       },
-      "limited_candidate_count": 23,
-      "mean_reciprocal_rank": "0.6607142857142857142857142856",
-      "mean_top_score_margin": "2.436631182056942510218979891",
-      "no_rank_count": 13,
+      "limited_candidate_count": 21,
+      "mean_reciprocal_rank": "0.875",
+      "mean_top_score_margin": "7.114831880293126415535847338",
+      "no_rank_count": 19,
       "no_rank_reason_counts": {
         "BOOKED_CARRIER_NOT_CANDIDATE_AT_CUTOFF": 10,
-        "NO_CANDIDATES_AT_CUTOFF": 3
+        "NO_CANDIDATES_AT_CUTOFF": 9
       },
-      "scored_case_count": 14,
+      "scored_case_count": 24,
       "scored_case_count_by_source": {
-        "BROKEROS": 5,
-        "FREIGHTFLOW": 4,
-        "HAULDESK": 5
+        "BROKEROS": 6,
+        "FREIGHTFLOW": 12,
+        "HAULDESK": 6
       },
-      "supported_candidate_count": 53,
-      "top_1_recall": "0.4285714285714285714285714286",
-      "top_3_recall": "0.9285714285714285714285714286",
-      "top_fit_tie_count": 12,
-      "top_fit_tie_rate": "0.4444444444444444444444444444",
+      "supported_candidate_count": 72,
+      "top_1_recall": "0.7916666666666666666666666667",
+      "top_3_recall": "1",
+      "top_fit_tie_count": 5,
+      "top_fit_tie_rate": "0.1162790697674418604651162791",
       "top_supported_confidence_counts": {
-        "LOW": 2,
-        "MEDIUM": 22
+        "HIGH": 22,
+        "LOW": 4,
+        "MEDIUM": 8
       }
     },
     "without_recency": {
       "by_history_depth": {
         "RICH": {
           "by_history_depth": {},
-          "case_count": 4,
-          "clear_top_count": 0,
+          "case_count": 16,
+          "clear_top_count": 16,
           "coverage_counts": {
-            "BROADER_LANE": 3,
-            "CLOSE_SCORE_TIE": 4,
-            "DISTANCE_EQUIPMENT": 1,
-            "KNOWN_EQUIPMENT": 4,
-            "NEAR_EXACT": 4,
-            "RICH": 4
+            "BROADER_LANE": 5,
+            "DISTANCE_EQUIPMENT": 6,
+            "KNOWN_EQUIPMENT": 16,
+            "NEAR_EXACT": 16,
+            "RICH": 16
           },
           "limited_candidate_count": 6,
-          "mean_reciprocal_rank": "0.875",
-          "mean_top_score_margin": "0.5090887842306651456287799925",
+          "mean_reciprocal_rank": "1",
+          "mean_top_score_margin": "11.58552079572137934710192272",
           "no_rank_count": 0,
           "no_rank_reason_counts": {},
-          "scored_case_count": 4,
+          "scored_case_count": 16,
           "scored_case_count_by_source": {
-            "BROKEROS": 1,
-            "FREIGHTFLOW": 1,
-            "HAULDESK": 2
+            "BROKEROS": 4,
+            "FREIGHTFLOW": 8,
+            "HAULDESK": 4
           },
-          "supported_candidate_count": 11,
-          "top_1_recall": "0.75",
+          "supported_candidate_count": 32,
+          "top_1_recall": "1",
           "top_3_recall": "1",
-          "top_fit_tie_count": 4,
-          "top_fit_tie_rate": "1",
+          "top_fit_tie_count": 0,
+          "top_fit_tie_rate": "0",
           "top_supported_confidence_counts": {
+            "HIGH": 12,
             "MEDIUM": 4
           }
         },
         "SPARSE": {
           "by_history_depth": {},
-          "case_count": 23,
-          "clear_top_count": 7,
+          "case_count": 27,
+          "clear_top_count": 15,
           "coverage_counts": {
-            "BROADER_LANE": 6,
-            "CLOSE_SCORE_TIE": 13,
-            "DISTANCE_EQUIPMENT": 3,
-            "KNOWN_EQUIPMENT": 10,
+            "BROADER_LANE": 5,
+            "CLOSE_SCORE_TIE": 3,
+            "DISTANCE_EQUIPMENT": 6,
+            "KNOWN_EQUIPMENT": 8,
             "LIMITED_CANDIDATE": 10,
-            "NEAR_EXACT": 13,
-            "SPARSE": 20
+            "NEAR_EXACT": 11,
+            "SPARSE": 18
           },
-          "limited_candidate_count": 17,
-          "mean_reciprocal_rank": "0.5916666666666666666666666666",
-          "mean_top_score_margin": "1.056161535458528315208497201",
-          "no_rank_count": 13,
+          "limited_candidate_count": 15,
+          "mean_reciprocal_rank": "0.625",
+          "mean_top_score_margin": "12.35967877076870389205579199",
+          "no_rank_count": 19,
           "no_rank_reason_counts": {
             "BOOKED_CARRIER_NOT_CANDIDATE_AT_CUTOFF": 10,
-            "NO_CANDIDATES_AT_CUTOFF": 3
+            "NO_CANDIDATES_AT_CUTOFF": 9
           },
-          "scored_case_count": 10,
+          "scored_case_count": 8,
           "scored_case_count_by_source": {
-            "BROKEROS": 4,
-            "FREIGHTFLOW": 3,
-            "HAULDESK": 3
+            "BROKEROS": 2,
+            "FREIGHTFLOW": 4,
+            "HAULDESK": 2
           },
-          "supported_candidate_count": 42,
-          "top_1_recall": "0.3",
-          "top_3_recall": "0.9",
-          "top_fit_tie_count": 13,
-          "top_fit_tie_rate": "0.5652173913043478260869565217",
+          "supported_candidate_count": 40,
+          "top_1_recall": "0.375",
+          "top_3_recall": "1",
+          "top_fit_tie_count": 3,
+          "top_fit_tie_rate": "0.1111111111111111111111111111",
           "top_supported_confidence_counts": {
-            "LOW": 4,
-            "MEDIUM": 16
+            "HIGH": 9,
+            "LOW": 8,
+            "MEDIUM": 1
           }
         }
       },
-      "case_count": 27,
-      "clear_top_count": 7,
+      "case_count": 43,
+      "clear_top_count": 31,
       "coverage_counts": {
-        "BROADER_LANE": 9,
-        "CLOSE_SCORE_TIE": 17,
-        "DISTANCE_EQUIPMENT": 4,
-        "KNOWN_EQUIPMENT": 14,
+        "BROADER_LANE": 10,
+        "CLOSE_SCORE_TIE": 3,
+        "DISTANCE_EQUIPMENT": 12,
+        "KNOWN_EQUIPMENT": 24,
         "LIMITED_CANDIDATE": 10,
-        "NEAR_EXACT": 17,
-        "RICH": 4,
-        "SPARSE": 20
+        "NEAR_EXACT": 27,
+        "RICH": 16,
+        "SPARSE": 18
       },
-      "limited_candidate_count": 23,
-      "mean_reciprocal_rank": "0.6726190476190476190476190476",
-      "mean_top_score_margin": "0.9345898129634476108574489322",
-      "no_rank_count": 13,
+      "limited_candidate_count": 21,
+      "mean_reciprocal_rank": "0.875",
+      "mean_top_score_margin": "11.97259978324504161957885735",
+      "no_rank_count": 19,
       "no_rank_reason_counts": {
         "BOOKED_CARRIER_NOT_CANDIDATE_AT_CUTOFF": 10,
-        "NO_CANDIDATES_AT_CUTOFF": 3
+        "NO_CANDIDATES_AT_CUTOFF": 9
       },
-      "scored_case_count": 14,
+      "scored_case_count": 24,
       "scored_case_count_by_source": {
-        "BROKEROS": 5,
-        "FREIGHTFLOW": 4,
-        "HAULDESK": 5
+        "BROKEROS": 6,
+        "FREIGHTFLOW": 12,
+        "HAULDESK": 6
       },
-      "supported_candidate_count": 53,
-      "top_1_recall": "0.4285714285714285714285714286",
-      "top_3_recall": "0.9285714285714285714285714286",
-      "top_fit_tie_count": 17,
-      "top_fit_tie_rate": "0.6296296296296296296296296296",
+      "supported_candidate_count": 72,
+      "top_1_recall": "0.7916666666666666666666666667",
+      "top_3_recall": "1",
+      "top_fit_tie_count": 3,
+      "top_fit_tie_rate": "0.06976744186046511627906976744",
       "top_supported_confidence_counts": {
-        "LOW": 4,
-        "MEDIUM": 20
+        "HIGH": 21,
+        "LOW": 8,
+        "MEDIUM": 5
       }
     }
   },
@@ -329,216 +337,220 @@
     "by_history_depth": {
       "RICH": {
         "by_history_depth": {},
-        "case_count": 4,
-        "clear_top_count": 1,
+        "case_count": 16,
+        "clear_top_count": 16,
         "coverage_counts": {
-          "BROADER_LANE": 3,
-          "CLOSE_SCORE_TIE": 3,
-          "DISTANCE_EQUIPMENT": 1,
-          "KNOWN_EQUIPMENT": 4,
-          "NEAR_EXACT": 4,
-          "RICH": 4
+          "BROADER_LANE": 5,
+          "DISTANCE_EQUIPMENT": 6,
+          "KNOWN_EQUIPMENT": 16,
+          "NEAR_EXACT": 16,
+          "RICH": 16
         },
         "limited_candidate_count": 6,
-        "mean_reciprocal_rank": "0.875",
-        "mean_top_score_margin": "0.842457478551304466355497795",
+        "mean_reciprocal_rank": "1",
+        "mean_top_score_margin": "12.00783582190804260692405986",
         "no_rank_count": 0,
         "no_rank_reason_counts": {},
-        "scored_case_count": 4,
+        "scored_case_count": 16,
         "scored_case_count_by_source": {
-          "BROKEROS": 1,
-          "FREIGHTFLOW": 1,
-          "HAULDESK": 2
+          "BROKEROS": 4,
+          "FREIGHTFLOW": 8,
+          "HAULDESK": 4
         },
-        "supported_candidate_count": 11,
-        "top_1_recall": "0.75",
+        "supported_candidate_count": 32,
+        "top_1_recall": "1",
         "top_3_recall": "1",
-        "top_fit_tie_count": 3,
-        "top_fit_tie_rate": "0.75",
+        "top_fit_tie_count": 0,
+        "top_fit_tie_rate": "0",
         "top_supported_confidence_counts": {
+          "HIGH": 12,
           "MEDIUM": 4
         }
       },
       "SPARSE": {
         "by_history_depth": {},
-        "case_count": 23,
-        "clear_top_count": 9,
+        "case_count": 27,
+        "clear_top_count": 14,
         "coverage_counts": {
-          "BROADER_LANE": 6,
-          "CLOSE_SCORE_TIE": 11,
-          "DISTANCE_EQUIPMENT": 3,
-          "KNOWN_EQUIPMENT": 10,
+          "BROADER_LANE": 5,
+          "CLOSE_SCORE_TIE": 4,
+          "DISTANCE_EQUIPMENT": 6,
+          "KNOWN_EQUIPMENT": 8,
           "LIMITED_CANDIDATE": 10,
-          "NEAR_EXACT": 13,
-          "SPARSE": 20
+          "NEAR_EXACT": 11,
+          "SPARSE": 18
         },
-        "limited_candidate_count": 17,
-        "mean_reciprocal_rank": "0.5749999999999999999999999999",
-        "mean_top_score_margin": "1.190389261399731569715502737",
-        "no_rank_count": 13,
+        "limited_candidate_count": 15,
+        "mean_reciprocal_rank": "0.6458333333333333333333333332",
+        "mean_top_score_margin": "11.5090979274165492539439382",
+        "no_rank_count": 19,
         "no_rank_reason_counts": {
           "BOOKED_CARRIER_NOT_CANDIDATE_AT_CUTOFF": 10,
-          "NO_CANDIDATES_AT_CUTOFF": 3
+          "NO_CANDIDATES_AT_CUTOFF": 9
         },
-        "scored_case_count": 10,
+        "scored_case_count": 8,
         "scored_case_count_by_source": {
-          "BROKEROS": 4,
-          "FREIGHTFLOW": 3,
-          "HAULDESK": 3
+          "BROKEROS": 2,
+          "FREIGHTFLOW": 4,
+          "HAULDESK": 2
         },
-        "supported_candidate_count": 42,
-        "top_1_recall": "0.3",
-        "top_3_recall": "0.9",
-        "top_fit_tie_count": 11,
-        "top_fit_tie_rate": "0.4782608695652173913043478261",
+        "supported_candidate_count": 40,
+        "top_1_recall": "0.375",
+        "top_3_recall": "1",
+        "top_fit_tie_count": 4,
+        "top_fit_tie_rate": "0.1481481481481481481481481481",
         "top_supported_confidence_counts": {
-          "LOW": 3,
-          "MEDIUM": 17
+          "HIGH": 9,
+          "LOW": 7,
+          "MEDIUM": 2
         }
       }
     },
-    "case_count": 27,
-    "clear_top_count": 10,
+    "case_count": 43,
+    "clear_top_count": 30,
     "coverage_counts": {
-      "BROADER_LANE": 9,
-      "CLOSE_SCORE_TIE": 14,
-      "DISTANCE_EQUIPMENT": 4,
-      "KNOWN_EQUIPMENT": 14,
+      "BROADER_LANE": 10,
+      "CLOSE_SCORE_TIE": 4,
+      "DISTANCE_EQUIPMENT": 12,
+      "KNOWN_EQUIPMENT": 24,
       "LIMITED_CANDIDATE": 10,
-      "NEAR_EXACT": 17,
-      "RICH": 4,
-      "SPARSE": 20
+      "NEAR_EXACT": 27,
+      "RICH": 16,
+      "SPARSE": 18
     },
-    "limited_candidate_count": 23,
-    "mean_reciprocal_rank": "0.6607142857142857142857142856",
-    "mean_top_score_margin": "1.113071087433414435635501639",
-    "no_rank_count": 13,
+    "limited_candidate_count": 21,
+    "mean_reciprocal_rank": "0.8819444444444444444444444442",
+    "mean_top_score_margin": "11.75846687466229593043399903",
+    "no_rank_count": 19,
     "no_rank_reason_counts": {
       "BOOKED_CARRIER_NOT_CANDIDATE_AT_CUTOFF": 10,
-      "NO_CANDIDATES_AT_CUTOFF": 3
+      "NO_CANDIDATES_AT_CUTOFF": 9
     },
-    "scored_case_count": 14,
+    "scored_case_count": 24,
     "scored_case_count_by_source": {
-      "BROKEROS": 5,
-      "FREIGHTFLOW": 4,
-      "HAULDESK": 5
+      "BROKEROS": 6,
+      "FREIGHTFLOW": 12,
+      "HAULDESK": 6
     },
-    "supported_candidate_count": 53,
-    "top_1_recall": "0.4285714285714285714285714286",
-    "top_3_recall": "0.9285714285714285714285714286",
-    "top_fit_tie_count": 14,
-    "top_fit_tie_rate": "0.5185185185185185185185185185",
+    "supported_candidate_count": 72,
+    "top_1_recall": "0.7916666666666666666666666667",
+    "top_3_recall": "1",
+    "top_fit_tie_count": 4,
+    "top_fit_tie_rate": "0.09302325581395348837209302326",
     "top_supported_confidence_counts": {
-      "LOW": 3,
-      "MEDIUM": 21
+      "HIGH": 21,
+      "LOW": 7,
+      "MEDIUM": 6
     }
   },
   "all_candidates_without_deadhead": {
     "by_history_depth": {
       "RICH": {
         "by_history_depth": {},
-        "case_count": 4,
-        "clear_top_count": 2,
+        "case_count": 16,
+        "clear_top_count": 16,
         "coverage_counts": {
-          "BROADER_LANE": 3,
-          "CLOSE_SCORE_TIE": 2,
-          "DISTANCE_EQUIPMENT": 1,
-          "KNOWN_EQUIPMENT": 4,
-          "NEAR_EXACT": 4,
-          "RICH": 4
+          "BROADER_LANE": 5,
+          "DISTANCE_EQUIPMENT": 6,
+          "KNOWN_EQUIPMENT": 16,
+          "NEAR_EXACT": 16,
+          "RICH": 16
         },
         "limited_candidate_count": 6,
-        "mean_reciprocal_rank": "0.875",
-        "mean_top_score_margin": "2.469698420751329651886234678",
+        "mean_reciprocal_rank": "1",
+        "mean_top_score_margin": "18.56600905069552499101627906",
         "no_rank_count": 0,
         "no_rank_reason_counts": {},
-        "scored_case_count": 4,
+        "scored_case_count": 16,
         "scored_case_count_by_source": {
-          "BROKEROS": 1,
-          "FREIGHTFLOW": 1,
-          "HAULDESK": 2
+          "BROKEROS": 4,
+          "FREIGHTFLOW": 8,
+          "HAULDESK": 4
         },
-        "supported_candidate_count": 11,
-        "top_1_recall": "0.75",
+        "supported_candidate_count": 32,
+        "top_1_recall": "1",
         "top_3_recall": "1",
-        "top_fit_tie_count": 2,
-        "top_fit_tie_rate": "0.5",
+        "top_fit_tie_count": 0,
+        "top_fit_tie_rate": "0",
         "top_supported_confidence_counts": {
+          "HIGH": 12,
           "MEDIUM": 4
         }
       },
       "SPARSE": {
         "by_history_depth": {},
-        "case_count": 23,
-        "clear_top_count": 10,
+        "case_count": 27,
+        "clear_top_count": 14,
         "coverage_counts": {
-          "BROADER_LANE": 6,
-          "CLOSE_SCORE_TIE": 10,
-          "DISTANCE_EQUIPMENT": 3,
-          "KNOWN_EQUIPMENT": 10,
+          "BROADER_LANE": 5,
+          "CLOSE_SCORE_TIE": 4,
+          "DISTANCE_EQUIPMENT": 6,
+          "KNOWN_EQUIPMENT": 8,
           "LIMITED_CANDIDATE": 10,
-          "NEAR_EXACT": 13,
-          "SPARSE": 20
+          "NEAR_EXACT": 11,
+          "SPARSE": 18
         },
-        "limited_candidate_count": 17,
-        "mean_reciprocal_rank": "0.5999999999999999999999999999",
-        "mean_top_score_margin": "1.514041735086968534881157341",
-        "no_rank_count": 13,
+        "limited_candidate_count": 15,
+        "mean_reciprocal_rank": "0.6666666666666666666666666666",
+        "mean_top_score_margin": "13.65273937890636046749228434",
+        "no_rank_count": 19,
         "no_rank_reason_counts": {
           "BOOKED_CARRIER_NOT_CANDIDATE_AT_CUTOFF": 10,
-          "NO_CANDIDATES_AT_CUTOFF": 3
+          "NO_CANDIDATES_AT_CUTOFF": 9
         },
-        "scored_case_count": 10,
+        "scored_case_count": 8,
         "scored_case_count_by_source": {
-          "BROKEROS": 4,
-          "FREIGHTFLOW": 3,
-          "HAULDESK": 3
+          "BROKEROS": 2,
+          "FREIGHTFLOW": 4,
+          "HAULDESK": 2
         },
-        "supported_candidate_count": 42,
-        "top_1_recall": "0.3",
+        "supported_candidate_count": 40,
+        "top_1_recall": "0.375",
         "top_3_recall": "1",
-        "top_fit_tie_count": 10,
-        "top_fit_tie_rate": "0.4347826086956521739130434783",
+        "top_fit_tie_count": 4,
+        "top_fit_tie_rate": "0.1481481481481481481481481481",
         "top_supported_confidence_counts": {
-          "LOW": 4,
-          "MEDIUM": 16
+          "HIGH": 10,
+          "LOW": 7,
+          "MEDIUM": 1
         }
       }
     },
-    "case_count": 27,
-    "clear_top_count": 12,
+    "case_count": 43,
+    "clear_top_count": 30,
     "coverage_counts": {
-      "BROADER_LANE": 9,
-      "CLOSE_SCORE_TIE": 12,
-      "DISTANCE_EQUIPMENT": 4,
-      "KNOWN_EQUIPMENT": 14,
+      "BROADER_LANE": 10,
+      "CLOSE_SCORE_TIE": 4,
+      "DISTANCE_EQUIPMENT": 12,
+      "KNOWN_EQUIPMENT": 24,
       "LIMITED_CANDIDATE": 10,
-      "NEAR_EXACT": 17,
-      "RICH": 4,
-      "SPARSE": 20
+      "NEAR_EXACT": 27,
+      "RICH": 16,
+      "SPARSE": 18
     },
-    "limited_candidate_count": 23,
-    "mean_reciprocal_rank": "0.6785714285714285714285714285",
-    "mean_top_score_margin": "1.726409887456826560882285638",
-    "no_rank_count": 13,
+    "limited_candidate_count": 21,
+    "mean_reciprocal_rank": "0.8888888888888888888888888888",
+    "mean_top_score_margin": "16.1093742148009427292542817",
+    "no_rank_count": 19,
     "no_rank_reason_counts": {
       "BOOKED_CARRIER_NOT_CANDIDATE_AT_CUTOFF": 10,
-      "NO_CANDIDATES_AT_CUTOFF": 3
+      "NO_CANDIDATES_AT_CUTOFF": 9
     },
-    "scored_case_count": 14,
+    "scored_case_count": 24,
     "scored_case_count_by_source": {
-      "BROKEROS": 5,
-      "FREIGHTFLOW": 4,
-      "HAULDESK": 5
+      "BROKEROS": 6,
+      "FREIGHTFLOW": 12,
+      "HAULDESK": 6
     },
-    "supported_candidate_count": 53,
-    "top_1_recall": "0.4285714285714285714285714286",
+    "supported_candidate_count": 72,
+    "top_1_recall": "0.7916666666666666666666666667",
     "top_3_recall": "1",
-    "top_fit_tie_count": 12,
-    "top_fit_tie_rate": "0.4444444444444444444444444444",
+    "top_fit_tie_count": 4,
+    "top_fit_tie_rate": "0.09302325581395348837209302326",
     "top_supported_confidence_counts": {
-      "LOW": 4,
-      "MEDIUM": 20
+      "HIGH": 22,
+      "LOW": 7,
+      "MEDIUM": 5
     }
   },
   "caveat": "The eventually booked carrier is only a weak behavioral proxy; it does not prove availability, acceptance probability, reliability, or dispatch quality.",
@@ -547,324 +559,332 @@
       "by_history_depth": {
         "RICH": {
           "by_history_depth": {},
-          "case_count": 4,
-          "clear_top_count": 1,
+          "case_count": 16,
+          "clear_top_count": 15,
           "coverage_counts": {
-            "BROADER_LANE": 3,
-            "CLOSE_SCORE_TIE": 3,
-            "DISTANCE_EQUIPMENT": 1,
-            "KNOWN_EQUIPMENT": 4,
-            "NEAR_EXACT": 4,
-            "RICH": 4
+            "BROADER_LANE": 5,
+            "CLOSE_SCORE_TIE": 1,
+            "DISTANCE_EQUIPMENT": 6,
+            "KNOWN_EQUIPMENT": 16,
+            "NEAR_EXACT": 16,
+            "RICH": 16
           },
           "limited_candidate_count": 6,
-          "mean_reciprocal_rank": "0.7083333333333333333333333332",
-          "mean_top_score_margin": "1.063755850982185973727850175",
+          "mean_reciprocal_rank": "1",
+          "mean_top_score_margin": "11.26078730796871027043327268",
           "no_rank_count": 0,
           "no_rank_reason_counts": {},
-          "scored_case_count": 4,
+          "scored_case_count": 16,
           "scored_case_count_by_source": {
-            "BROKEROS": 1,
-            "FREIGHTFLOW": 1,
-            "HAULDESK": 2
+            "BROKEROS": 4,
+            "FREIGHTFLOW": 8,
+            "HAULDESK": 4
           },
-          "supported_candidate_count": 11,
-          "top_1_recall": "0.5",
+          "supported_candidate_count": 32,
+          "top_1_recall": "1",
           "top_3_recall": "1",
-          "top_fit_tie_count": 3,
-          "top_fit_tie_rate": "0.75",
+          "top_fit_tie_count": 1,
+          "top_fit_tie_rate": "0.0625",
           "top_supported_confidence_counts": {
+            "HIGH": 12,
             "MEDIUM": 4
           }
         },
         "SPARSE": {
           "by_history_depth": {},
-          "case_count": 23,
-          "clear_top_count": 7,
+          "case_count": 27,
+          "clear_top_count": 14,
           "coverage_counts": {
-            "BROADER_LANE": 6,
-            "CLOSE_SCORE_TIE": 13,
-            "DISTANCE_EQUIPMENT": 3,
-            "KNOWN_EQUIPMENT": 10,
+            "BROADER_LANE": 5,
+            "CLOSE_SCORE_TIE": 4,
+            "DISTANCE_EQUIPMENT": 6,
+            "KNOWN_EQUIPMENT": 8,
             "LIMITED_CANDIDATE": 10,
-            "NEAR_EXACT": 13,
-            "SPARSE": 20
+            "NEAR_EXACT": 11,
+            "SPARSE": 18
           },
-          "limited_candidate_count": 17,
-          "mean_reciprocal_rank": "0.5749999999999999999999999999",
-          "mean_top_score_margin": "1.001425787160036945164219439",
-          "no_rank_count": 13,
+          "limited_candidate_count": 15,
+          "mean_reciprocal_rank": "0.625",
+          "mean_top_score_margin": "11.56488607625725908813937282",
+          "no_rank_count": 19,
           "no_rank_reason_counts": {
             "BOOKED_CARRIER_NOT_SUPPORTED_AT_CUTOFF": 10,
-            "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 3
+            "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 9
           },
-          "scored_case_count": 10,
+          "scored_case_count": 8,
           "scored_case_count_by_source": {
-            "BROKEROS": 4,
-            "FREIGHTFLOW": 3,
-            "HAULDESK": 3
+            "BROKEROS": 2,
+            "FREIGHTFLOW": 4,
+            "HAULDESK": 2
           },
-          "supported_candidate_count": 42,
-          "top_1_recall": "0.3",
-          "top_3_recall": "0.9",
-          "top_fit_tie_count": 13,
-          "top_fit_tie_rate": "0.5652173913043478260869565217",
+          "supported_candidate_count": 40,
+          "top_1_recall": "0.375",
+          "top_3_recall": "1",
+          "top_fit_tie_count": 4,
+          "top_fit_tie_rate": "0.1481481481481481481481481481",
           "top_supported_confidence_counts": {
-            "LOW": 3,
-            "MEDIUM": 17
+            "HIGH": 9,
+            "LOW": 7,
+            "MEDIUM": 2
           }
         }
       },
-      "case_count": 27,
-      "clear_top_count": 8,
+      "case_count": 43,
+      "clear_top_count": 29,
       "coverage_counts": {
-        "BROADER_LANE": 9,
-        "CLOSE_SCORE_TIE": 16,
-        "DISTANCE_EQUIPMENT": 4,
-        "KNOWN_EQUIPMENT": 14,
+        "BROADER_LANE": 10,
+        "CLOSE_SCORE_TIE": 5,
+        "DISTANCE_EQUIPMENT": 12,
+        "KNOWN_EQUIPMENT": 24,
         "LIMITED_CANDIDATE": 10,
-        "NEAR_EXACT": 17,
-        "RICH": 4,
-        "SPARSE": 20
+        "NEAR_EXACT": 27,
+        "RICH": 16,
+        "SPARSE": 18
       },
-      "limited_candidate_count": 23,
-      "mean_reciprocal_rank": "0.613095238095238095238095238",
-      "mean_top_score_margin": "1.015276912453847840400581824",
-      "no_rank_count": 13,
+      "limited_candidate_count": 21,
+      "mean_reciprocal_rank": "0.875",
+      "mean_top_score_margin": "11.41283669211298467928632275",
+      "no_rank_count": 19,
       "no_rank_reason_counts": {
         "BOOKED_CARRIER_NOT_SUPPORTED_AT_CUTOFF": 10,
-        "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 3
+        "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 9
       },
-      "scored_case_count": 14,
+      "scored_case_count": 24,
       "scored_case_count_by_source": {
-        "BROKEROS": 5,
-        "FREIGHTFLOW": 4,
-        "HAULDESK": 5
+        "BROKEROS": 6,
+        "FREIGHTFLOW": 12,
+        "HAULDESK": 6
       },
-      "supported_candidate_count": 53,
-      "top_1_recall": "0.3571428571428571428571428571",
-      "top_3_recall": "0.9285714285714285714285714286",
-      "top_fit_tie_count": 16,
-      "top_fit_tie_rate": "0.5925925925925925925925925926",
+      "supported_candidate_count": 72,
+      "top_1_recall": "0.7916666666666666666666666667",
+      "top_3_recall": "1",
+      "top_fit_tie_count": 5,
+      "top_fit_tie_rate": "0.1162790697674418604651162791",
       "top_supported_confidence_counts": {
-        "LOW": 3,
-        "MEDIUM": 21
+        "HIGH": 21,
+        "LOW": 7,
+        "MEDIUM": 6
       }
     },
     "without_lane": {
       "by_history_depth": {
         "RICH": {
           "by_history_depth": {},
-          "case_count": 4,
-          "clear_top_count": 0,
+          "case_count": 16,
+          "clear_top_count": 12,
           "coverage_counts": {
-            "BROADER_LANE": 3,
+            "BROADER_LANE": 5,
             "CLOSE_SCORE_TIE": 4,
-            "DISTANCE_EQUIPMENT": 1,
-            "KNOWN_EQUIPMENT": 4,
-            "NEAR_EXACT": 4,
-            "RICH": 4
+            "DISTANCE_EQUIPMENT": 6,
+            "KNOWN_EQUIPMENT": 16,
+            "NEAR_EXACT": 16,
+            "RICH": 16
           },
           "limited_candidate_count": 6,
-          "mean_reciprocal_rank": "0.7083333333333333333333333332",
-          "mean_top_score_margin": "1.447669710683755189509679922",
+          "mean_reciprocal_rank": "1",
+          "mean_top_score_margin": "4.401959115129148708935369026",
           "no_rank_count": 0,
           "no_rank_reason_counts": {},
-          "scored_case_count": 4,
+          "scored_case_count": 16,
           "scored_case_count_by_source": {
-            "BROKEROS": 1,
-            "FREIGHTFLOW": 1,
-            "HAULDESK": 2
+            "BROKEROS": 4,
+            "FREIGHTFLOW": 8,
+            "HAULDESK": 4
           },
-          "supported_candidate_count": 11,
-          "top_1_recall": "0.5",
+          "supported_candidate_count": 32,
+          "top_1_recall": "1",
           "top_3_recall": "1",
           "top_fit_tie_count": 4,
-          "top_fit_tie_rate": "1",
+          "top_fit_tie_rate": "0.25",
           "top_supported_confidence_counts": {
+            "HIGH": 12,
             "MEDIUM": 4
           }
         },
         "SPARSE": {
           "by_history_depth": {},
-          "case_count": 23,
-          "clear_top_count": 12,
+          "case_count": 27,
+          "clear_top_count": 17,
           "coverage_counts": {
-            "BROADER_LANE": 6,
-            "CLOSE_SCORE_TIE": 8,
-            "DISTANCE_EQUIPMENT": 3,
-            "KNOWN_EQUIPMENT": 10,
+            "BROADER_LANE": 5,
+            "CLOSE_SCORE_TIE": 1,
+            "DISTANCE_EQUIPMENT": 6,
+            "KNOWN_EQUIPMENT": 8,
             "LIMITED_CANDIDATE": 10,
-            "NEAR_EXACT": 13,
-            "SPARSE": 20
+            "NEAR_EXACT": 11,
+            "SPARSE": 18
           },
-          "limited_candidate_count": 17,
-          "mean_reciprocal_rank": "0.6416666666666666666666666666",
-          "mean_top_score_margin": "2.71919160244928174470735131",
-          "no_rank_count": 13,
+          "limited_candidate_count": 15,
+          "mean_reciprocal_rank": "0.625",
+          "mean_top_score_margin": "9.82770464545710412213632565",
+          "no_rank_count": 19,
           "no_rank_reason_counts": {
             "BOOKED_CARRIER_NOT_SUPPORTED_AT_CUTOFF": 10,
-            "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 3
+            "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 9
           },
-          "scored_case_count": 10,
+          "scored_case_count": 8,
           "scored_case_count_by_source": {
-            "BROKEROS": 4,
-            "FREIGHTFLOW": 3,
-            "HAULDESK": 3
+            "BROKEROS": 2,
+            "FREIGHTFLOW": 4,
+            "HAULDESK": 2
           },
-          "supported_candidate_count": 42,
-          "top_1_recall": "0.4",
-          "top_3_recall": "0.9",
-          "top_fit_tie_count": 8,
-          "top_fit_tie_rate": "0.3478260869565217391304347826",
+          "supported_candidate_count": 40,
+          "top_1_recall": "0.375",
+          "top_3_recall": "1",
+          "top_fit_tie_count": 1,
+          "top_fit_tie_rate": "0.03703703703703703703703703704",
           "top_supported_confidence_counts": {
-            "LOW": 2,
-            "MEDIUM": 18
+            "HIGH": 10,
+            "LOW": 4,
+            "MEDIUM": 4
           }
         }
       },
-      "case_count": 27,
-      "clear_top_count": 12,
+      "case_count": 43,
+      "clear_top_count": 29,
       "coverage_counts": {
-        "BROADER_LANE": 9,
-        "CLOSE_SCORE_TIE": 12,
-        "DISTANCE_EQUIPMENT": 4,
-        "KNOWN_EQUIPMENT": 14,
+        "BROADER_LANE": 10,
+        "CLOSE_SCORE_TIE": 5,
+        "DISTANCE_EQUIPMENT": 12,
+        "KNOWN_EQUIPMENT": 24,
         "LIMITED_CANDIDATE": 10,
-        "NEAR_EXACT": 17,
-        "RICH": 4,
-        "SPARSE": 20
+        "NEAR_EXACT": 27,
+        "RICH": 16,
+        "SPARSE": 18
       },
-      "limited_candidate_count": 23,
-      "mean_reciprocal_rank": "0.6607142857142857142857142856",
-      "mean_top_score_margin": "2.436631182056942510218979891",
-      "no_rank_count": 13,
+      "limited_candidate_count": 21,
+      "mean_reciprocal_rank": "0.875",
+      "mean_top_score_margin": "7.114831880293126415535847338",
+      "no_rank_count": 19,
       "no_rank_reason_counts": {
         "BOOKED_CARRIER_NOT_SUPPORTED_AT_CUTOFF": 10,
-        "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 3
+        "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 9
       },
-      "scored_case_count": 14,
+      "scored_case_count": 24,
       "scored_case_count_by_source": {
-        "BROKEROS": 5,
-        "FREIGHTFLOW": 4,
-        "HAULDESK": 5
+        "BROKEROS": 6,
+        "FREIGHTFLOW": 12,
+        "HAULDESK": 6
       },
-      "supported_candidate_count": 53,
-      "top_1_recall": "0.4285714285714285714285714286",
-      "top_3_recall": "0.9285714285714285714285714286",
-      "top_fit_tie_count": 12,
-      "top_fit_tie_rate": "0.4444444444444444444444444444",
+      "supported_candidate_count": 72,
+      "top_1_recall": "0.7916666666666666666666666667",
+      "top_3_recall": "1",
+      "top_fit_tie_count": 5,
+      "top_fit_tie_rate": "0.1162790697674418604651162791",
       "top_supported_confidence_counts": {
-        "LOW": 2,
-        "MEDIUM": 22
+        "HIGH": 22,
+        "LOW": 4,
+        "MEDIUM": 8
       }
     },
     "without_recency": {
       "by_history_depth": {
         "RICH": {
           "by_history_depth": {},
-          "case_count": 4,
-          "clear_top_count": 0,
+          "case_count": 16,
+          "clear_top_count": 16,
           "coverage_counts": {
-            "BROADER_LANE": 3,
-            "CLOSE_SCORE_TIE": 4,
-            "DISTANCE_EQUIPMENT": 1,
-            "KNOWN_EQUIPMENT": 4,
-            "NEAR_EXACT": 4,
-            "RICH": 4
+            "BROADER_LANE": 5,
+            "DISTANCE_EQUIPMENT": 6,
+            "KNOWN_EQUIPMENT": 16,
+            "NEAR_EXACT": 16,
+            "RICH": 16
           },
           "limited_candidate_count": 6,
-          "mean_reciprocal_rank": "0.875",
-          "mean_top_score_margin": "0.5090887842306651456287799925",
+          "mean_reciprocal_rank": "1",
+          "mean_top_score_margin": "11.58552079572137934710192272",
           "no_rank_count": 0,
           "no_rank_reason_counts": {},
-          "scored_case_count": 4,
+          "scored_case_count": 16,
           "scored_case_count_by_source": {
-            "BROKEROS": 1,
-            "FREIGHTFLOW": 1,
-            "HAULDESK": 2
+            "BROKEROS": 4,
+            "FREIGHTFLOW": 8,
+            "HAULDESK": 4
           },
-          "supported_candidate_count": 11,
-          "top_1_recall": "0.75",
+          "supported_candidate_count": 32,
+          "top_1_recall": "1",
           "top_3_recall": "1",
-          "top_fit_tie_count": 4,
-          "top_fit_tie_rate": "1",
+          "top_fit_tie_count": 0,
+          "top_fit_tie_rate": "0",
           "top_supported_confidence_counts": {
+            "HIGH": 12,
             "MEDIUM": 4
           }
         },
         "SPARSE": {
           "by_history_depth": {},
-          "case_count": 23,
-          "clear_top_count": 7,
+          "case_count": 27,
+          "clear_top_count": 15,
           "coverage_counts": {
-            "BROADER_LANE": 6,
-            "CLOSE_SCORE_TIE": 13,
-            "DISTANCE_EQUIPMENT": 3,
-            "KNOWN_EQUIPMENT": 10,
+            "BROADER_LANE": 5,
+            "CLOSE_SCORE_TIE": 3,
+            "DISTANCE_EQUIPMENT": 6,
+            "KNOWN_EQUIPMENT": 8,
             "LIMITED_CANDIDATE": 10,
-            "NEAR_EXACT": 13,
-            "SPARSE": 20
+            "NEAR_EXACT": 11,
+            "SPARSE": 18
           },
-          "limited_candidate_count": 17,
-          "mean_reciprocal_rank": "0.5916666666666666666666666666",
-          "mean_top_score_margin": "1.056161535458528315208497201",
-          "no_rank_count": 13,
+          "limited_candidate_count": 15,
+          "mean_reciprocal_rank": "0.625",
+          "mean_top_score_margin": "12.35967877076870389205579199",
+          "no_rank_count": 19,
           "no_rank_reason_counts": {
             "BOOKED_CARRIER_NOT_SUPPORTED_AT_CUTOFF": 10,
-            "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 3
+            "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 9
           },
-          "scored_case_count": 10,
+          "scored_case_count": 8,
           "scored_case_count_by_source": {
-            "BROKEROS": 4,
-            "FREIGHTFLOW": 3,
-            "HAULDESK": 3
+            "BROKEROS": 2,
+            "FREIGHTFLOW": 4,
+            "HAULDESK": 2
           },
-          "supported_candidate_count": 42,
-          "top_1_recall": "0.3",
-          "top_3_recall": "0.9",
-          "top_fit_tie_count": 13,
-          "top_fit_tie_rate": "0.5652173913043478260869565217",
+          "supported_candidate_count": 40,
+          "top_1_recall": "0.375",
+          "top_3_recall": "1",
+          "top_fit_tie_count": 3,
+          "top_fit_tie_rate": "0.1111111111111111111111111111",
           "top_supported_confidence_counts": {
-            "LOW": 4,
-            "MEDIUM": 16
+            "HIGH": 9,
+            "LOW": 8,
+            "MEDIUM": 1
           }
         }
       },
-      "case_count": 27,
-      "clear_top_count": 7,
+      "case_count": 43,
+      "clear_top_count": 31,
       "coverage_counts": {
-        "BROADER_LANE": 9,
-        "CLOSE_SCORE_TIE": 17,
-        "DISTANCE_EQUIPMENT": 4,
-        "KNOWN_EQUIPMENT": 14,
+        "BROADER_LANE": 10,
+        "CLOSE_SCORE_TIE": 3,
+        "DISTANCE_EQUIPMENT": 12,
+        "KNOWN_EQUIPMENT": 24,
         "LIMITED_CANDIDATE": 10,
-        "NEAR_EXACT": 17,
-        "RICH": 4,
-        "SPARSE": 20
+        "NEAR_EXACT": 27,
+        "RICH": 16,
+        "SPARSE": 18
       },
-      "limited_candidate_count": 23,
-      "mean_reciprocal_rank": "0.6726190476190476190476190476",
-      "mean_top_score_margin": "0.9345898129634476108574489322",
-      "no_rank_count": 13,
+      "limited_candidate_count": 21,
+      "mean_reciprocal_rank": "0.875",
+      "mean_top_score_margin": "11.97259978324504161957885735",
+      "no_rank_count": 19,
       "no_rank_reason_counts": {
         "BOOKED_CARRIER_NOT_SUPPORTED_AT_CUTOFF": 10,
-        "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 3
+        "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 9
       },
-      "scored_case_count": 14,
+      "scored_case_count": 24,
       "scored_case_count_by_source": {
-        "BROKEROS": 5,
-        "FREIGHTFLOW": 4,
-        "HAULDESK": 5
+        "BROKEROS": 6,
+        "FREIGHTFLOW": 12,
+        "HAULDESK": 6
       },
-      "supported_candidate_count": 53,
-      "top_1_recall": "0.4285714285714285714285714286",
-      "top_3_recall": "0.9285714285714285714285714286",
-      "top_fit_tie_count": 17,
-      "top_fit_tie_rate": "0.6296296296296296296296296296",
+      "supported_candidate_count": 72,
+      "top_1_recall": "0.7916666666666666666666666667",
+      "top_3_recall": "1",
+      "top_fit_tie_count": 3,
+      "top_fit_tie_rate": "0.06976744186046511627906976744",
       "top_supported_confidence_counts": {
-        "LOW": 4,
-        "MEDIUM": 20
+        "HIGH": 21,
+        "LOW": 8,
+        "MEDIUM": 5
       }
     }
   },
@@ -877,216 +897,220 @@
     "by_history_depth": {
       "RICH": {
         "by_history_depth": {},
-        "case_count": 4,
-        "clear_top_count": 1,
+        "case_count": 16,
+        "clear_top_count": 16,
         "coverage_counts": {
-          "BROADER_LANE": 3,
-          "CLOSE_SCORE_TIE": 3,
-          "DISTANCE_EQUIPMENT": 1,
-          "KNOWN_EQUIPMENT": 4,
-          "NEAR_EXACT": 4,
-          "RICH": 4
+          "BROADER_LANE": 5,
+          "DISTANCE_EQUIPMENT": 6,
+          "KNOWN_EQUIPMENT": 16,
+          "NEAR_EXACT": 16,
+          "RICH": 16
         },
         "limited_candidate_count": 6,
-        "mean_reciprocal_rank": "0.875",
-        "mean_top_score_margin": "0.842457478551304466355497795",
+        "mean_reciprocal_rank": "1",
+        "mean_top_score_margin": "12.00783582190804260692405986",
         "no_rank_count": 0,
         "no_rank_reason_counts": {},
-        "scored_case_count": 4,
+        "scored_case_count": 16,
         "scored_case_count_by_source": {
-          "BROKEROS": 1,
-          "FREIGHTFLOW": 1,
-          "HAULDESK": 2
+          "BROKEROS": 4,
+          "FREIGHTFLOW": 8,
+          "HAULDESK": 4
         },
-        "supported_candidate_count": 11,
-        "top_1_recall": "0.75",
+        "supported_candidate_count": 32,
+        "top_1_recall": "1",
         "top_3_recall": "1",
-        "top_fit_tie_count": 3,
-        "top_fit_tie_rate": "0.75",
+        "top_fit_tie_count": 0,
+        "top_fit_tie_rate": "0",
         "top_supported_confidence_counts": {
+          "HIGH": 12,
           "MEDIUM": 4
         }
       },
       "SPARSE": {
         "by_history_depth": {},
-        "case_count": 23,
-        "clear_top_count": 9,
+        "case_count": 27,
+        "clear_top_count": 14,
         "coverage_counts": {
-          "BROADER_LANE": 6,
-          "CLOSE_SCORE_TIE": 11,
-          "DISTANCE_EQUIPMENT": 3,
-          "KNOWN_EQUIPMENT": 10,
+          "BROADER_LANE": 5,
+          "CLOSE_SCORE_TIE": 4,
+          "DISTANCE_EQUIPMENT": 6,
+          "KNOWN_EQUIPMENT": 8,
           "LIMITED_CANDIDATE": 10,
-          "NEAR_EXACT": 13,
-          "SPARSE": 20
+          "NEAR_EXACT": 11,
+          "SPARSE": 18
         },
-        "limited_candidate_count": 17,
-        "mean_reciprocal_rank": "0.5749999999999999999999999999",
-        "mean_top_score_margin": "1.190389261399731569715502737",
-        "no_rank_count": 13,
+        "limited_candidate_count": 15,
+        "mean_reciprocal_rank": "0.6458333333333333333333333332",
+        "mean_top_score_margin": "11.5090979274165492539439382",
+        "no_rank_count": 19,
         "no_rank_reason_counts": {
           "BOOKED_CARRIER_NOT_SUPPORTED_AT_CUTOFF": 10,
-          "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 3
+          "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 9
         },
-        "scored_case_count": 10,
+        "scored_case_count": 8,
         "scored_case_count_by_source": {
-          "BROKEROS": 4,
-          "FREIGHTFLOW": 3,
-          "HAULDESK": 3
+          "BROKEROS": 2,
+          "FREIGHTFLOW": 4,
+          "HAULDESK": 2
         },
-        "supported_candidate_count": 42,
-        "top_1_recall": "0.3",
-        "top_3_recall": "0.9",
-        "top_fit_tie_count": 11,
-        "top_fit_tie_rate": "0.4782608695652173913043478261",
+        "supported_candidate_count": 40,
+        "top_1_recall": "0.375",
+        "top_3_recall": "1",
+        "top_fit_tie_count": 4,
+        "top_fit_tie_rate": "0.1481481481481481481481481481",
         "top_supported_confidence_counts": {
-          "LOW": 3,
-          "MEDIUM": 17
+          "HIGH": 9,
+          "LOW": 7,
+          "MEDIUM": 2
         }
       }
     },
-    "case_count": 27,
-    "clear_top_count": 10,
+    "case_count": 43,
+    "clear_top_count": 30,
     "coverage_counts": {
-      "BROADER_LANE": 9,
-      "CLOSE_SCORE_TIE": 14,
-      "DISTANCE_EQUIPMENT": 4,
-      "KNOWN_EQUIPMENT": 14,
+      "BROADER_LANE": 10,
+      "CLOSE_SCORE_TIE": 4,
+      "DISTANCE_EQUIPMENT": 12,
+      "KNOWN_EQUIPMENT": 24,
       "LIMITED_CANDIDATE": 10,
-      "NEAR_EXACT": 17,
-      "RICH": 4,
-      "SPARSE": 20
+      "NEAR_EXACT": 27,
+      "RICH": 16,
+      "SPARSE": 18
     },
-    "limited_candidate_count": 23,
-    "mean_reciprocal_rank": "0.6607142857142857142857142856",
-    "mean_top_score_margin": "1.113071087433414435635501639",
-    "no_rank_count": 13,
+    "limited_candidate_count": 21,
+    "mean_reciprocal_rank": "0.8819444444444444444444444442",
+    "mean_top_score_margin": "11.75846687466229593043399903",
+    "no_rank_count": 19,
     "no_rank_reason_counts": {
       "BOOKED_CARRIER_NOT_SUPPORTED_AT_CUTOFF": 10,
-      "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 3
+      "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 9
     },
-    "scored_case_count": 14,
+    "scored_case_count": 24,
     "scored_case_count_by_source": {
-      "BROKEROS": 5,
-      "FREIGHTFLOW": 4,
-      "HAULDESK": 5
+      "BROKEROS": 6,
+      "FREIGHTFLOW": 12,
+      "HAULDESK": 6
     },
-    "supported_candidate_count": 53,
-    "top_1_recall": "0.4285714285714285714285714286",
-    "top_3_recall": "0.9285714285714285714285714286",
-    "top_fit_tie_count": 14,
-    "top_fit_tie_rate": "0.5185185185185185185185185185",
+    "supported_candidate_count": 72,
+    "top_1_recall": "0.7916666666666666666666666667",
+    "top_3_recall": "1",
+    "top_fit_tie_count": 4,
+    "top_fit_tie_rate": "0.09302325581395348837209302326",
     "top_supported_confidence_counts": {
-      "LOW": 3,
-      "MEDIUM": 21
+      "HIGH": 21,
+      "LOW": 7,
+      "MEDIUM": 6
     }
   },
   "without_deadhead": {
     "by_history_depth": {
       "RICH": {
         "by_history_depth": {},
-        "case_count": 4,
-        "clear_top_count": 2,
+        "case_count": 16,
+        "clear_top_count": 16,
         "coverage_counts": {
-          "BROADER_LANE": 3,
-          "CLOSE_SCORE_TIE": 2,
-          "DISTANCE_EQUIPMENT": 1,
-          "KNOWN_EQUIPMENT": 4,
-          "NEAR_EXACT": 4,
-          "RICH": 4
+          "BROADER_LANE": 5,
+          "DISTANCE_EQUIPMENT": 6,
+          "KNOWN_EQUIPMENT": 16,
+          "NEAR_EXACT": 16,
+          "RICH": 16
         },
         "limited_candidate_count": 6,
-        "mean_reciprocal_rank": "0.875",
-        "mean_top_score_margin": "2.469698420751329651886234678",
+        "mean_reciprocal_rank": "1",
+        "mean_top_score_margin": "18.56600905069552499101627906",
         "no_rank_count": 0,
         "no_rank_reason_counts": {},
-        "scored_case_count": 4,
+        "scored_case_count": 16,
         "scored_case_count_by_source": {
-          "BROKEROS": 1,
-          "FREIGHTFLOW": 1,
-          "HAULDESK": 2
+          "BROKEROS": 4,
+          "FREIGHTFLOW": 8,
+          "HAULDESK": 4
         },
-        "supported_candidate_count": 11,
-        "top_1_recall": "0.75",
+        "supported_candidate_count": 32,
+        "top_1_recall": "1",
         "top_3_recall": "1",
-        "top_fit_tie_count": 2,
-        "top_fit_tie_rate": "0.5",
+        "top_fit_tie_count": 0,
+        "top_fit_tie_rate": "0",
         "top_supported_confidence_counts": {
+          "HIGH": 12,
           "MEDIUM": 4
         }
       },
       "SPARSE": {
         "by_history_depth": {},
-        "case_count": 23,
-        "clear_top_count": 10,
+        "case_count": 27,
+        "clear_top_count": 14,
         "coverage_counts": {
-          "BROADER_LANE": 6,
-          "CLOSE_SCORE_TIE": 10,
-          "DISTANCE_EQUIPMENT": 3,
-          "KNOWN_EQUIPMENT": 10,
+          "BROADER_LANE": 5,
+          "CLOSE_SCORE_TIE": 4,
+          "DISTANCE_EQUIPMENT": 6,
+          "KNOWN_EQUIPMENT": 8,
           "LIMITED_CANDIDATE": 10,
-          "NEAR_EXACT": 13,
-          "SPARSE": 20
+          "NEAR_EXACT": 11,
+          "SPARSE": 18
         },
-        "limited_candidate_count": 17,
-        "mean_reciprocal_rank": "0.5999999999999999999999999999",
-        "mean_top_score_margin": "1.514041735086968534881157341",
-        "no_rank_count": 13,
+        "limited_candidate_count": 15,
+        "mean_reciprocal_rank": "0.6666666666666666666666666666",
+        "mean_top_score_margin": "13.65273937890636046749228434",
+        "no_rank_count": 19,
         "no_rank_reason_counts": {
           "BOOKED_CARRIER_NOT_SUPPORTED_AT_CUTOFF": 10,
-          "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 3
+          "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 9
         },
-        "scored_case_count": 10,
+        "scored_case_count": 8,
         "scored_case_count_by_source": {
-          "BROKEROS": 4,
-          "FREIGHTFLOW": 3,
-          "HAULDESK": 3
+          "BROKEROS": 2,
+          "FREIGHTFLOW": 4,
+          "HAULDESK": 2
         },
-        "supported_candidate_count": 42,
-        "top_1_recall": "0.3",
+        "supported_candidate_count": 40,
+        "top_1_recall": "0.375",
         "top_3_recall": "1",
-        "top_fit_tie_count": 10,
-        "top_fit_tie_rate": "0.4347826086956521739130434783",
+        "top_fit_tie_count": 4,
+        "top_fit_tie_rate": "0.1481481481481481481481481481",
         "top_supported_confidence_counts": {
-          "LOW": 4,
-          "MEDIUM": 16
+          "HIGH": 10,
+          "LOW": 7,
+          "MEDIUM": 1
         }
       }
     },
-    "case_count": 27,
-    "clear_top_count": 12,
+    "case_count": 43,
+    "clear_top_count": 30,
     "coverage_counts": {
-      "BROADER_LANE": 9,
-      "CLOSE_SCORE_TIE": 12,
-      "DISTANCE_EQUIPMENT": 4,
-      "KNOWN_EQUIPMENT": 14,
+      "BROADER_LANE": 10,
+      "CLOSE_SCORE_TIE": 4,
+      "DISTANCE_EQUIPMENT": 12,
+      "KNOWN_EQUIPMENT": 24,
       "LIMITED_CANDIDATE": 10,
-      "NEAR_EXACT": 17,
-      "RICH": 4,
-      "SPARSE": 20
+      "NEAR_EXACT": 27,
+      "RICH": 16,
+      "SPARSE": 18
     },
-    "limited_candidate_count": 23,
-    "mean_reciprocal_rank": "0.6785714285714285714285714285",
-    "mean_top_score_margin": "1.726409887456826560882285638",
-    "no_rank_count": 13,
+    "limited_candidate_count": 21,
+    "mean_reciprocal_rank": "0.8888888888888888888888888888",
+    "mean_top_score_margin": "16.1093742148009427292542817",
+    "no_rank_count": 19,
     "no_rank_reason_counts": {
       "BOOKED_CARRIER_NOT_SUPPORTED_AT_CUTOFF": 10,
-      "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 3
+      "NO_SUPPORTED_CANDIDATES_AT_CUTOFF": 9
     },
-    "scored_case_count": 14,
+    "scored_case_count": 24,
     "scored_case_count_by_source": {
-      "BROKEROS": 5,
-      "FREIGHTFLOW": 4,
-      "HAULDESK": 5
+      "BROKEROS": 6,
+      "FREIGHTFLOW": 12,
+      "HAULDESK": 6
     },
-    "supported_candidate_count": 53,
-    "top_1_recall": "0.4285714285714285714285714286",
+    "supported_candidate_count": 72,
+    "top_1_recall": "0.7916666666666666666666666667",
     "top_3_recall": "1",
-    "top_fit_tie_count": 12,
-    "top_fit_tie_rate": "0.4444444444444444444444444444",
+    "top_fit_tie_count": 4,
+    "top_fit_tie_rate": "0.09302325581395348837209302326",
     "top_supported_confidence_counts": {
-      "LOW": 4,
-      "MEDIUM": 20
+      "HIGH": 22,
+      "LOW": 7,
+      "MEDIUM": 5
     }
   }
 }

@@ -3,7 +3,6 @@
 import hashlib
 import json
 import os
-from datetime import UTC, datetime
 from decimal import Decimal
 from pathlib import Path
 from uuid import UUID, uuid4
@@ -111,6 +110,21 @@ def _external_load_id(sync: DiscoveredSync) -> str:
     return str(payload["loads"][0]["load_num"])
 
 
+def _external_load_id_with_carrier_rate(sync: DiscoveredSync, amount: Decimal) -> str:
+    """Return the load that carries a correction, never merely the file's first load."""
+    payload = json.loads(sync.path.read_text())
+    expected = float(amount)
+    if sync.binding.source_system is SourceSystem.FREIGHTFLOW:
+        record = next(item for item in payload["loads"] if item["totalBuy"] == expected)
+        return str(record["shipmentId"])
+    if sync.binding.source_system is SourceSystem.BROKEROS:
+        record = next(
+            item for item in payload["records"] if item["bos__Carrier_Rate__c"] == expected
+        )
+        return str(record["Id"])
+    raise AssertionError("HaulDesk corrections are append-only ledger rows.")
+
+
 def _load(session: Session, tenant_id: UUID, external_id: str) -> Load:
     set_tenant_context(session, tenant_id)
     load = session.scalar(
@@ -172,13 +186,13 @@ def test_generated_replacement_and_ledger_corrections_update_current_state_once(
             for source, external_id, booking, corrected in (
                 (
                     SourceSystem.FREIGHTFLOW,
-                    _external_load_id(ff_correction),
+                    _external_load_id_with_carrier_rate(ff_correction, Decimal("1265")),
                     Decimal("1210"),
                     Decimal("1265"),
                 ),
                 (
                     SourceSystem.BROKEROS,
-                    _external_load_id(brokeros_correction),
+                    _external_load_id_with_carrier_rate(brokeros_correction, Decimal("1660")),
                     Decimal("1630"),
                     Decimal("1660"),
                 ),
@@ -259,14 +273,20 @@ def test_generated_correction_preserves_history_changes_later_estimate_and_rebui
                 data_root / "tms_a_freightflow", str(tenant_id), SourceSystem.FREIGHTFLOW
             )
             syncs = FileIngestionOrchestrator((binding,)).discover()
-            correction_at = datetime(2026, 7, 3, 18, tzinfo=UTC)
-            correction_sync = next(sync for sync in syncs if sync.sync_at == correction_at)
+            correction_sync = next(
+                sync for sync in syncs if '"totalBuy": 1265' in sync.path.read_text()
+            )
+            correction_at = correction_sync.sync_at
             day11_sync = next(sync for sync in syncs if sync.sync_at == DAY11_SYNC_AT)
             for sync in syncs:
                 if sync.sync_at < correction_at:
                     _ingest(session, sync)
 
-            corrected_load = _load(session, tenant_id, _external_load_id(correction_sync))
+            corrected_load = _load(
+                session,
+                tenant_id,
+                _external_load_id_with_carrier_rate(correction_sync, Decimal("1265")),
+            )
             corrected_load_id = corrected_load.id
             corrected_external_id = corrected_load.external_id
             active_version = next(
@@ -303,7 +323,11 @@ def test_generated_correction_preserves_history_changes_later_estimate_and_rebui
 
             session.rollback()
             _ingest(session, correction_sync)
-            corrected_load = _load(session, tenant_id, _external_load_id(correction_sync))
+            corrected_load = _load(
+                session,
+                tenant_id,
+                _external_load_id_with_carrier_rate(correction_sync, Decimal("1265")),
+            )
             assert corrected_load.carrier_rate_amount == Decimal("1265")
             after = HierarchicalRateEstimator().estimate(
                 session, tenant_id, target_id, DAY11_SYNC_AT

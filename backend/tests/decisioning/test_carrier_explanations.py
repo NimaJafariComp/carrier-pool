@@ -34,7 +34,7 @@ def test_explanations_use_evidence_templates_without_unsupported_claims() -> Non
     assert "UNKNOWN_TARGET_EQUIPMENT" in explanation.warnings
     text = " ".join(explanation.evidence_bullets).lower()
     assert all(word not in text for word in ("available", "reliable", "likely to accept"))
-    assert explanation.model_version == "carrier-ranking-v4"
+    assert explanation.model_version == "carrier-ranking-v5"
 
 
 def test_distance_equipment_evidence_is_not_described_as_directional() -> None:

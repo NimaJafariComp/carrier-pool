@@ -187,6 +187,39 @@ def write_ranking_artifacts(report: RankingEvaluationReport, artifacts_dir: Path
     return path
 
 
+def write_ranking_formula_comparison(
+    candidate: RankingEvaluationReport,
+    legacy: RankingEvaluationReport,
+    artifacts_dir: Path,
+    calibrated_candidate: RankingEvaluationReport | None = None,
+) -> Path:
+    """Persist an explicitly same-case comparison of ranking score formulas."""
+    artifacts_dir.mkdir(parents=True, exist_ok=True)
+    path = artifacts_dir / "ranking_score_comparison.json"
+    payload = {
+        "candidate_model_version": "carrier-ranking-v5",
+        "legacy_model_version": "carrier-ranking-v4",
+        "same_case_population": (
+            candidate.with_deadhead.case_count == legacy.with_deadhead.case_count
+            and candidate.with_deadhead.scored_case_count == legacy.with_deadhead.scored_case_count
+        ),
+        "candidate": asdict(candidate),
+        "legacy": asdict(legacy),
+        "caveat": WEAK_PROXY_CAVEAT,
+    }
+    if calibrated_candidate is not None:
+        payload["calibrated_candidate_model_version"] = "carrier-ranking-v6"
+        payload["calibrated_candidate"] = asdict(calibrated_candidate)
+        payload["all_same_case_population"] = (
+            payload["same_case_population"]
+            and calibrated_candidate.with_deadhead.case_count == candidate.with_deadhead.case_count
+            and calibrated_candidate.with_deadhead.scored_case_count
+            == candidate.with_deadhead.scored_case_count
+        )
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+    return path
+
+
 class RankingBacktestHarness:
     """Reconstruct ranking inputs at first ACTIVE and compare later booking labels."""
 

@@ -7,6 +7,7 @@ from carrier_pool.decisioning.ranking_evaluation import (
     evaluate_rankings,
     ranking_acceptance_failures,
     write_ranking_artifacts,
+    write_ranking_formula_comparison,
 )
 
 
@@ -24,6 +25,24 @@ def test_metrics_and_ablation_are_reported_with_case_counts(tmp_path: Path) -> N
     path = write_ranking_artifacts(report, tmp_path)
     assert path.name == "ranking_metrics.json"
     assert "eventually booked carrier is only a weak behavioral proxy" in path.read_text()
+
+
+def test_formula_comparison_uses_same_case_reports(tmp_path: Path) -> None:
+    cases = (RankingEvaluationCase("t1", "booked", ("booked",), "RICH"),)
+    path = write_ranking_formula_comparison(
+        evaluate_rankings(cases, cases),
+        evaluate_rankings(cases, cases),
+        tmp_path,
+        evaluate_rankings(cases, cases),
+    )
+
+    payload = path.read_text()
+    assert path.name == "ranking_score_comparison.json"
+    assert '"candidate"' in payload
+    assert '"legacy"' in payload
+    assert '"same_case_population": true' in payload
+    assert '"calibrated_candidate_model_version": "carrier-ranking-v6"' in payload
+    assert '"all_same_case_population": true' in payload
 
 
 def test_acceptance_requires_coverage_and_separation_not_proxy_recall() -> None:

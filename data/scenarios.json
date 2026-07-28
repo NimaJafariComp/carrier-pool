@@ -3,18 +3,18 @@
     {
       "booked_carrier_id": "FF-C-201",
       "coverage_tags": [
-        "RICH",
+        "SPARSE",
         "NEAR_EXACT",
         "KNOWN_EQUIPMENT"
       ],
       "load_id": "FF-1001",
       "source_files": [
-        "tms_a_freightflow/2026-07-01T00-00_sync.json",
-        "tms_a_freightflow/2026-07-01T06-00_sync.json",
-        "tms_a_freightflow/2026-07-01T12-00_sync.json",
-        "tms_a_freightflow/2026-07-01T18-00_sync.json",
-        "tms_a_freightflow/2026-07-02T00-00_sync.json",
-        "tms_a_freightflow/2026-07-02T06-00_sync.json"
+        "tms_a_freightflow/2026-07-04T00-00_sync.json",
+        "tms_a_freightflow/2026-07-04T06-00_sync.json",
+        "tms_a_freightflow/2026-07-04T12-00_sync.json",
+        "tms_a_freightflow/2026-07-04T18-00_sync.json",
+        "tms_a_freightflow/2026-07-05T00-00_sync.json",
+        "tms_a_freightflow/2026-07-05T06-00_sync.json"
       ]
     },
     {
@@ -26,29 +26,29 @@
       ],
       "load_id": "FF-1101",
       "source_files": [
-        "tms_a_freightflow/2026-07-02T12-00_sync.json",
-        "tms_a_freightflow/2026-07-02T18-00_sync.json",
-        "tms_a_freightflow/2026-07-03T00-00_sync.json",
-        "tms_a_freightflow/2026-07-03T06-00_sync.json",
-        "tms_a_freightflow/2026-07-03T12-00_sync.json",
-        "tms_a_freightflow/2026-07-03T18-00_sync.json"
+        "tms_a_freightflow/2026-07-05T12-00_sync.json",
+        "tms_a_freightflow/2026-07-05T18-00_sync.json",
+        "tms_a_freightflow/2026-07-06T00-00_sync.json",
+        "tms_a_freightflow/2026-07-06T06-00_sync.json",
+        "tms_a_freightflow/2026-07-06T12-00_sync.json",
+        "tms_a_freightflow/2026-07-06T18-00_sync.json"
       ]
     },
     {
-      "booked_carrier_id": "FF-C-201",
+      "booked_carrier_id": "FF-C-202",
       "coverage_tags": [
-        "RICH",
+        "SPARSE",
         "NEAR_EXACT",
         "KNOWN_EQUIPMENT"
       ],
       "load_id": "FF-1201",
       "source_files": [
-        "tms_a_freightflow/2026-07-04T00-00_sync.json",
-        "tms_a_freightflow/2026-07-04T06-00_sync.json",
-        "tms_a_freightflow/2026-07-04T12-00_sync.json",
-        "tms_a_freightflow/2026-07-04T18-00_sync.json",
-        "tms_a_freightflow/2026-07-05T00-00_sync.json",
-        "tms_a_freightflow/2026-07-05T06-00_sync.json"
+        "tms_a_freightflow/2026-07-08T12-00_sync.json",
+        "tms_a_freightflow/2026-07-08T18-00_sync.json",
+        "tms_a_freightflow/2026-07-09T00-00_sync.json",
+        "tms_a_freightflow/2026-07-09T06-00_sync.json",
+        "tms_a_freightflow/2026-07-09T12-00_sync.json",
+        "tms_a_freightflow/2026-07-09T18-00_sync.json"
       ]
     },
     {
@@ -60,12 +60,12 @@
       ],
       "load_id": "FF-1301",
       "source_files": [
-        "tms_a_freightflow/2026-07-05T12-00_sync.json",
-        "tms_a_freightflow/2026-07-05T18-00_sync.json",
-        "tms_a_freightflow/2026-07-06T00-00_sync.json",
-        "tms_a_freightflow/2026-07-06T06-00_sync.json",
-        "tms_a_freightflow/2026-07-06T12-00_sync.json",
-        "tms_a_freightflow/2026-07-06T18-00_sync.json"
+        "tms_a_freightflow/2026-07-07T00-00_sync.json",
+        "tms_a_freightflow/2026-07-07T06-00_sync.json",
+        "tms_a_freightflow/2026-07-07T12-00_sync.json",
+        "tms_a_freightflow/2026-07-07T18-00_sync.json",
+        "tms_a_freightflow/2026-07-08T00-00_sync.json",
+        "tms_a_freightflow/2026-07-08T06-00_sync.json"
       ]
     },
     {
@@ -77,12 +77,12 @@
       ],
       "load_id": "FF-1401",
       "source_files": [
-        "tms_a_freightflow/2026-07-07T00-00_sync.json",
-        "tms_a_freightflow/2026-07-07T06-00_sync.json",
-        "tms_a_freightflow/2026-07-07T12-00_sync.json",
-        "tms_a_freightflow/2026-07-07T18-00_sync.json",
-        "tms_a_freightflow/2026-07-08T00-00_sync.json",
-        "tms_a_freightflow/2026-07-08T06-00_sync.json"
+        "tms_a_freightflow/2026-07-08T12-00_sync.json",
+        "tms_a_freightflow/2026-07-08T18-00_sync.json",
+        "tms_a_freightflow/2026-07-09T00-00_sync.json",
+        "tms_a_freightflow/2026-07-09T06-00_sync.json",
+        "tms_a_freightflow/2026-07-09T12-00_sync.json",
+        "tms_a_freightflow/2026-07-09T18-00_sync.json"
       ]
     },
     {
@@ -94,29 +94,29 @@
       ],
       "load_id": "FF-1402",
       "source_files": [
-        "tms_a_freightflow/2026-07-08T12-00_sync.json",
-        "tms_a_freightflow/2026-07-08T18-00_sync.json",
-        "tms_a_freightflow/2026-07-09T00-00_sync.json",
-        "tms_a_freightflow/2026-07-09T06-00_sync.json",
-        "tms_a_freightflow/2026-07-09T12-00_sync.json",
-        "tms_a_freightflow/2026-07-09T18-00_sync.json"
+        "tms_a_freightflow/2026-07-02T12-00_sync.json",
+        "tms_a_freightflow/2026-07-02T18-00_sync.json",
+        "tms_a_freightflow/2026-07-03T00-00_sync.json",
+        "tms_a_freightflow/2026-07-03T06-00_sync.json",
+        "tms_a_freightflow/2026-07-03T12-00_sync.json",
+        "tms_a_freightflow/2026-07-03T18-00_sync.json"
       ]
     },
     {
       "booked_carrier_id": "HD-C-401",
       "coverage_tags": [
-        "RICH",
+        "SPARSE",
         "NEAR_EXACT",
         "KNOWN_EQUIPMENT"
       ],
       "load_id": "HD-2001",
       "source_files": [
-        "tms_b_hauldesk/2026-07-01T00-00_sync.json",
-        "tms_b_hauldesk/2026-07-01T06-00_sync.json",
-        "tms_b_hauldesk/2026-07-01T12-00_sync.json",
-        "tms_b_hauldesk/2026-07-01T18-00_sync.json",
-        "tms_b_hauldesk/2026-07-02T00-00_sync.json",
-        "tms_b_hauldesk/2026-07-02T06-00_sync.json"
+        "tms_b_hauldesk/2026-07-02T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-02T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-03T18-00_sync.json"
       ]
     },
     {
@@ -128,29 +128,29 @@
       ],
       "load_id": "HD-2002",
       "source_files": [
-        "tms_b_hauldesk/2026-07-02T12-00_sync.json",
-        "tms_b_hauldesk/2026-07-02T18-00_sync.json",
-        "tms_b_hauldesk/2026-07-03T00-00_sync.json",
-        "tms_b_hauldesk/2026-07-03T06-00_sync.json",
-        "tms_b_hauldesk/2026-07-03T12-00_sync.json",
-        "tms_b_hauldesk/2026-07-03T18-00_sync.json"
-      ]
-    },
-    {
-      "booked_carrier_id": "HD-C-401",
-      "coverage_tags": [
-        "RICH",
-        "METRO_CORRIDOR",
-        "KNOWN_EQUIPMENT"
-      ],
-      "load_id": "HD-2003",
-      "source_files": [
         "tms_b_hauldesk/2026-07-04T00-00_sync.json",
         "tms_b_hauldesk/2026-07-04T06-00_sync.json",
         "tms_b_hauldesk/2026-07-04T12-00_sync.json",
         "tms_b_hauldesk/2026-07-04T18-00_sync.json",
         "tms_b_hauldesk/2026-07-05T00-00_sync.json",
         "tms_b_hauldesk/2026-07-05T06-00_sync.json"
+      ]
+    },
+    {
+      "booked_carrier_id": "HD-C-401",
+      "coverage_tags": [
+        "SPARSE",
+        "METRO_CORRIDOR",
+        "KNOWN_EQUIPMENT"
+      ],
+      "load_id": "HD-2003",
+      "source_files": [
+        "tms_b_hauldesk/2026-07-05T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-05T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-06T18-00_sync.json"
       ]
     },
     {
@@ -162,12 +162,12 @@
       ],
       "load_id": "HD-2004",
       "source_files": [
-        "tms_b_hauldesk/2026-07-05T12-00_sync.json",
-        "tms_b_hauldesk/2026-07-05T18-00_sync.json",
-        "tms_b_hauldesk/2026-07-06T00-00_sync.json",
-        "tms_b_hauldesk/2026-07-06T06-00_sync.json",
-        "tms_b_hauldesk/2026-07-06T12-00_sync.json",
-        "tms_b_hauldesk/2026-07-06T18-00_sync.json"
+        "tms_b_hauldesk/2026-07-07T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-07T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T06-00_sync.json"
       ]
     },
     {
@@ -179,12 +179,12 @@
       ],
       "load_id": "HD-2005",
       "source_files": [
-        "tms_b_hauldesk/2026-07-07T00-00_sync.json",
-        "tms_b_hauldesk/2026-07-07T06-00_sync.json",
-        "tms_b_hauldesk/2026-07-07T12-00_sync.json",
-        "tms_b_hauldesk/2026-07-07T18-00_sync.json",
-        "tms_b_hauldesk/2026-07-08T00-00_sync.json",
-        "tms_b_hauldesk/2026-07-08T06-00_sync.json"
+        "tms_b_hauldesk/2026-07-08T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-08T18-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T00-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T06-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T12-00_sync.json",
+        "tms_b_hauldesk/2026-07-09T18-00_sync.json"
       ]
     },
     {
@@ -207,28 +207,11 @@
     {
       "booked_carrier_id": "BO-C-601",
       "coverage_tags": [
-        "RICH",
+        "SPARSE",
         "NEAR_EXACT",
         "KNOWN_EQUIPMENT"
       ],
       "load_id": "BO-3001",
-      "source_files": [
-        "tms_c_brokeros/2026-07-01T00-00_sync.json",
-        "tms_c_brokeros/2026-07-01T06-00_sync.json",
-        "tms_c_brokeros/2026-07-01T12-00_sync.json",
-        "tms_c_brokeros/2026-07-01T18-00_sync.json",
-        "tms_c_brokeros/2026-07-02T00-00_sync.json",
-        "tms_c_brokeros/2026-07-02T06-00_sync.json"
-      ]
-    },
-    {
-      "booked_carrier_id": "BO-C-602",
-      "coverage_tags": [
-        "SPARSE",
-        "BROADER_LANE",
-        "KNOWN_EQUIPMENT"
-      ],
-      "load_id": "BO-3002",
       "source_files": [
         "tms_c_brokeros/2026-07-02T12-00_sync.json",
         "tms_c_brokeros/2026-07-02T18-00_sync.json",
@@ -239,13 +222,13 @@
       ]
     },
     {
-      "booked_carrier_id": "BO-C-603",
+      "booked_carrier_id": "BO-C-602",
       "coverage_tags": [
         "SPARSE",
-        "METRO_CORRIDOR",
+        "BROADER_LANE",
         "KNOWN_EQUIPMENT"
       ],
-      "load_id": "BO-3003",
+      "load_id": "BO-3002",
       "source_files": [
         "tms_c_brokeros/2026-07-04T00-00_sync.json",
         "tms_c_brokeros/2026-07-04T06-00_sync.json",
@@ -259,10 +242,10 @@
       "booked_carrier_id": "BO-C-603",
       "coverage_tags": [
         "SPARSE",
-        "DISTANCE_EQUIPMENT",
+        "METRO_CORRIDOR",
         "KNOWN_EQUIPMENT"
       ],
-      "load_id": "BO-3004",
+      "load_id": "BO-3003",
       "source_files": [
         "tms_c_brokeros/2026-07-05T12-00_sync.json",
         "tms_c_brokeros/2026-07-05T18-00_sync.json",
@@ -270,6 +253,23 @@
         "tms_c_brokeros/2026-07-06T06-00_sync.json",
         "tms_c_brokeros/2026-07-06T12-00_sync.json",
         "tms_c_brokeros/2026-07-06T18-00_sync.json"
+      ]
+    },
+    {
+      "booked_carrier_id": "BO-C-603",
+      "coverage_tags": [
+        "SPARSE",
+        "DISTANCE_EQUIPMENT",
+        "KNOWN_EQUIPMENT"
+      ],
+      "load_id": "BO-3004",
+      "source_files": [
+        "tms_c_brokeros/2026-07-07T00-00_sync.json",
+        "tms_c_brokeros/2026-07-07T06-00_sync.json",
+        "tms_c_brokeros/2026-07-07T12-00_sync.json",
+        "tms_c_brokeros/2026-07-07T18-00_sync.json",
+        "tms_c_brokeros/2026-07-08T00-00_sync.json",
+        "tms_c_brokeros/2026-07-08T06-00_sync.json"
       ]
     },
     {
@@ -281,18 +281,18 @@
       ],
       "load_id": "BO-3005",
       "source_files": [
-        "tms_c_brokeros/2026-07-07T00-00_sync.json",
-        "tms_c_brokeros/2026-07-07T06-00_sync.json",
-        "tms_c_brokeros/2026-07-07T12-00_sync.json",
-        "tms_c_brokeros/2026-07-07T18-00_sync.json",
-        "tms_c_brokeros/2026-07-08T00-00_sync.json",
-        "tms_c_brokeros/2026-07-08T06-00_sync.json"
+        "tms_c_brokeros/2026-07-08T12-00_sync.json",
+        "tms_c_brokeros/2026-07-08T18-00_sync.json",
+        "tms_c_brokeros/2026-07-09T00-00_sync.json",
+        "tms_c_brokeros/2026-07-09T06-00_sync.json",
+        "tms_c_brokeros/2026-07-09T12-00_sync.json",
+        "tms_c_brokeros/2026-07-09T18-00_sync.json"
       ]
     },
     {
       "booked_carrier_id": "BO-C-601",
       "coverage_tags": [
-        "RICH",
+        "SPARSE",
         "NEAR_EXACT",
         "KNOWN_EQUIPMENT"
       ],
@@ -309,7 +309,7 @@
     {
       "booked_carrier_id": "FF-C-202",
       "coverage_tags": [
-        "RICH",
+        "SPARSE",
         "NEAR_EXACT",
         "CLOSE_SCORE_TIE"
       ],
@@ -322,7 +322,7 @@
       ]
     },
     {
-      "booked_carrier_id": "FF-C-201",
+      "booked_carrier_id": "FF-C-202",
       "coverage_tags": [
         "SPARSE",
         "BROADER_LANE",
@@ -352,7 +352,7 @@
       ]
     },
     {
-      "booked_carrier_id": "HD-C-404",
+      "booked_carrier_id": "HD-C-401",
       "coverage_tags": [
         "RICH",
         "NEAR_EXACT",
@@ -397,7 +397,7 @@
       ]
     },
     {
-      "booked_carrier_id": "BO-C-602",
+      "booked_carrier_id": "BO-C-601",
       "coverage_tags": [
         "RICH",
         "NEAR_EXACT",
@@ -488,12 +488,12 @@
       "expected_warnings": [],
       "scenario_id": "SC-01",
       "source_files": [
-        "tms_a_freightflow/2026-07-02T12-00_sync.json",
-        "tms_a_freightflow/2026-07-02T18-00_sync.json",
-        "tms_a_freightflow/2026-07-03T00-00_sync.json",
-        "tms_a_freightflow/2026-07-03T06-00_sync.json",
-        "tms_a_freightflow/2026-07-03T12-00_sync.json",
-        "tms_a_freightflow/2026-07-03T18-00_sync.json"
+        "tms_a_freightflow/2026-07-05T12-00_sync.json",
+        "tms_a_freightflow/2026-07-05T18-00_sync.json",
+        "tms_a_freightflow/2026-07-06T00-00_sync.json",
+        "tms_a_freightflow/2026-07-06T06-00_sync.json",
+        "tms_a_freightflow/2026-07-06T12-00_sync.json",
+        "tms_a_freightflow/2026-07-06T18-00_sync.json"
       ],
       "source_systems": [
         "FREIGHTFLOW"
@@ -584,12 +584,12 @@
       "expected_warnings": [],
       "scenario_id": "SC-04",
       "source_files": [
-        "tms_a_freightflow/2026-07-04T00-00_sync.json",
-        "tms_a_freightflow/2026-07-04T06-00_sync.json",
-        "tms_a_freightflow/2026-07-04T12-00_sync.json",
-        "tms_a_freightflow/2026-07-04T18-00_sync.json",
-        "tms_a_freightflow/2026-07-05T00-00_sync.json",
-        "tms_a_freightflow/2026-07-05T06-00_sync.json"
+        "tms_a_freightflow/2026-07-08T12-00_sync.json",
+        "tms_a_freightflow/2026-07-08T18-00_sync.json",
+        "tms_a_freightflow/2026-07-09T00-00_sync.json",
+        "tms_a_freightflow/2026-07-09T06-00_sync.json",
+        "tms_a_freightflow/2026-07-09T12-00_sync.json",
+        "tms_a_freightflow/2026-07-09T18-00_sync.json"
       ],
       "source_systems": [
         "FREIGHTFLOW"
@@ -614,12 +614,12 @@
       "expected_warnings": [],
       "scenario_id": "SC-05",
       "source_files": [
-        "tms_a_freightflow/2026-07-02T12-00_sync.json",
-        "tms_a_freightflow/2026-07-02T18-00_sync.json",
-        "tms_a_freightflow/2026-07-03T00-00_sync.json",
-        "tms_a_freightflow/2026-07-03T06-00_sync.json",
-        "tms_a_freightflow/2026-07-03T12-00_sync.json",
-        "tms_a_freightflow/2026-07-03T18-00_sync.json"
+        "tms_a_freightflow/2026-07-05T12-00_sync.json",
+        "tms_a_freightflow/2026-07-05T18-00_sync.json",
+        "tms_a_freightflow/2026-07-06T00-00_sync.json",
+        "tms_a_freightflow/2026-07-06T06-00_sync.json",
+        "tms_a_freightflow/2026-07-06T12-00_sync.json",
+        "tms_a_freightflow/2026-07-06T18-00_sync.json"
       ],
       "source_systems": [
         "FREIGHTFLOW"
@@ -646,12 +646,12 @@
       "expected_warnings": [],
       "scenario_id": "SC-06",
       "source_files": [
-        "tms_a_freightflow/2026-07-05T12-00_sync.json",
-        "tms_a_freightflow/2026-07-05T18-00_sync.json",
-        "tms_a_freightflow/2026-07-06T00-00_sync.json",
-        "tms_a_freightflow/2026-07-06T06-00_sync.json",
-        "tms_a_freightflow/2026-07-06T12-00_sync.json",
-        "tms_a_freightflow/2026-07-06T18-00_sync.json"
+        "tms_a_freightflow/2026-07-07T00-00_sync.json",
+        "tms_a_freightflow/2026-07-07T06-00_sync.json",
+        "tms_a_freightflow/2026-07-07T12-00_sync.json",
+        "tms_a_freightflow/2026-07-07T18-00_sync.json",
+        "tms_a_freightflow/2026-07-08T00-00_sync.json",
+        "tms_a_freightflow/2026-07-08T06-00_sync.json"
       ],
       "source_systems": [
         "FREIGHTFLOW"
@@ -678,12 +678,12 @@
       "expected_warnings": [],
       "scenario_id": "SC-07",
       "source_files": [
-        "tms_a_freightflow/2026-07-02T12-00_sync.json",
-        "tms_a_freightflow/2026-07-02T18-00_sync.json",
-        "tms_a_freightflow/2026-07-03T00-00_sync.json",
-        "tms_a_freightflow/2026-07-03T06-00_sync.json",
-        "tms_a_freightflow/2026-07-03T12-00_sync.json",
-        "tms_a_freightflow/2026-07-03T18-00_sync.json"
+        "tms_a_freightflow/2026-07-05T12-00_sync.json",
+        "tms_a_freightflow/2026-07-05T18-00_sync.json",
+        "tms_a_freightflow/2026-07-06T00-00_sync.json",
+        "tms_a_freightflow/2026-07-06T06-00_sync.json",
+        "tms_a_freightflow/2026-07-06T12-00_sync.json",
+        "tms_a_freightflow/2026-07-06T18-00_sync.json"
       ],
       "source_systems": [
         "FREIGHTFLOW"
@@ -838,12 +838,12 @@
       "expected_warnings": [],
       "scenario_id": "SC-12",
       "source_files": [
-        "tms_a_freightflow/2026-07-02T12-00_sync.json",
-        "tms_a_freightflow/2026-07-02T18-00_sync.json",
-        "tms_a_freightflow/2026-07-03T00-00_sync.json",
-        "tms_a_freightflow/2026-07-03T06-00_sync.json",
-        "tms_a_freightflow/2026-07-03T12-00_sync.json",
-        "tms_a_freightflow/2026-07-03T18-00_sync.json"
+        "tms_a_freightflow/2026-07-05T12-00_sync.json",
+        "tms_a_freightflow/2026-07-05T18-00_sync.json",
+        "tms_a_freightflow/2026-07-06T00-00_sync.json",
+        "tms_a_freightflow/2026-07-06T06-00_sync.json",
+        "tms_a_freightflow/2026-07-06T12-00_sync.json",
+        "tms_a_freightflow/2026-07-06T18-00_sync.json"
       ],
       "source_systems": [
         "FREIGHTFLOW"
@@ -934,12 +934,12 @@
       "expected_warnings": [],
       "scenario_id": "SC-15",
       "source_files": [
-        "tms_a_freightflow/2026-07-02T12-00_sync.json",
-        "tms_a_freightflow/2026-07-02T18-00_sync.json",
-        "tms_a_freightflow/2026-07-03T00-00_sync.json",
-        "tms_a_freightflow/2026-07-03T06-00_sync.json",
-        "tms_a_freightflow/2026-07-03T12-00_sync.json",
-        "tms_a_freightflow/2026-07-03T18-00_sync.json"
+        "tms_a_freightflow/2026-07-05T12-00_sync.json",
+        "tms_a_freightflow/2026-07-05T18-00_sync.json",
+        "tms_a_freightflow/2026-07-06T00-00_sync.json",
+        "tms_a_freightflow/2026-07-06T06-00_sync.json",
+        "tms_a_freightflow/2026-07-06T12-00_sync.json",
+        "tms_a_freightflow/2026-07-06T18-00_sync.json"
       ],
       "source_systems": [
         "FREIGHTFLOW"
@@ -966,12 +966,12 @@
       "expected_warnings": [],
       "scenario_id": "SC-16",
       "source_files": [
-        "tms_a_freightflow/2026-07-04T00-00_sync.json",
-        "tms_a_freightflow/2026-07-04T06-00_sync.json",
-        "tms_a_freightflow/2026-07-04T12-00_sync.json",
-        "tms_a_freightflow/2026-07-04T18-00_sync.json",
-        "tms_a_freightflow/2026-07-05T00-00_sync.json",
-        "tms_a_freightflow/2026-07-05T06-00_sync.json"
+        "tms_a_freightflow/2026-07-08T12-00_sync.json",
+        "tms_a_freightflow/2026-07-08T18-00_sync.json",
+        "tms_a_freightflow/2026-07-09T00-00_sync.json",
+        "tms_a_freightflow/2026-07-09T06-00_sync.json",
+        "tms_a_freightflow/2026-07-09T12-00_sync.json",
+        "tms_a_freightflow/2026-07-09T18-00_sync.json"
       ],
       "source_systems": [
         "FREIGHTFLOW"
@@ -998,12 +998,12 @@
       "expected_warnings": [],
       "scenario_id": "SC-17",
       "source_files": [
-        "tms_a_freightflow/2026-07-05T12-00_sync.json",
-        "tms_a_freightflow/2026-07-05T18-00_sync.json",
-        "tms_a_freightflow/2026-07-06T00-00_sync.json",
-        "tms_a_freightflow/2026-07-06T06-00_sync.json",
-        "tms_a_freightflow/2026-07-06T12-00_sync.json",
-        "tms_a_freightflow/2026-07-06T18-00_sync.json"
+        "tms_a_freightflow/2026-07-07T00-00_sync.json",
+        "tms_a_freightflow/2026-07-07T06-00_sync.json",
+        "tms_a_freightflow/2026-07-07T12-00_sync.json",
+        "tms_a_freightflow/2026-07-07T18-00_sync.json",
+        "tms_a_freightflow/2026-07-08T00-00_sync.json",
+        "tms_a_freightflow/2026-07-08T06-00_sync.json"
       ],
       "source_systems": [
         "FREIGHTFLOW"
@@ -1030,12 +1030,12 @@
       "expected_warnings": [],
       "scenario_id": "SC-18",
       "source_files": [
-        "tms_a_freightflow/2026-07-07T00-00_sync.json",
-        "tms_a_freightflow/2026-07-07T06-00_sync.json",
-        "tms_a_freightflow/2026-07-07T12-00_sync.json",
-        "tms_a_freightflow/2026-07-07T18-00_sync.json",
-        "tms_a_freightflow/2026-07-08T00-00_sync.json",
-        "tms_a_freightflow/2026-07-08T06-00_sync.json"
+        "tms_a_freightflow/2026-07-08T12-00_sync.json",
+        "tms_a_freightflow/2026-07-08T18-00_sync.json",
+        "tms_a_freightflow/2026-07-09T00-00_sync.json",
+        "tms_a_freightflow/2026-07-09T06-00_sync.json",
+        "tms_a_freightflow/2026-07-09T12-00_sync.json",
+        "tms_a_freightflow/2026-07-09T18-00_sync.json"
       ],
       "source_systems": [
         "FREIGHTFLOW"
@@ -1062,12 +1062,12 @@
       "expected_warnings": [],
       "scenario_id": "SC-19",
       "source_files": [
-        "tms_a_freightflow/2026-07-08T12-00_sync.json",
-        "tms_a_freightflow/2026-07-08T18-00_sync.json",
-        "tms_a_freightflow/2026-07-09T00-00_sync.json",
-        "tms_a_freightflow/2026-07-09T06-00_sync.json",
-        "tms_a_freightflow/2026-07-09T12-00_sync.json",
-        "tms_a_freightflow/2026-07-09T18-00_sync.json"
+        "tms_a_freightflow/2026-07-02T12-00_sync.json",
+        "tms_a_freightflow/2026-07-02T18-00_sync.json",
+        "tms_a_freightflow/2026-07-03T00-00_sync.json",
+        "tms_a_freightflow/2026-07-03T06-00_sync.json",
+        "tms_a_freightflow/2026-07-03T12-00_sync.json",
+        "tms_a_freightflow/2026-07-03T18-00_sync.json"
       ],
       "source_systems": [
         "FREIGHTFLOW"
@@ -1094,12 +1094,12 @@
       "expected_warnings": [],
       "scenario_id": "SC-20",
       "source_files": [
-        "tms_c_brokeros/2026-07-05T12-00_sync.json",
-        "tms_c_brokeros/2026-07-05T18-00_sync.json",
-        "tms_c_brokeros/2026-07-06T00-00_sync.json",
-        "tms_c_brokeros/2026-07-06T06-00_sync.json",
-        "tms_c_brokeros/2026-07-06T12-00_sync.json",
-        "tms_c_brokeros/2026-07-06T18-00_sync.json"
+        "tms_c_brokeros/2026-07-07T00-00_sync.json",
+        "tms_c_brokeros/2026-07-07T06-00_sync.json",
+        "tms_c_brokeros/2026-07-07T12-00_sync.json",
+        "tms_c_brokeros/2026-07-07T18-00_sync.json",
+        "tms_c_brokeros/2026-07-08T00-00_sync.json",
+        "tms_c_brokeros/2026-07-08T06-00_sync.json"
       ],
       "source_systems": [
         "BROKEROS"
@@ -1154,12 +1154,12 @@
       "expected_warnings": [],
       "scenario_id": "SC-22",
       "source_files": [
-        "tms_a_freightflow/2026-07-04T00-00_sync.json",
-        "tms_a_freightflow/2026-07-04T06-00_sync.json",
-        "tms_a_freightflow/2026-07-04T12-00_sync.json",
-        "tms_a_freightflow/2026-07-04T18-00_sync.json",
-        "tms_a_freightflow/2026-07-05T00-00_sync.json",
-        "tms_a_freightflow/2026-07-05T06-00_sync.json"
+        "tms_a_freightflow/2026-07-08T12-00_sync.json",
+        "tms_a_freightflow/2026-07-08T18-00_sync.json",
+        "tms_a_freightflow/2026-07-09T00-00_sync.json",
+        "tms_a_freightflow/2026-07-09T06-00_sync.json",
+        "tms_a_freightflow/2026-07-09T12-00_sync.json",
+        "tms_a_freightflow/2026-07-09T18-00_sync.json"
       ],
       "source_systems": [
         "FREIGHTFLOW"

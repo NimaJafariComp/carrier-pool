@@ -34,7 +34,7 @@ def test_schedule_has_all_historical_slots_and_day11_active_files() -> None:
 
 def test_early_anchor_completes_before_later_loads_first_become_active() -> None:
     schedule = build_schedule(build_catalog())
-    for source, anchor_id in ANCHOR_LOAD_IDS.items():
+    for source, anchor_ids in ANCHOR_LOAD_IDS.items():
         source_events = tuple(
             (sync.sync_at, event)
             for sync in schedule
@@ -42,22 +42,29 @@ def test_early_anchor_completes_before_later_loads_first_become_active() -> None
             for event in sync.events
             if isinstance(event, LifecycleEvent)
         )
-        anchor_completed_at = next(
-            sync_at
-            for sync_at, event in source_events
-            if event.load_id == anchor_id
-            and event.status is not None
-            and event.status.value == "COMPLETED"
-        )
+        anchor_completed_at = {
+            anchor_id: next(
+                sync_at
+                for sync_at, event in source_events
+                if event.load_id == anchor_id
+                and event.status is not None
+                and event.status.value == "COMPLETED"
+            )
+            for anchor_id in anchor_ids
+        }
         later_first_active = {
             event.load_id: sync_at
             for sync_at, event in source_events
-            if event.load_id != anchor_id
+            if event.load_id not in anchor_ids
             and event.status is not None
             and event.status.value == "ACTIVE"
         }
         assert later_first_active
-        assert all(anchor_completed_at < active_at for active_at in later_first_active.values())
+        assert all(
+            completed_at < active_at
+            for completed_at in anchor_completed_at.values()
+            for active_at in later_first_active.values()
+        )
 
 
 def test_hauldesk_load_emits_one_booking_linehaul_not_status_adjustments() -> None:
@@ -70,6 +77,20 @@ def test_hauldesk_load_emits_one_booking_linehaul_not_status_adjustments() -> No
     )
 
     assert [(entry.code, entry.amount.amount) for entry in entries] == [("LINEHAUL", 1150)]
+
+
+def test_delivery_proximity_examples_have_distinct_historical_recency() -> None:
+    completions = {
+        event.load_id: sync.sync_at
+        for sync in build_schedule(build_catalog())
+        for event in sync.events
+        if isinstance(event, LifecycleEvent)
+        and event.load_id in {"FF-1401", "FF-1402"}
+        and event.status is LoadStatus.COMPLETED
+    }
+
+    assert completions["FF-1402"] < completions["FF-1401"]
+    assert (completions["FF-1401"] - completions["FF-1402"]).days >= 5
 
 
 def test_rate_outcomes_are_authored_and_final_corrections_are_source_accurate() -> None:
@@ -128,6 +149,40 @@ def test_authored_holdouts_are_labeled_only_after_first_active() -> None:
         assert lifecycle[0].carrier_id is None
         assert lifecycle[1].carrier_id is None
         assert all(event.carrier_id == booked_carrier_id for event in lifecycle[2:])
+
+
+def test_rich_ranking_holdouts_have_three_completed_carrier_loads_at_activation() -> None:
+    """A RICH tag must describe evidence available at the historical cutoff."""
+    catalog = build_catalog()
+    holdouts = {item.load_id: item for item in catalog.ranking_holdouts}
+    completed: dict[tuple[str, str], int] = {}
+    completed_carriers: dict[str, str] = {}
+
+    for sync in build_schedule(catalog):
+        for event in sync.events:
+            if not isinstance(event, LifecycleEvent):
+                continue
+            holdout = holdouts.get(event.load_id)
+            if event.status is LoadStatus.ACTIVE and holdout and "RICH" in holdout.coverage_tags:
+                assert completed.get((sync.tenant_id, holdout.booked_carrier_id), 0) >= 3
+                target = catalog.load(event.load_id)
+                matching_anchors = tuple(
+                    load
+                    for load in catalog.loads
+                    if load.history_anchor
+                    and load.tenant_id == target.tenant_id
+                    and load.equipment is target.equipment
+                    and load.stops == target.stops
+                )
+                assert len(matching_anchors) >= 3
+                assert all(
+                    completed_carriers[load.logical_id] == holdout.booked_carrier_id
+                    for load in matching_anchors
+                )
+            if event.status is LoadStatus.COMPLETED and event.carrier_id:
+                key = (sync.tenant_id, event.carrier_id)
+                completed[key] = completed.get(key, 0) + 1
+                completed_carriers[event.load_id] = event.carrier_id
 
 
 def test_writer_uses_strict_names_and_is_byte_deterministic(tmp_path: Path) -> None:

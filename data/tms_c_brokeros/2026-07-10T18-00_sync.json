@@ -6,7 +6,7 @@
       "LastModifiedDate": "2026-07-10T18:00:00.000+0000",
       "Name": "BO-3201",
       "bos__Carrier_Rate__c": 1610,
-      "bos__Carrier__c": "001F20F3DAA4B0297A",
+      "bos__Carrier__c": "00190FB4F1C847097A",
       "bos__Customer_Rate__c": 1890,
       "bos__Customer__c": "0014DD806107C8FF73",
       "bos__Distance_Miles__c": 193.6,
@@ -173,11 +173,6 @@
       "bos__Postal_Code__c": "77478",
       "bos__State__c": "TX",
       "type": "Location"
-    },
-    "001F20F3DAA4B0297A": {
-      "Name": "Port City Transport",
-      "record_type": "Carrier",
-      "type": "Account"
     }
   },
   "synced_at": "2026-07-10T18:00:00.000+0000"

@@ -88,10 +88,10 @@ intervening appearances repeat only the source's normal changed-load snapshot.
 | `SC-13` | Rich Houston→San Antonio reefer history; `BO-3101…BO-3105`, `BO-C-601` | `bo-broker`; alternating `HOU-SUG/KAT/PAS→SAT-SCH/NBR/SAT`; reefer; D1–D10 | Five completed BrokerOS lifecycles, completion files: `D3 18`, `D5 18`, `D7 12`, `D9 12`, `D10 18` | `BO-3102` is the `SC-11` restatement path. | At least five directional reefer comparables; supports geographic-neighbor target. | `test_sc13_rich_hou_sat_reefer_history` |
 | `SC-14` | Thin suburb lane; `HD-2101`, `HD-C-404` | `hd-broker`; `DFW-PLN→HOU-BAY`; dry van; D6→D7 | BOOKED `D6 12`; COMPLETED `D7 18` | No correction. | Exactly one direct comparable; sparse fallback must be visible for `SC-26`. | `test_sc14_thin_suburb_lane` |
 | `SC-15` | Many similar-load carrier; `FF-C-201` | `ff-broker`; `DFW→HOU`; dry van; D1–D10 | Assigned to `SC-01`, `SC-07`, and `FF-1101…FF-1106` on their booked files | Standard source corrections retained. | High effective lane history; strong historical-fit candidate for `SC-24`. | `test_sc15_many_similar_loads` |
-| `SC-16` | One highly similar carrier; `FF-1201`, `FF-C-202` | `ff-broker`; `DFW-GP→HOU-KAT`; dry van; D8→D9 | BOOKED `D8 12`; COMPLETED `D9 18` | No correction. | One excellent comparable but lower effective evidence/confidence than `FF-C-201`. | `test_sc16_one_similar_load_is_shrunk` |
+| `SC-16` | One highly similar carrier; `FF-1201`, `FF-C-202` | `ff-broker`; `DFW-GP→HOU-KAT`; dry van | BOOKED then COMPLETED | No correction. | One excellent comparable remains sparse evidence beside Lone Star Van's richer history. | `test_sc16_one_similar_load_is_shrunk` |
 | `SC-17` | Broad equipment, poor lane fit; `FF-1301…FF-1304`, `FF-C-203` | `ff-broker`; `HOU→SAT`/`SAT→DFW`; dry van, reefer, flatbed; D2–D10 | Four completed lifecycles at `D3 18`, `D5 12`, `D7 12`, `D10 18` | No correction. | Equipment breadth cannot outweigh poor DFW→Houston lane fit. | `test_sc17_broad_equipment_poor_lane_fit` |
-| `SC-18` | Recent delivery near Day 11 pickup; `FF-1401`, `FF-C-204` | `ff-broker`; `HOU-PAS→DFW-GP`; dry van; D10 | BOOKED `D10 06`; DELIVERED `D10 18` at Grand Prairie | No correction. | Recent known delivery near `SC-24` pickup increases historical deadhead component; never availability claim. | `test_sc18_recent_delivery_near_target_pickup` |
-| `SC-19` | Old delivery evidence decays; `FF-1402`, `FF-C-205` | `ff-broker`; `HOU-HOU→DFW-GP`; dry van; D1 | BOOKED `D1 06`; DELIVERED `D1 18` at Grand Prairie | No correction. | Same location signal as `SC-18`, but age suppresses its component for `SC-24`. | `test_sc19_old_delivery_evidence_decays` |
+| `SC-18` | Recent delivery near Day 11 pickup; `FF-1401`, `FF-C-204` | `ff-broker`; `HOU-PAS→DFW-GP`; dry van; completes late in history | BOOKED then COMPLETED at Grand Prairie | No correction. | Recent known delivery near `SC-24` pickup increases historical deadhead component; never availability claim. | `test_delivery_proximity_examples_have_distinct_historical_recency` |
+| `SC-19` | Old delivery evidence decays; `FF-1402`, `FF-C-205` | `ff-broker`; `HOU-HOU→DFW-GP`; dry van; completes early in history | BOOKED then COMPLETED at Grand Prairie | No correction. | Same location signal as `SC-18`, but age suppresses its component for `SC-24`. | `test_delivery_proximity_examples_have_distinct_historical_recency` |
 | `SC-20` | Ordered multi-stop BrokerOS load; `BO-3004`, `BO-CUST-501`, `BO-C-603` | `bo-broker`; `HOU-SUG→HOU-HOU→SAT-SCH`; reefer; D7→D8 | Ready to Book `D7 06`; Booked `D7 18`; Paid `D8 18` | Three child stops with order 1, 2, 3. | Ordered independent stop flags survive; no flattened-route assumption. | `test_sc20_brokeros_multistop_order` |
 | `SC-21` | Unknown-equipment load; `BO-3005`, `BO-CUST-502`, no carrier initially | `bo-broker`; `HOU-PAS→SAT-NBR`; UNKNOWN; D8→D9 | Ready to Book `D8 06` equipment null; Booked `D8 18`; Paid `D9 18` | None. | UNKNOWN stays a first-class equipment value, not dry van. | `test_sc21_unknown_equipment_remains_unknown` |
 | `SC-22` | Duplicate-file ingestion; `FF-1002` file checksum | `ff-broker`; uses `DFW-IRV→HOU-HOU`; dry van | Re-ingest `tms_a_freightflow/2026-07-02T12-00_sync.json` after chronological ingest | No new source observation. | No new ingestion facts, versions, or projections. This is an operation, not a duplicate generated file. | `test_sc22_duplicate_file_is_noop` |
@@ -102,12 +102,13 @@ intervening appearances repeat only the source's normal changed-load snapshot.
 
 ## Schedule and conflict rules
 
-1. Each source begins with one early anchor load: `FF-1001`, `HD-2001`, and
-   `BO-3001`. Its six lifecycle observations occupy that source's first six
-   historical slots (`PLANNED`, `ACTIVE`, `COVERED`, `IN_TRANSIT`, `DELIVERED`,
-   `COMPLETED`). Every other historical load first becomes `ACTIVE` only after
-   its source anchor is completed.
-2. Each source has six historical lifecycle loads. The first 36 source slots run
+1. Each source begins with three early anchors. Their six lifecycle observations
+   occupy the first six historical slots. Every ordinary historical load first
+   becomes `ACTIVE` only after those three anchors are completed. FreightFlow adds
+   seven more same-carrier anchors in later spare file capacity to demonstrate a
+   strong Day 11 FreightFlow historical fit. These are supporting history for
+   `SC-24`, not a separate required scenario.
+2. Each source has six ordinary historical lifecycle loads. The first 36 source slots run
    their ordered six-stage lifecycle blocks; the final four slots carry three
    authored rolling-holdout loads through `PLANNED`, `ACTIVE`, `COVERED`, and
    `COMPLETED` together. Later booked-carrier labels and coverage tags are

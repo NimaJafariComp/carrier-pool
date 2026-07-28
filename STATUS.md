@@ -475,3 +475,21 @@ acceptance evidence has not yet been recorded.
   broker retains at most two intentionally thin or mismatched histories, and every
   call-order group is larger than its “more history needed” group. Ranking
   safeguards were not relaxed to manufacture eligibility.
+- **Scenario-price contrast:** `SC-26` now provides the visible sparse-local price
+  case promised by `docs/DATA_SCENARIOS.md`: its small near-exact DFW-suburb group
+  is blended with regional same-equipment Fort Worth→Houston evidence. The generated
+  Day 11 decision is medium confidence with `SPARSE_EVIDENCE` and
+  `BROADER_FALLBACK`; an integration assertion protects that behavior.
+- **Ranking-history contrast:** BrokerOS and HaulDesk now each have authored rich,
+  regional-only, stale, recent-delivery-near-pickup, and materially different-lane
+  examples around their Day 11 targets. Generator tests protect those route
+  assignments; the delivered locations remain historical evidence, never live
+  truck-location or availability signals.
+- **Ranking explanation copy:** distance/equipment-tier evidence now says that a
+  completed load had a similar trip length and required the same equipment. The UI
+  no longer exposes the internal `distance-and-equipment` tier name.
+- **Comparable-load scalability:** the evidence table shows its first five rows by
+  default and gives an accessible “Show N more loads” control with a visible count;
+  expanding preserves the complete tenant-local evidence set and can be collapsed.
+- **Comparable wording:** endpoint distances now read “N mi from pickup/delivery” so
+  table match evidence is unambiguous.

@@ -86,8 +86,10 @@ def _lane_bullets(feature: CarrierFeatureSet) -> tuple[str, ...]:
     if directional:
         bullets.append(f"{directional} completed directional lane matches are recorded.")
     if distance_equipment:
+        noun = "load" if distance_equipment == 1 else "loads"
         bullets.append(
-            f"{distance_equipment} completed distance-and-equipment matches are recorded."
+            f"{distance_equipment} completed {noun} had a similar trip length and required "
+            "the same equipment."
         )
     if tenant_equipment:
         bullets.append(f"{tenant_equipment} completed same-equipment tenant loads are recorded.")

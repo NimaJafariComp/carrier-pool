@@ -9,7 +9,7 @@
       "bos__Carrier__c": "0014B5C08D023327EB",
       "bos__Customer_Rate__c": 1590,
       "bos__Customer__c": "0014DD806107C8FF73",
-      "bos__Distance_Miles__c": 190.4,
+      "bos__Distance_Miles__c": 243.2,
       "bos__Equipment_Type__c": "Reefer",
       "bos__Line_Items__r": [
         {
@@ -25,7 +25,7 @@
           "bos__Arrival_Time__c": null,
           "bos__Is_Dropoff__c": false,
           "bos__Is_Pickup__c": true,
-          "bos__Location__c": "001F04A07EF8DE704D",
+          "bos__Location__c": "0013C3DBA5ED1B5F8C",
           "bos__Number__c": 1,
           "bos__Scheduled_Date__c": "2026-07-07"
         },
@@ -33,7 +33,7 @@
           "bos__Arrival_Time__c": null,
           "bos__Is_Dropoff__c": true,
           "bos__Is_Pickup__c": false,
-          "bos__Location__c": "001A06FC7BDA751406",
+          "bos__Location__c": "001D8865AAFDB06E4A",
           "bos__Number__c": 2,
           "bos__Scheduled_Date__c": "2026-07-08"
         }
@@ -45,7 +45,7 @@
       "LastModifiedDate": "2026-07-07T12:00:00.000+0000",
       "Name": "BO-3004",
       "bos__Carrier_Rate__c": 1880,
-      "bos__Carrier__c": "001D5D8A47515E0A1D",
+      "bos__Carrier__c": "001FF89499E8183864",
       "bos__Customer_Rate__c": 2160,
       "bos__Customer__c": "0014DD806107C8FF73",
       "bos__Distance_Miles__c": 214.7,
@@ -112,10 +112,12 @@
       "bos__State__c": "TX",
       "type": "Location"
     },
-    "001D5D8A47515E0A1D": {
-      "Name": "Lone Oak Logistics",
-      "record_type": "Carrier",
-      "type": "Account"
+    "001D8865AAFDB06E4A": {
+      "Name": "Grand Prairie Facility",
+      "bos__City__c": "Grand Prairie",
+      "bos__Postal_Code__c": "75050",
+      "bos__State__c": "TX",
+      "type": "Location"
     },
     "001F04A07EF8DE704D": {
       "Name": "Sugar Land Facility",
@@ -123,6 +125,11 @@
       "bos__Postal_Code__c": "77478",
       "bos__State__c": "TX",
       "type": "Location"
+    },
+    "001FF89499E8183864": {
+      "Name": "Cypress Carrier",
+      "record_type": "Carrier",
+      "type": "Account"
     }
   },
   "synced_at": "2026-07-07T12:00:00.000+0000"

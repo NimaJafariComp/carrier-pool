@@ -391,10 +391,52 @@ describe("App", () => {
     expect(screen.getByRole("columnheader", { name: "Carrier pay" })).toBeInTheDocument();
     expect(screen.getByText("Dallas, TX → Houston, TX")).toBeInTheDocument();
     expect(screen.getByText("Nearby route, same equipment")).toBeInTheDocument();
-    expect(screen.getByText("18 mi pickup · 22 mi delivery")).toBeInTheDocument();
+    expect(screen.getByText("18 mi from pickup · 22 mi from delivery")).toBeInTheDocument();
     expect(screen.getByText("$1,180.00")).toBeInTheDocument();
     expect(screen.getByText("BO-3101")).toBeInTheDocument();
     expect(screen.queryByText("a0jFB388F4DF5D2288")).not.toBeInTheDocument();
+  });
+
+  it("progressively reveals comparable loads without making the evidence table unbounded", async () => {
+    const comparableLoads = Array.from({ length: 7 }, (_, index) => ({
+      ...decision().comparable_loads[0],
+      load_external_id: `FF-${1001 + index}`,
+      load_number: `FF-${1001 + index}`,
+    }));
+    const manyComparables = decision({ comparable_loads: comparableLoads });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((url: string) =>
+        Promise.resolve({
+          ok: true,
+          json: async () =>
+            url.endsWith("/tenants")
+              ? [tenantA]
+              : url.includes("/decision")
+                ? manyComparables
+                : [activeLoad],
+        }),
+      ),
+    );
+    renderApp();
+
+    await userEvent.setup().click(await screen.findByRole("button", { name: /view decision/i }));
+
+    expect(screen.getByText("Showing 5 of 7")).toBeInTheDocument();
+    expect(screen.getByText("FF-1005")).toBeInTheDocument();
+    expect(screen.queryByText("FF-1006")).not.toBeInTheDocument();
+    const reveal = screen.getByRole("button", { name: "Show 2 more loads" });
+    expect(reveal).toHaveAttribute("aria-expanded", "false");
+
+    await userEvent.setup().click(reveal);
+
+    expect(screen.getByText("Showing all 7")).toBeInTheDocument();
+    expect(screen.getByText("FF-1006")).toBeInTheDocument();
+    expect(screen.getByText("FF-1007")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Show fewer loads" })).toHaveAttribute(
+      "aria-expanded",
+      "true",
+    );
   });
 
   it("shows a medium-confidence decision without overstating certainty", async () => {

@@ -143,7 +143,7 @@ function comparableMatch(item: Decision["comparable_loads"][number]): {
     if (distance === null || distance === undefined) return `${place} unavailable`;
     return distance < 0.5
       ? `Same ${place.toLowerCase()}`
-      : `${Math.round(distance)} mi ${place.toLowerCase()}`;
+      : `${Math.round(distance)} mi from ${place.toLowerCase()}`;
   };
 
   return {
@@ -413,11 +413,22 @@ function CarrierRankings({ carriers }: { carriers: Decision["ranked_carriers"] }
 }
 
 function DecisionDetail({ decision }: { decision: Decision }) {
+  const [showAllComparables, setShowAllComparables] = useState(false);
   const { pricing } = decision;
   const rateRange = comparisonRange(decision);
   const warnings = pricingWarnings([...pricing.warnings, ...decision.warnings]);
   const pickup = decision.load.stops.find((stop) => stop.is_pickup);
   const dropoff = [...decision.load.stops].reverse().find((stop) => stop.is_dropoff);
+  const comparableLimit = 5;
+  const comparableCount = decision.comparable_loads.length;
+  const visibleComparables = showAllComparables
+    ? decision.comparable_loads
+    : decision.comparable_loads.slice(0, comparableLimit);
+  const hiddenComparableCount = Math.max(0, comparableCount - comparableLimit);
+
+  useEffect(() => {
+    setShowAllComparables(false);
+  }, [decision.load.id]);
 
   return (
     <section aria-labelledby="decision-title" className="decision-panel">
@@ -470,8 +481,9 @@ function DecisionDetail({ decision }: { decision: Decision }) {
       <section aria-labelledby="comparables-title" className="comparables">
         <h3 id="comparables-title">Comparable completed loads</h3>
         {decision.comparable_loads.length > 0 ? (
-          <div className="comparables__table-wrap">
-            <table>
+          <>
+            <div className="comparables__table-wrap">
+              <table id="comparable-loads-table">
               <thead>
                 <tr>
                   <th scope="col">Load</th>
@@ -482,7 +494,7 @@ function DecisionDetail({ decision }: { decision: Decision }) {
                 </tr>
               </thead>
               <tbody>
-                {decision.comparable_loads.map((item, index) => {
+                {visibleComparables.map((item, index) => {
                   const match = comparableMatch(item);
                   return (
                     <tr key={`${item.load_external_id}-${index}`}>
@@ -513,8 +525,28 @@ function DecisionDetail({ decision }: { decision: Decision }) {
                   );
                 })}
               </tbody>
-            </table>
-          </div>
+              </table>
+            </div>
+            {hiddenComparableCount > 0 && (
+              <div className="comparables__controls">
+                <span aria-live="polite">
+                  {showAllComparables
+                    ? `Showing all ${comparableCount}`
+                    : `Showing ${comparableLimit} of ${comparableCount}`}
+                </span>
+                <button
+                  type="button"
+                  aria-controls="comparable-loads-table"
+                  aria-expanded={showAllComparables}
+                  onClick={() => setShowAllComparables((value) => !value)}
+                >
+                  {showAllComparables
+                    ? "Show fewer loads"
+                    : `Show ${hiddenComparableCount} more load${hiddenComparableCount === 1 ? "" : "s"}`}
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <p>No comparable completed loads are recorded for this decision.</p>
         )}

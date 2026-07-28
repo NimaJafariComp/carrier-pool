@@ -48,7 +48,7 @@
       "bos__Carrier__c": null,
       "bos__Customer_Rate__c": 1560,
       "bos__Customer__c": "0014DD806107C8FF73",
-      "bos__Distance_Miles__c": 190.4,
+      "bos__Distance_Miles__c": 237.9,
       "bos__Equipment_Type__c": "Reefer",
       "bos__Line_Items__r": [
         {
@@ -64,7 +64,7 @@
           "bos__Arrival_Time__c": null,
           "bos__Is_Dropoff__c": false,
           "bos__Is_Pickup__c": true,
-          "bos__Location__c": "001F04A07EF8DE704D",
+          "bos__Location__c": "001B982E8C6B92D48E",
           "bos__Number__c": 1,
           "bos__Scheduled_Date__c": "2026-07-07"
         },
@@ -72,7 +72,7 @@
           "bos__Arrival_Time__c": null,
           "bos__Is_Dropoff__c": true,
           "bos__Is_Pickup__c": false,
-          "bos__Location__c": "001A06FC7BDA751406",
+          "bos__Location__c": "001AE19313D2600FCA",
           "bos__Number__c": 2,
           "bos__Scheduled_Date__c": "2026-07-08"
         }

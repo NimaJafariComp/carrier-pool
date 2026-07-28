@@ -222,7 +222,7 @@
       ]
     },
     {
-      "booked_carrier_id": "BO-C-602",
+      "booked_carrier_id": "BO-C-607",
       "coverage_tags": [
         "SPARSE",
         "BROADER_LANE",
@@ -239,7 +239,7 @@
       ]
     },
     {
-      "booked_carrier_id": "BO-C-603",
+      "booked_carrier_id": "BO-C-605",
       "coverage_tags": [
         "SPARSE",
         "METRO_CORRIDOR",
@@ -256,7 +256,7 @@
       ]
     },
     {
-      "booked_carrier_id": "BO-C-603",
+      "booked_carrier_id": "BO-C-605",
       "coverage_tags": [
         "SPARSE",
         "DISTANCE_EQUIPMENT",
@@ -1302,7 +1302,7 @@
       "verification_test": "test_sc24_day11_exact_lane_decision"
     },
     {
-      "description": "Day 11 geographic-neighbor target.",
+      "description": "Day 11 rich Houston to San Antonio reefer target.",
       "entity_ids": {
         "carrier_ids": [],
         "customer_ids": [
@@ -1312,7 +1312,7 @@
           "BO-9001"
         ]
       },
-      "expected_effect": "Neighbor history supports fallback tier.",
+      "expected_effect": "Near-exact history supports a high-evidence price and ranking.",
       "expected_warnings": [],
       "scenario_id": "SC-25",
       "source_files": [
@@ -1327,7 +1327,7 @@
       "verification_test": "test_sc25_day11_geographic_neighbor_decision"
     },
     {
-      "description": "Day 11 sparse-fallback target.",
+      "description": "Day 11 sparse-local, broader-fallback target.",
       "entity_ids": {
         "carrier_ids": [],
         "customer_ids": [
@@ -1337,7 +1337,7 @@
           "HD-9001"
         ]
       },
-      "expected_effect": "Thin history lowers confidence.",
+      "expected_effect": "Sparse local evidence blends with regional history at medium confidence.",
       "expected_warnings": [],
       "scenario_id": "SC-26",
       "source_files": [

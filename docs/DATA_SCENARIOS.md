@@ -65,6 +65,18 @@ FreightFlow shipment/customer/carrier IDs; `HD-2026-xxxx`/numeric HaulDesk IDs;
 and 18-character BrokerOS CRM IDs. The logical IDs are the scenario contract;
 the generated manifest exposes both logical and source IDs.
 
+### Day 11 ranking-evidence contrast
+
+The two non-FreightFlow demo rosters deliberately avoid interchangeable carrier
+histories. For the BrokerOS Katy→San Antonio reefer target, Gulf Reefers has rich
+near-exact work; Port City has only regional Galveston→San Antonio work; Lone Oak
+has a single older regional completion; Coastal's latest recorded delivery returns
+to Katy; and Alamo Route includes a materially different Houston→DFW reefer lane.
+For the HaulDesk Plano→Baytown dry-van target, Delta Prime has rich corridor work,
+Guadalupe has the sparse local suburb lane, Mission has a materially different
+Houston→San Antonio lane, and River City has a recent historical Baytown→Plano
+delivery. These are historical-fit distinctions only, never availability claims.
+
 ## Required scenario matrix
 
 Dates in route columns are planned pickup → delivery. `FF`, `HD`, and `BO`
@@ -85,8 +97,8 @@ intervening appearances repeat only the source's normal changed-load snapshot.
 | `SC-10` | HaulDesk negative adjustment; `HD-2002` | Same as `SC-09` | New PAY ADJUSTMENT row at `D5 12` | -$30 PAY ledger entry. | Pay total falls once; no ledger overwrite/double count. | `test_sc10_hauldesk_negative_adjustment_applies_once` |
 | `SC-11` | BrokerOS silent carrier-rate restatement; `BO-3003`, `BO-CUST-503`, `BO-C-602` | `bo-broker`; `HOU-KAT→SAT-NBR`; reefer; D4→D6 | `D4 12` Booked pay $1,420; `D5 18` Booked pay $1,475; `D6 12` Paid | No source correction marker; complete snapshot restates pay. | Current pay $1,475; two immutable rate versions, no ledger rows. | `test_sc11_brokeros_rate_restatement` |
 | `SC-12` | Rich DFW→Houston dry-van history; `FF-1101…FF-1106`, `FF-C-201` | `ff-broker`; alternating `DFW-GP/IRV/ARL→HOU-KAT/SUG/HOU`; dry van; D1–D10 | Six completed replacement lifecycles, completion files: `D2 18`, `D4 18`, `D5 18`, `D7 18`, `D9 18`, `D10 12` | `FF-1104` incorporates `SC-07` ZIP correction. | At least six comparable completed loads. Main private rate/rank evidence for `SC-24`. | `test_sc12_rich_dfw_hou_history` |
-| `SC-13` | Rich Houston→San Antonio reefer history; `BO-3101…BO-3105`, `BO-C-601` | `bo-broker`; alternating `HOU-SUG/KAT/PAS→SAT-SCH/NBR/SAT`; reefer; D1–D10 | Five completed BrokerOS lifecycles, completion files: `D3 18`, `D5 18`, `D7 12`, `D9 12`, `D10 18` | `BO-3102` is the `SC-11` restatement path. | At least five directional reefer comparables; supports geographic-neighbor target. | `test_sc13_rich_hou_sat_reefer_history` |
-| `SC-14` | Thin suburb lane; `HD-2101`, `HD-C-404` | `hd-broker`; `DFW-PLN→HOU-BAY`; dry van; D6→D7 | BOOKED `D6 12`; COMPLETED `D7 18` | No correction. | Exactly one direct comparable; sparse fallback must be visible for `SC-26`. | `test_sc14_thin_suburb_lane` |
+| `SC-13` | Rich Houston→San Antonio reefer history; `BO-3101…BO-3105`, `BO-C-601` | `bo-broker`; alternating `HOU-SUG/KAT/PAS→SAT-SCH/NBR/SAT`; reefer; D1–D10 | Five completed BrokerOS lifecycles, completion files: `D3 18`, `D5 18`, `D7 12`, `D9 12`, `D10 18` | `BO-3102` is the `SC-11` restatement path. | At least five directional reefer comparables; supports the rich near-exact `SC-25` example. | `test_sc13_rich_hou_sat_reefer_history` |
+| `SC-14` | Thin suburb lane; `HD-2101`, `HD-C-404` | `hd-broker`; `DFW-PLN→HOU-BAY`; dry van; D6→D7 | BOOKED `D6 12`; COMPLETED `D7 18` | No correction. | Exact suburb evidence for `SC-26`; it remains a small local group rather than a rich lane. | `test_sc14_thin_suburb_lane` |
 | `SC-15` | Many similar-load carrier; `FF-C-201` | `ff-broker`; `DFW→HOU`; dry van; D1–D10 | Assigned to `SC-01`, `SC-07`, and `FF-1101…FF-1106` on their booked files | Standard source corrections retained. | High effective lane history; strong historical-fit candidate for `SC-24`. | `test_sc15_many_similar_loads` |
 | `SC-16` | One highly similar carrier; `FF-1201`, `FF-C-202` | `ff-broker`; `DFW-GP→HOU-KAT`; dry van | BOOKED then COMPLETED | No correction. | One excellent comparable remains sparse evidence beside Lone Star Van's richer history. | `test_sc16_one_similar_load_is_shrunk` |
 | `SC-17` | Broad equipment, poor lane fit; `FF-1301…FF-1304`, `FF-C-203` | `ff-broker`; `HOU→SAT`/`SAT→DFW`; dry van, reefer, flatbed; D2–D10 | Four completed lifecycles at `D3 18`, `D5 12`, `D7 12`, `D10 18` | No correction. | Equipment breadth cannot outweigh poor DFW→Houston lane fit. | `test_sc17_broad_equipment_poor_lane_fit` |
@@ -97,8 +109,8 @@ intervening appearances repeat only the source's normal changed-load snapshot.
 | `SC-22` | Duplicate-file ingestion; `FF-1002` file checksum | `ff-broker`; uses `DFW-IRV→HOU-HOU`; dry van | Re-ingest `tms_a_freightflow/2026-07-02T12-00_sync.json` after chronological ingest | No new source observation. | No new ingestion facts, versions, or projections. This is an operation, not a duplicate generated file. | `test_sc22_duplicate_file_is_noop` |
 | `SC-23` | Same authority under two tenants; `FF-C-206`, `HD-C-206` | `ff-broker` and `hd-broker`; both MC 1350101 / DOT 3901001; different local lanes | First appear in `D2 06` FreightFlow and `D2 12` HaulDesk respectively | None. | Two tenant-owned carrier records remain separate; changing one cannot affect another tenant's decision. | `test_sc23_same_mc_dot_does_not_cross_tenant_boundary` |
 | `SC-24` | Day 11 exact-lane target; `FF-9001`, `FF-CUST-101` | `ff-broker`; `DFW-GP→HOU-KAT`; dry van; pickup D11→D12 | ACTIVE/BOOKING in `tms_a_freightflow/2026-07-11T06-00_sync.json` | No future booking/rate file generated. | Exact private history (`SC-12`); `FF-C-201` ranks above low-history and stale-evidence candidates; narrowest supported rate tier. | `test_sc24_day11_exact_lane_decision` |
-| `SC-25` | Day 11 geographic-neighbor target; `BO-9001`, `BO-CUST-501` | `bo-broker`; `HOU-KAT→SAT-SAT`; reefer; pickup D11→D12 | ACTIVE/Ready to Book in `tms_c_brokeros/2026-07-11T06-00_sync.json` | No future booking/rate file generated. | Uses nearby `SC-13` endpoints, not an exact city pair; explanation gives endpoint distances and fallback tier. | `test_sc25_day11_geographic_neighbor_decision` |
-| `SC-26` | Day 11 sparse fallback target; `HD-9001`, `HD-CUST-302` | `hd-broker`; `DFW-PLN→HOU-BAY`; dry van; pickup D11→D12 | ACTIVE/Open in `tms_b_hauldesk/2026-07-11T06-00_sync.json` | No future booking/rate file generated. | Thin `SC-14` evidence causes broader fallback, lower confidence, and shrinkage. | `test_sc26_day11_sparse_fallback_decision` |
+| `SC-25` | Day 11 Houston→San Antonio reefer target; `BO-9001`, `BO-CUST-501` | `bo-broker`; `HOU-KAT→SAT-SAT`; reefer; pickup D11→D12 | ACTIVE/Ready to Book in `tms_c_brokeros/2026-07-11T06-00_sync.json` | No future booking/rate file generated. | Multiple recent, same-equipment Houston→San Antonio loads provide a high-evidence near-exact price and ranking example. | `test_sc25_day11_geographic_neighbor_decision` |
+| `SC-26` | Day 11 sparse local, broader-fallback target; `HD-9001`, `HD-CUST-302` | `hd-broker`; `DFW-PLN→HOU-BAY`; dry van; pickup D11→D12 | ACTIVE/Open in `tms_b_hauldesk/2026-07-11T06-00_sync.json` | No future booking/rate file generated. | `HD-2101` and one nearby completed lane form a deliberately small near-exact group. Earlier Fort Worth→Houston dry-van history is regional, so the estimate blends local and broader same-equipment evidence and reports medium confidence. | `test_sc26_day11_sparse_fallback_decision` |
 
 ## Schedule and conflict rules
 
@@ -119,6 +131,8 @@ intervening appearances repeat only the source's normal changed-load snapshot.
    canonical catalog data, never derived from ranking output. They cover rich and
    sparse history, near-exact, broader-lane, distance/equipment,
    limited-candidate, and close-score-tie cases. Day 11 targets are unchanged.
+   `SC-26` intentionally has a small near-exact price group plus a regional
+   dry-van baseline; this is the visible sparse-local/blended-price demo case.
 3. Historical files use the literal name `{YYYY-MM-DD}T{HH-MM}_sync.json`.
    Event timestamps fall at or before the file timestamp; all source-specific
    modified timestamps advance with that event.

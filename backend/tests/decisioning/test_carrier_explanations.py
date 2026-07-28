@@ -69,5 +69,7 @@ def test_distance_equipment_evidence_is_not_described_as_directional() -> None:
 
     explanation = explain_rankings(CarrierHistoricalFitScorer().score((feature,)), (feature,))[0]
 
-    assert "distance-and-equipment" in " ".join(explanation.evidence_bullets)
-    assert "directional" not in " ".join(explanation.evidence_bullets)
+    text = " ".join(explanation.evidence_bullets)
+    assert "similar trip length" in text
+    assert "same equipment" in text
+    assert "directional" not in text

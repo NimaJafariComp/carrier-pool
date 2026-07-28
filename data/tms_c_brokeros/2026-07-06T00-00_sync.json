@@ -9,7 +9,7 @@
       "bos__Carrier__c": "001155011E5966918B",
       "bos__Customer_Rate__c": 1810,
       "bos__Customer__c": "0014DD806107C8FF73",
-      "bos__Distance_Miles__c": 237.9,
+      "bos__Distance_Miles__c": 193.6,
       "bos__Equipment_Type__c": "Reefer",
       "bos__Line_Items__r": [
         {
@@ -25,7 +25,7 @@
           "bos__Arrival_Time__c": null,
           "bos__Is_Dropoff__c": false,
           "bos__Is_Pickup__c": true,
-          "bos__Location__c": "001B982E8C6B92D48E",
+          "bos__Location__c": "001AE19313D2600FCA",
           "bos__Number__c": 1,
           "bos__Scheduled_Date__c": "2026-07-07"
         },
@@ -33,7 +33,7 @@
           "bos__Arrival_Time__c": null,
           "bos__Is_Dropoff__c": true,
           "bos__Is_Pickup__c": false,
-          "bos__Location__c": "001AE19313D2600FCA",
+          "bos__Location__c": "001CB9C8C891F1A584",
           "bos__Number__c": 2,
           "bos__Scheduled_Date__c": "2026-07-08"
         }
@@ -48,7 +48,7 @@
       "bos__Carrier__c": "001155011E5966918B",
       "bos__Customer_Rate__c": 1545,
       "bos__Customer__c": "0014DD806107C8FF73",
-      "bos__Distance_Miles__c": 190.4,
+      "bos__Distance_Miles__c": 193.6,
       "bos__Equipment_Type__c": "Reefer",
       "bos__Line_Items__r": [
         {
@@ -64,7 +64,7 @@
           "bos__Arrival_Time__c": null,
           "bos__Is_Dropoff__c": false,
           "bos__Is_Pickup__c": true,
-          "bos__Location__c": "001F04A07EF8DE704D",
+          "bos__Location__c": "001AE19313D2600FCA",
           "bos__Number__c": 1,
           "bos__Scheduled_Date__c": "2026-07-07"
         },
@@ -72,7 +72,7 @@
           "bos__Arrival_Time__c": null,
           "bos__Is_Dropoff__c": true,
           "bos__Is_Pickup__c": false,
-          "bos__Location__c": "001A06FC7BDA751406",
+          "bos__Location__c": "001CB9C8C891F1A584",
           "bos__Number__c": 2,
           "bos__Scheduled_Date__c": "2026-07-08"
         }
@@ -84,7 +84,7 @@
       "LastModifiedDate": "2026-07-06T00:00:00.000+0000",
       "Name": "BO-3003",
       "bos__Carrier_Rate__c": 1630,
-      "bos__Carrier__c": "001D5D8A47515E0A1D",
+      "bos__Carrier__c": "001FF89499E8183864",
       "bos__Customer_Rate__c": 1910,
       "bos__Customer__c": "0017F25C12B6C0E60C",
       "bos__Distance_Miles__c": 237.9,
@@ -134,13 +134,6 @@
       "record_type": "Customer",
       "type": "Account"
     },
-    "001A06FC7BDA751406": {
-      "Name": "Schertz Facility",
-      "bos__City__c": "Schertz",
-      "bos__Postal_Code__c": "78154",
-      "bos__State__c": "TX",
-      "type": "Location"
-    },
     "001AE19313D2600FCA": {
       "Name": "San Antonio Facility",
       "bos__City__c": "San Antonio",
@@ -155,17 +148,17 @@
       "bos__State__c": "TX",
       "type": "Location"
     },
-    "001D5D8A47515E0A1D": {
-      "Name": "Lone Oak Logistics",
-      "record_type": "Carrier",
-      "type": "Account"
-    },
-    "001F04A07EF8DE704D": {
-      "Name": "Sugar Land Facility",
-      "bos__City__c": "Sugar Land",
-      "bos__Postal_Code__c": "77478",
+    "001CB9C8C891F1A584": {
+      "Name": "Katy Facility",
+      "bos__City__c": "Katy",
+      "bos__Postal_Code__c": "77449",
       "bos__State__c": "TX",
       "type": "Location"
+    },
+    "001FF89499E8183864": {
+      "Name": "Cypress Carrier",
+      "record_type": "Carrier",
+      "type": "Account"
     }
   },
   "synced_at": "2026-07-06T00:00:00.000+0000"

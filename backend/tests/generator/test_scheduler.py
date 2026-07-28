@@ -129,6 +129,38 @@ def test_day11_rosters_have_multiple_relevant_histories_and_small_limited_groups
         assert completed_equipment[("hd-broker", carrier_id, hauldesk_equipment)] >= minimum
 
 
+def test_day11_candidate_histories_have_authored_lane_recency_and_proximity_contrast() -> None:
+    """The demo must show distinguishable historical-fit evidence, not clones."""
+    catalog = build_catalog()
+    completed_routes: dict[str, list[tuple[str, ...]]] = {}
+    for sync in build_schedule(catalog):
+        if sync.sync_at >= DAY11_SYNC_AT:
+            continue
+        for event in sync.events:
+            if not (
+                isinstance(event, LifecycleEvent)
+                and event.status is LoadStatus.COMPLETED
+                and event.carrier_id is not None
+            ):
+                continue
+            load = catalog.load(event.load_id)
+            completed_routes.setdefault(event.carrier_id, []).append(
+                tuple(stop.location_id for stop in load.stops)
+            )
+
+    # BrokerOS: regional-only, stale single-load, return-delivery-near-pickup,
+    # and materially different same-equipment histories surround the rich exact lane.
+    assert set(completed_routes["BO-C-602"]) == {("HOU-GLV", "SAT-SAT")}
+    assert completed_routes["BO-C-603"] == [("HOU-GLV", "SAT-SAT")]
+    assert set(completed_routes["BO-C-606"]) == {("SAT-SAT", "HOU-KAT")}
+    assert ("HOU-HOU", "DFW-GP") in completed_routes["BO-C-607"]
+
+    # HaulDesk: one carrier has a different same-equipment lane and another has
+    # a recent historical delivery at the Day 11 pickup, never a live-location claim.
+    assert ("HOU-HOU", "SAT-SAT") in completed_routes["HD-C-405"]
+    assert ("HOU-BAY", "DFW-PLN") in completed_routes["HD-C-408"]
+
+
 def test_hauldesk_load_emits_one_booking_linehaul_not_status_adjustments() -> None:
     schedule = build_schedule(build_catalog())
     entries = tuple(

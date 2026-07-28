@@ -175,6 +175,15 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
                 if comparable.load_external_id == "HD-2101"
             )
             assert displayed_hd2101_rate == Decimal("1150")
+            # SC-26 deliberately has only a sparse local suburb group. The estimator must
+            # retain that local evidence while blending it with broader, same-
+            # equipment Texas-corridor history instead of presenting a falsely
+            # precise rich-history estimate.
+            assert day11_estimate.local_tier is LaneTier.NEAR_EXACT
+            assert day11_estimate.broader_tier is LaneTier.REGIONAL
+            assert day11_estimate.blend_local_weight is not None
+            assert Decimal("0") < day11_estimate.blend_local_weight < Decimal("1")
+            assert day11_estimate.confidence.level.value == "MEDIUM"
 
             ff_day11_target = session.scalar(
                 select(Load).where(

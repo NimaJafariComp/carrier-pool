@@ -9,7 +9,7 @@
       "bos__Carrier__c": null,
       "bos__Customer_Rate__c": 1590,
       "bos__Customer__c": "0014DD806107C8FF73",
-      "bos__Distance_Miles__c": 190.4,
+      "bos__Distance_Miles__c": 243.2,
       "bos__Equipment_Type__c": "Reefer",
       "bos__Line_Items__r": [
         {
@@ -25,7 +25,7 @@
           "bos__Arrival_Time__c": null,
           "bos__Is_Dropoff__c": false,
           "bos__Is_Pickup__c": true,
-          "bos__Location__c": "001F04A07EF8DE704D",
+          "bos__Location__c": "0013C3DBA5ED1B5F8C",
           "bos__Number__c": 1,
           "bos__Scheduled_Date__c": "2026-07-07"
         },
@@ -33,7 +33,7 @@
           "bos__Arrival_Time__c": null,
           "bos__Is_Dropoff__c": true,
           "bos__Is_Pickup__c": false,
-          "bos__Location__c": "001A06FC7BDA751406",
+          "bos__Location__c": "001D8865AAFDB06E4A",
           "bos__Number__c": 2,
           "bos__Scheduled_Date__c": "2026-07-08"
         }
@@ -104,6 +104,13 @@
       "Name": "Schertz Facility",
       "bos__City__c": "Schertz",
       "bos__Postal_Code__c": "78154",
+      "bos__State__c": "TX",
+      "type": "Location"
+    },
+    "001D8865AAFDB06E4A": {
+      "Name": "Grand Prairie Facility",
+      "bos__City__c": "Grand Prairie",
+      "bos__Postal_Code__c": "75050",
       "bos__State__c": "TX",
       "type": "Location"
     },

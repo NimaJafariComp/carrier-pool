@@ -45,10 +45,10 @@
       "LastModifiedDate": "2026-07-04T18:00:00.000+0000",
       "Name": "BO-2907",
       "bos__Carrier_Rate__c": 1280,
-      "bos__Carrier__c": "001FF89499E8183864",
+      "bos__Carrier__c": "001F20F3DAA4B0297A",
       "bos__Customer_Rate__c": 1560,
       "bos__Customer__c": "0014DD806107C8FF73",
-      "bos__Distance_Miles__c": 190.4,
+      "bos__Distance_Miles__c": 237.9,
       "bos__Equipment_Type__c": "Reefer",
       "bos__Line_Items__r": [
         {
@@ -64,7 +64,7 @@
           "bos__Arrival_Time__c": null,
           "bos__Is_Dropoff__c": false,
           "bos__Is_Pickup__c": true,
-          "bos__Location__c": "001F04A07EF8DE704D",
+          "bos__Location__c": "001B982E8C6B92D48E",
           "bos__Number__c": 1,
           "bos__Scheduled_Date__c": "2026-07-07"
         },
@@ -72,7 +72,7 @@
           "bos__Arrival_Time__c": null,
           "bos__Is_Dropoff__c": true,
           "bos__Is_Pickup__c": false,
-          "bos__Location__c": "001A06FC7BDA751406",
+          "bos__Location__c": "001AE19313D2600FCA",
           "bos__Number__c": 2,
           "bos__Scheduled_Date__c": "2026-07-08"
         }
@@ -84,7 +84,7 @@
       "LastModifiedDate": "2026-07-04T18:00:00.000+0000",
       "Name": "BO-3002",
       "bos__Carrier_Rate__c": 1490,
-      "bos__Carrier__c": "001F20F3DAA4B0297A",
+      "bos__Carrier__c": "0014B5C08D023327EB",
       "bos__Customer_Rate__c": 1770,
       "bos__Customer__c": "0014DD806107C8FF73",
       "bos__Distance_Miles__c": 190.4,
@@ -119,6 +119,11 @@
     }
   ],
   "referenced_records": {
+    "0014B5C08D023327EB": {
+      "Name": "Alamo Route",
+      "record_type": "Carrier",
+      "type": "Account"
+    },
     "0014DD806107C8FF73": {
       "Name": "Gulf Coast Foods",
       "record_type": "Customer",

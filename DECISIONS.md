@@ -83,24 +83,32 @@ justify model complexity.
 
 ## Historical-fit ranking, shrinkage, and confidence
 
-**Decision:** serve `carrier-ranking-v5`. It combines directional lane evidence,
-equipment history, relevant-work recency, and last historical delivery proximity.
-The adjusted score shrinks independent completed-load evidence toward a neutral
-50 using `ESS / (ESS + 6)`. V5 counts a completed version once even if it supports
-multiple components, and does not cap score ESS. Confidence is separate and
-saturates with evidence; it is not inferred from the score.
+**Decision:** serve `carrier-ranking-v5`. It is a transparent historical-fit
+score, not a probability that a carrier will accept. It combines four bounded
+signals: directional lane similarity, matching-equipment history, recency of
+relevant completed work, and the distance/time gap from the carrier's last
+recorded delivery to the target pickup.
 
-On the current same 57 temporal cases, v4, v5, and the v6 analysis candidate each
-have 32 supported scored cases, 50.0% top-1 recall, 90.625% top-3 recall, MRR
-0.6875, and a 5.26% top-fit tie rate. V6 only raises numeric margins by reducing
-the shrinkage constant from 6 to 4, so it remains analysis-only. The ranking
-artifact marks weight tuning ineligible because the booked-carrier outcome is a
-weak proxy and the demo is not an independent operational holdout.
+V5 counts each completed load once when measuring independent history, even when
+that load contributes to several signals. Its raw component score is then shrunk
+toward a neutral 50 using `ESS / (ESS + 6)`: a small or repetitive history cannot
+produce an extreme recommendation, while several independent, strong matches can
+move the score materially away from neutral. It does not impose a separate hard
+cap on score effective sample size. Confidence is calculated independently from
+evidence depth, lane quality, equipment coverage, recency, and geography; a high
+score is not automatically high confidence.
 
-**Rejected:** v4's overlapping component counts and score-ESS cap, which could
-overstate one load while limiting genuinely deep history; v6 as serving behavior,
-because larger numbers without better ordering or tie behavior are not an
-improvement; and score-only certainty, because sparse evidence must remain visible.
+On the current 57 temporal cases, V5 has 32 supported scored cases, 50.0% top-1
+recall, 90.625% top-3 recall, MRR 0.6875, and a 5.26% top-fit tie rate. These are
+diagnostics against an eventually booked-carrier proxy, not proof of operational
+accuracy. The ranking artifact marks weight tuning ineligible because the demo is
+not an independent operational holdout.
+
+**Rejected:** v4, because overlapping component counts could overstate one load
+and its score-ESS cap could limit genuinely deep history; the v6 analysis
+candidate, because lowering the shrinkage constant raised numeric margins without
+improving ordering or tie behavior; and score-only certainty, because sparse
+evidence must remain visible.
 
 ## Booked-carrier labels and historical delivery proximity
 

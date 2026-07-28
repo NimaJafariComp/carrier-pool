@@ -2,10 +2,10 @@
   "loads": [
     {
       "carrier": {
-        "carrierMasterId": 169083,
-        "dotNumber": "3900201",
-        "mcNumber": "1350201",
-        "name": "Lone Star Van",
+        "carrierMasterId": 860367,
+        "dotNumber": "3900204",
+        "mcNumber": "1350204",
+        "name": "Metro Haul",
         "phoneNumber": "+12145550101"
       },
       "createdDate": "2026-07-06T07:00:00-05:00",
@@ -44,10 +44,10 @@
     },
     {
       "carrier": {
-        "carrierMasterId": 169083,
-        "dotNumber": "3900201",
-        "mcNumber": "1350201",
-        "name": "Lone Star Van",
+        "carrierMasterId": 357057,
+        "dotNumber": "3900205",
+        "mcNumber": "1350205",
+        "name": "Heritage Trucking",
         "phoneNumber": "+12145550101"
       },
       "createdDate": "2026-07-06T07:00:00-05:00",

@@ -216,7 +216,10 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
                 for item in fixed_ranking
                 if item.carrier_external_id == rich_demo_carrier.external_id
             )
-            assert rich_demo_fit.effective_history >= Decimal(9)
+            # The scenario retains nine distinct completed loads. Its reverse-lane
+            # return is deliberately downweighted, so weighted ESS is below the
+            # raw count without weakening the strong-fit demonstration.
+            assert rich_demo_fit.effective_history >= Decimal("7.8")
             assert rich_demo_fit.adjusted_score >= Decimal(75)
             assert rich_demo_fit.confidence == "HIGH"
             assert serving_demo_fit.adjusted_score >= Decimal(75)
@@ -256,13 +259,13 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
             # invisible/dormant candidates again.
             minimum_candidates = {
                 SourceSystem.FREIGHTFLOW: 5,
-                SourceSystem.HAULDESK: 8,
-                SourceSystem.BROKEROS: 8,
+                SourceSystem.HAULDESK: 6,
+                SourceSystem.BROKEROS: 7,
             }
             minimum_actionable_candidates = {
-                SourceSystem.FREIGHTFLOW: 2,
-                SourceSystem.HAULDESK: 2,
-                SourceSystem.BROKEROS: 3,
+                SourceSystem.FREIGHTFLOW: 4,
+                SourceSystem.HAULDESK: 5,
+                SourceSystem.BROKEROS: 5,
             }
             for source_system, tenant_id in tenant_ids.items():
                 target = session.scalar(
@@ -296,14 +299,14 @@ def test_generated_data_ingests_idempotently_and_rebuilds(tmp_path: Path) -> Non
                 ranking = CarrierHistoricalFitScorer().score(candidate_features)
                 assert ranking
                 assert len(candidate_features) >= minimum_candidates[source_system]
-                assert (
-                    sum(
-                        item.evidence_status == "SUPPORTED"
-                        and item.confidence_score >= Decimal(".45")
-                        for item in ranking
-                    )
-                    >= minimum_actionable_candidates[source_system]
+                actionable_count = sum(
+                    item.evidence_status == "SUPPORTED" and item.confidence_score >= Decimal(".45")
+                    for item in ranking
                 )
+                assert actionable_count >= minimum_actionable_candidates[source_system]
+                limited_count = len(ranking) - actionable_count
+                assert limited_count <= 2
+                assert actionable_count > limited_count
                 assert CarrierHistoricalFitScorer().score(candidate_features) == ranking
                 explanations = explain_rankings(ranking, candidate_features)
                 assert all(item.supporting_load_ids for item in explanations)

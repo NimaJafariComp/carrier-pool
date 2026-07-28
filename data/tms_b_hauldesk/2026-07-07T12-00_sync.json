@@ -1,12 +1,12 @@
 {
   "carriers": [
     {
-      "carrier_id": 141389,
-      "carrier_name": "Crossroads Carrier",
-      "dot_no": "3901001",
+      "carrier_id": 233984,
+      "carrier_name": "River City Freight",
+      "dot_no": "3900408",
       "home_city": "Dallas",
       "home_state": "TX",
-      "mc_no": "1350101",
+      "mc_no": "1350408",
       "phone": "(214) 555-0101"
     },
     {
@@ -21,23 +21,23 @@
   ],
   "loads": [
     {
-      "carrier_ref": 141389,
+      "carrier_ref": 233984,
       "customer_code": "HD-CUST-302",
       "customer_name": "Hill Country Produce",
       "del_arrived_at": null,
-      "del_city": "Grand Prairie",
+      "del_city": "Houston",
       "del_date": "2026-07-08",
       "del_state": "TX",
-      "del_zip": "75050",
-      "dist_km": 385.277,
+      "del_zip": "77002",
+      "dist_km": 385.921,
       "entered_at": "2026-07-07 07:00:00",
       "equip": "V",
       "load_num": "HD-1910",
-      "pu_city": "Katy",
+      "pu_city": "Dallas",
       "pu_date": "2026-07-07",
       "pu_departed_at": null,
       "pu_state": "TX",
-      "pu_zip": "77449",
+      "pu_zip": "75201",
       "status_code": 30,
       "updated_at": "2026-07-07 07:00:00",
       "weight_kg": 10886.21688024085

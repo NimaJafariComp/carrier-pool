@@ -1,12 +1,12 @@
 {
   "carriers": [
     {
-      "carrier_id": 320562,
-      "carrier_name": "Alamo Refrigerated",
-      "dot_no": "3900403",
+      "carrier_id": 668390,
+      "carrier_name": "Central Haul",
+      "dot_no": "3900402",
       "home_city": "Dallas",
       "home_state": "TX",
-      "mc_no": "1350403",
+      "mc_no": "1350402",
       "phone": "(214) 555-0101"
     },
     {
@@ -30,23 +30,23 @@
   ],
   "loads": [
     {
-      "carrier_ref": 320562,
-      "customer_code": "HD-CUST-301",
-      "customer_name": "Alamo Building Supply",
+      "carrier_ref": 668390,
+      "customer_code": "HD-CUST-302",
+      "customer_name": "Hill Country Produce",
       "del_arrived_at": null,
-      "del_city": "Schertz",
+      "del_city": "Houston",
       "del_date": "2026-07-08",
       "del_state": "TX",
-      "del_zip": "78154",
-      "dist_km": 306.419,
+      "del_zip": "77002",
+      "dist_km": 385.921,
       "entered_at": "2026-07-06 13:00:00",
-      "equip": "R",
+      "equip": "V",
       "load_num": "HD-1908",
-      "pu_city": "Sugar Land",
+      "pu_city": "Dallas",
       "pu_date": "2026-07-07",
       "pu_departed_at": null,
       "pu_state": "TX",
-      "pu_zip": "77478",
+      "pu_zip": "75201",
       "status_code": 90,
       "updated_at": "2026-07-06 13:00:00",
       "weight_kg": 10886.21688024085

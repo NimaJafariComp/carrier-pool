@@ -453,7 +453,7 @@ acceptance evidence has not yet been recorded.
   wrote the evaluation artifacts.
 - **Current decisioning:** `carrier-ranking-v5` is serving. On the current
   57-case / 30-scored-case deterministic ranking evaluation, v4, v5, and v6 had
-  the same ordering metrics: 66.67% top-1, 100% top-3, 0.806 MRR, and 12.28%
+  the same ordering metrics: 63.33% top-1, 93.33% top-3, 0.778 MRR, and 8.77%
   close ties. V5 is retained because it removes the v4 evidence-counting defect
   and score ceiling; v6 only widened margins.
 - **Safety and correctness:** database tests cover RLS, generic cross-tenant
@@ -469,7 +469,9 @@ acceptance evidence has not yet been recorded.
   source-appropriate schedule wording, and tenant-safe comparable-load labels are
   available in the demo. The optional geography view is bundled/offline and
   explicitly avoids live routing, traffic, or truck-location claims.
-- **Demo-history coverage:** authored completed work now yields 5, 8, and 8 Day 11
-  candidates for FreightFlow, HaulDesk, and BrokerOS, with 2, 2, and 3 supported
-  call-order candidates. The roster remains intentionally mixed with sparse and
-  unsupported histories; ranking safeguards were not relaxed.
+- **Demo-history coverage:** the generated roster is protected by regression checks:
+  FreightFlow, HaulDesk, and BrokerOS have 5, 6, and 7 historical candidates,
+  with at least 4, 5, and 5 supported call-order candidates respectively. Each
+  broker retains at most two intentionally thin or mismatched histories, and every
+  call-order group is larger than its “more history needed” group. Ranking
+  safeguards were not relaxed to manufacture eligibility.

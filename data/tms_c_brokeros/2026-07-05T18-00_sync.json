@@ -9,6 +9,45 @@
       "bos__Carrier__c": null,
       "bos__Customer_Rate__c": 1810,
       "bos__Customer__c": "0014DD806107C8FF73",
+      "bos__Distance_Miles__c": 237.9,
+      "bos__Equipment_Type__c": "Reefer",
+      "bos__Line_Items__r": [
+        {
+          "bos__Commodity__c": "General freight",
+          "bos__Pallet_Count__c": 18,
+          "bos__Weight_Units__c": "lbs",
+          "bos__Weight__c": 24000
+        }
+      ],
+      "bos__Load_Status__c": "Ready to Book",
+      "bos__Stops__r": [
+        {
+          "bos__Arrival_Time__c": null,
+          "bos__Is_Dropoff__c": false,
+          "bos__Is_Pickup__c": true,
+          "bos__Location__c": "001B982E8C6B92D48E",
+          "bos__Number__c": 1,
+          "bos__Scheduled_Date__c": "2026-07-07"
+        },
+        {
+          "bos__Arrival_Time__c": null,
+          "bos__Is_Dropoff__c": true,
+          "bos__Is_Pickup__c": false,
+          "bos__Location__c": "001AE19313D2600FCA",
+          "bos__Number__c": 2,
+          "bos__Scheduled_Date__c": "2026-07-08"
+        }
+      ]
+    },
+    {
+      "CreatedDate": "2026-07-05T18:00:00.000+0000",
+      "Id": "a0j40C948B5FCDCBAD",
+      "LastModifiedDate": "2026-07-05T18:00:00.000+0000",
+      "Name": "BO-2909",
+      "bos__Carrier_Rate__c": null,
+      "bos__Carrier__c": null,
+      "bos__Customer_Rate__c": 1545,
+      "bos__Customer__c": "0014DD806107C8FF73",
       "bos__Distance_Miles__c": 190.4,
       "bos__Equipment_Type__c": "Reefer",
       "bos__Line_Items__r": [
@@ -34,45 +73,6 @@
           "bos__Is_Dropoff__c": true,
           "bos__Is_Pickup__c": false,
           "bos__Location__c": "001A06FC7BDA751406",
-          "bos__Number__c": 2,
-          "bos__Scheduled_Date__c": "2026-07-08"
-        }
-      ]
-    },
-    {
-      "CreatedDate": "2026-07-05T18:00:00.000+0000",
-      "Id": "a0j40C948B5FCDCBAD",
-      "LastModifiedDate": "2026-07-05T18:00:00.000+0000",
-      "Name": "BO-2909",
-      "bos__Carrier_Rate__c": null,
-      "bos__Carrier__c": null,
-      "bos__Customer_Rate__c": 1545,
-      "bos__Customer__c": "0017F25C12B6C0E60C",
-      "bos__Distance_Miles__c": 275.6,
-      "bos__Equipment_Type__c": "Dry Van",
-      "bos__Line_Items__r": [
-        {
-          "bos__Commodity__c": "General freight",
-          "bos__Pallet_Count__c": 18,
-          "bos__Weight_Units__c": "lbs",
-          "bos__Weight__c": 24000
-        }
-      ],
-      "bos__Load_Status__c": "Ready to Book",
-      "bos__Stops__r": [
-        {
-          "bos__Arrival_Time__c": null,
-          "bos__Is_Dropoff__c": false,
-          "bos__Is_Pickup__c": true,
-          "bos__Location__c": "001AE19313D2600FCA",
-          "bos__Number__c": 1,
-          "bos__Scheduled_Date__c": "2026-07-07"
-        },
-        {
-          "bos__Arrival_Time__c": null,
-          "bos__Is_Dropoff__c": true,
-          "bos__Is_Pickup__c": false,
-          "bos__Location__c": "001599B950DA4A43ED",
           "bos__Number__c": 2,
           "bos__Scheduled_Date__c": "2026-07-08"
         }
@@ -123,13 +123,6 @@
       "Name": "Gulf Coast Foods",
       "record_type": "Customer",
       "type": "Account"
-    },
-    "001599B950DA4A43ED": {
-      "Name": "Dallas Facility",
-      "bos__City__c": "Dallas",
-      "bos__Postal_Code__c": "75201",
-      "bos__State__c": "TX",
-      "type": "Location"
     },
     "0017F25C12B6C0E60C": {
       "Name": "Bayou Retail",

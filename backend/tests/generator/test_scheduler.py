@@ -81,8 +81,52 @@ def test_anchor_catalog_represents_diverse_completed_carrier_history() -> None:
                 completed_carriers.setdefault(sync.tenant_id, set()).add(event.carrier_id)
 
     assert len(completed_carriers["ff-broker"]) >= 5
-    assert len(completed_carriers["hd-broker"]) >= 7
-    assert len(completed_carriers["bo-broker"]) == 8
+    assert len(completed_carriers["hd-broker"]) >= 6
+    assert len(completed_carriers["bo-broker"]) >= 7
+
+
+def test_day11_rosters_have_multiple_relevant_histories_and_small_limited_groups() -> None:
+    """Keep the demo roster useful without disguising genuinely thin history."""
+    catalog = build_catalog()
+    completed_equipment: dict[tuple[str, str, object], int] = {}
+    for sync in build_schedule(catalog):
+        if sync.sync_at >= DAY11_SYNC_AT:
+            continue
+        for event in sync.events:
+            if not (
+                isinstance(event, LifecycleEvent)
+                and event.status is LoadStatus.COMPLETED
+                and event.carrier_id is not None
+            ):
+                continue
+            load = catalog.load(event.load_id)
+            key = (sync.tenant_id, event.carrier_id, load.equipment)
+            completed_equipment[key] = completed_equipment.get(key, 0) + 1
+
+    # Five BrokerOS reefer carriers have relevant completed work for BO-9001;
+    # the remaining two rostered histories intentionally demonstrate thin or
+    # mismatched evidence.
+    brokeros_equipment = catalog.load("BO-9001").equipment
+    for carrier_id, minimum in {
+        "BO-C-601": 3,
+        "BO-C-602": 1,
+        "BO-C-603": 1,
+        "BO-C-605": 2,
+        "BO-C-606": 2,
+    }.items():
+        assert completed_equipment[("bo-broker", carrier_id, brokeros_equipment)] >= minimum
+
+    # Five HaulDesk dry-van carriers have two or more relevant observations for
+    # HD-9001; the rest retain deliberately limited/mismatched evidence.
+    hauldesk_equipment = catalog.load("HD-9001").equipment
+    for carrier_id, minimum in {
+        "HD-C-401": 3,
+        "HD-C-402": 2,
+        "HD-C-404": 2,
+        "HD-C-405": 2,
+        "HD-C-408": 2,
+    }.items():
+        assert completed_equipment[("hd-broker", carrier_id, hauldesk_equipment)] >= minimum
 
 
 def test_hauldesk_load_emits_one_booking_linehaul_not_status_adjustments() -> None:

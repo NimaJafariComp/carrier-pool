@@ -117,33 +117,33 @@ _ANCHOR_CARRIERS = {
     "FF-0904": "FF-C-201",
     "FF-0905": "FF-C-201",
     "FF-0906": "FF-C-201",
-    # Keep Lone Star's strong exact-lane history, but reserve two anchor slots for
-    # genuinely distinct FF candidates.  Catalog carrier diversity must be
+    # Keep Lone Star's strong exact-lane history, but reserve three anchor slots for
+    # genuinely distinct FF candidates. Catalog carrier diversity must be
     # represented by completed work, not just dormant carrier master records.
     "FF-0907": "FF-C-202",
-    "FF-0908": "FF-C-201",
-    "FF-0909": "FF-C-201",
+    "FF-0908": "FF-C-204",
+    "FF-0909": "FF-C-205",
     "FF-0990": "FF-C-201",
     "HD-1901": "HD-C-401",
     "HD-1902": "HD-C-401",
     "HD-1903": "HD-C-401",
     "HD-1904": "HD-C-404",
     "HD-1905": "HD-C-405",
-    "HD-1906": "HD-C-402",
-    "HD-1907": "HD-C-407",
-    "HD-1908": "HD-C-403",
+    "HD-1906": "HD-C-405",
+    "HD-1907": "HD-C-402",
+    "HD-1908": "HD-C-402",
     "HD-1909": "HD-C-408",
-    "HD-1910": "HD-C-206",
+    "HD-1910": "HD-C-408",
     "BO-2901": "BO-C-601",
     "BO-2902": "BO-C-601",
     "BO-2903": "BO-C-601",
     "BO-2904": "BO-C-602",
     "BO-2905": "BO-C-603",
     "BO-2906": "BO-C-605",
-    "BO-2907": "BO-C-606",
-    "BO-2908": "BO-C-607",
-    "BO-2909": "BO-C-608",
-    "BO-2910": "BO-C-604",
+    "BO-2907": "BO-C-605",
+    "BO-2908": "BO-C-606",
+    "BO-2909": "BO-C-606",
+    "BO-2910": "BO-C-607",
 }
 
 # Keep the two delivery-proximity examples intentionally distinct: Heritage finishes

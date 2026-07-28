@@ -44,7 +44,7 @@ def explain_rankings(
             bullets.append("Target equipment is unknown, so equipment-fit confidence is limited.")
         if item.effective_history < 4:
             warnings.append("SPARSE_HISTORY_SHRINKAGE")
-            bullets.append("Limited completed history pulls the score toward a neutral prior.")
+            bullets.append("Limited history, so this score stays close to neutral.")
         result.append(
             RankedCarrierExplanation(
                 rank,

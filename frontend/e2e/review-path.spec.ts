@@ -97,7 +97,7 @@ function decision(loadData: typeof exactLoad, sparse = false) {
         },
         reason_codes: sparse ? ["SPARSE_HISTORY_SHRINKAGE", "DEADHEAD_LOCATION_UNAVAILABLE"] : [],
         explanation_bullets: sparse
-          ? ["Limited completed history pulls the score toward a neutral prior."]
+          ? ["Limited history, so this score stays close to neutral."]
           : ["Last known delivery was 18 miles from pickup 2 days earlier."],
         evidence_ids: [sparse ? "hd-history-version" : "ff-history-version"],
         evidence_status: "SUPPORTED",

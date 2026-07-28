@@ -607,7 +607,7 @@ describe("App", () => {
           component_scores: { lane: "0.3", equipment: "0.5", deadhead: "0", recency: "0.2" },
           reason_codes: ["SPARSE_HISTORY_SHRINKAGE", "DEADHEAD_LOCATION_UNAVAILABLE"],
           explanation_bullets: [
-            "Limited completed history pulls the score toward a neutral prior.",
+            "Limited history, so this score stays close to neutral.",
           ],
           evidence_ids: [],
           evidence_status: "SUPPORTED",

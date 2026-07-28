@@ -12,6 +12,14 @@ It is not an automated dispatcher. It does not claim a carrier is available,
 likely to accept, reliable, or optimal. Historical delivery proximity is evidence
 about a past delivery, not live truck location.
 
+## Stack
+
+- **Backend:** Python 3.13, FastAPI, Pydantic v2, SQLAlchemy 2, Alembic, and Psycopg 3
+- **Database:** PostgreSQL with `NUMERIC`, JSONB audit data, and row-level security
+- **Frontend:** React, TypeScript, Vite, TanStack Query, generated OpenAPI types, and plain CSS
+- **Data and geography:** deterministic Python generator, bundled Texas ZIP centroids, and Haversine distance
+- **Delivery and quality:** Docker Compose, Make, `uv`, pnpm, pytest, Ruff, Pyright, Vitest, and Playwright
+
 ## Review this project
 
 ### Prerequisites
@@ -33,6 +41,16 @@ make demo
 `carrier_pool_demo` database, generates and validates the deterministic source data,
 applies migrations, seeds the demo brokers, ingests every sync chronologically,
 persists the Day 11 decisions, builds the containers, and starts the services.
+
+### How commands use Docker
+
+The runnable demo stack is Docker Compose: PostgreSQL, migrations, FastAPI, and
+the frontend are started by `make demo`. `make db-up` starts only PostgreSQL, and
+`make down` stops the Compose stack without removing its volumes or generated data.
+
+Data generation, validation, API-type export, linting, type checks, and most tests
+run locally through `uv` and `pnpm`. Commands that need PostgreSQL, such as
+`make test-integration`, use the Docker database started by `make db-up`.
 
 Open:
 

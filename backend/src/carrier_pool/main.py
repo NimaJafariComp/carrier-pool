@@ -1,7 +1,7 @@
 """Tenant-scoped FastAPI transport for persisted Carrier Pool decisions."""
 
 import os
-from collections.abc import Generator
+from collections.abc import Generator, Iterable, Sequence
 from typing import Any, cast
 from uuid import UUID
 
@@ -20,7 +20,7 @@ from carrier_pool.db.models import (
     Tenant,
 )
 from carrier_pool.db.tenant import set_tenant_context
-from carrier_pool.demo import DEMO_TENANT_SLUGS
+from carrier_pool.demo import DEMO_TENANT_IDS, DEMO_TENANT_SLUGS
 from carrier_pool.domain.types import LoadStatus
 
 
@@ -137,11 +137,16 @@ def database_session() -> Generator[Session]:
 
 
 def tenant_context(x_tenant_id: str | None = Header(default=None)) -> UUID:
-    """Accept only explicit UUID demo tenant context."""
+    """Accept only one server-authored demo broker binding."""
     try:
-        return UUID(x_tenant_id) if x_tenant_id is not None else (_ for _ in ()).throw(ValueError)
+        tenant_id = (
+            UUID(x_tenant_id) if x_tenant_id is not None else (_ for _ in ()).throw(ValueError)
+        )
     except ValueError as error:
         raise HTTPException(status_code=400, detail="Invalid tenant context.") from error
+    if tenant_id not in DEMO_TENANT_IDS:
+        raise HTTPException(status_code=400, detail="Invalid tenant context.")
+    return tenant_id
 
 
 @app.get("/health", response_model=HealthResponse, tags=["health"])
@@ -240,6 +245,9 @@ def get_decision(
         raise HTTPException(status_code=404, detail="Load not found.")
     warnings = list(pricing.get("warnings", []))
     ranking_evidence = decision.evidence_summary.get("ranking_evidence", {})
+    evidence_version_ids = _tenant_evidence_version_ids(
+        session, tenant_id, decision, recommendations
+    )
     return DecisionResponse(
         load=_load_response(session, tenant_id, load),
         as_of=decision.as_of.isoformat(),
@@ -249,13 +257,19 @@ def get_decision(
         pricing=PricingResponse(**pricing),
         confidence=ConfidenceResponse(**decision.confidence),
         ranked_carriers=[
-            _ranked_carrier_response(item, carriers[item.carrier_id], ranking_evidence)
+            _ranked_carrier_response(
+                item,
+                carriers[item.carrier_id],
+                ranking_evidence,
+                evidence_version_ids,
+            )
             for item in recommendations
         ],
         comparable_loads=[
             _comparable_load_response(cast(dict[str, object], entry))
             for entry in cast(list[object], decision.evidence_summary.get("comparable_loads", []))
             if isinstance(entry, dict)
+            and _has_tenant_evidence(cast(dict[str, object], entry), evidence_version_ids)
         ],
         warnings=warnings,
     )
@@ -265,6 +279,7 @@ def _ranked_carrier_response(
     recommendation: CarrierRecommendation,
     carrier: Carrier,
     ranking_evidence: object,
+    evidence_version_ids: set[str],
 ) -> RankedCarrierResponse:
     raw_evidence = (
         cast(dict[str, Any], ranking_evidence) if isinstance(ranking_evidence, dict) else {}
@@ -294,7 +309,11 @@ def _ranked_carrier_response(
             [item for item in bullets if isinstance(item, str)]
             or [_reason_bullet(code) for code in recommendation.explanation_reason_codes]
         ),
-        evidence_ids=recommendation.evidence_ids,
+        evidence_ids=[
+            evidence_id
+            for evidence_id in recommendation.evidence_ids
+            if evidence_id in evidence_version_ids
+        ],
         evidence_status=status if isinstance(status, str) else "SUPPORTED",
         tie_group=tie_group if isinstance(tie_group, int) else None,
         evidence_by_component={
@@ -302,11 +321,79 @@ def _ranked_carrier_response(
                 _evidence_load_response(cast(dict[str, object], entry))
                 for entry in cast(list[object], values)
                 if isinstance(entry, dict)
+                and _has_tenant_evidence(cast(dict[str, object], entry), evidence_version_ids)
             ]
             for key, values in components.items()
             if isinstance(values, list)
         },
     )
+
+
+def _tenant_evidence_version_ids(
+    session: Session,
+    tenant_id: UUID,
+    decision: DecisionRun,
+    recommendations: Sequence[CarrierRecommendation],
+) -> set[str]:
+    """Authorize opaque stored evidence against tenant-local immutable versions.
+
+    RLS protects the decision row itself, but JSONB fields are not relational
+    foreign keys. Treat malformed, legacy, or cross-tenant embedded references as
+    unavailable rather than serializing their descriptive fields.
+    """
+    candidates: set[UUID] = set()
+    for recommendation in recommendations:
+        candidates.update(_uuid_values(recommendation.evidence_ids))
+    summary = cast(dict[str, object], decision.evidence_summary)
+    comparable_loads = summary.get("comparable_loads", [])
+    if isinstance(comparable_loads, list):
+        for entry in cast(list[object], comparable_loads):
+            if isinstance(entry, dict):
+                typed_entry = cast(dict[str, object], entry)
+                candidates.update(_uuid_values([typed_entry.get("load_version_id")]))
+    ranking_evidence = summary.get("ranking_evidence", {})
+    if isinstance(ranking_evidence, dict):
+        typed_ranking_evidence = cast(dict[str, object], ranking_evidence)
+        for carrier_evidence in typed_ranking_evidence.values():
+            if not isinstance(carrier_evidence, dict):
+                continue
+            components = cast(dict[str, object], carrier_evidence).get("components", {})
+            if not isinstance(components, dict):
+                continue
+            for entries in cast(dict[str, object], components).values():
+                if isinstance(entries, list):
+                    for entry in cast(list[object], entries):
+                        if isinstance(entry, dict):
+                            typed_entry = cast(dict[str, object], entry)
+                            candidates.update(_uuid_values([typed_entry.get("load_version_id")]))
+    if not candidates:
+        return set()
+    return {
+        str(version_id)
+        for version_id in session.scalars(
+            select(LoadVersion.id).where(
+                LoadVersion.tenant_id == tenant_id,
+                LoadVersion.id.in_(candidates),
+            )
+        ).all()
+    }
+
+
+def _uuid_values(values: Iterable[object]) -> set[UUID]:
+    result: set[UUID] = set()
+    for value in values:
+        if not isinstance(value, str):
+            continue
+        try:
+            result.add(UUID(value))
+        except ValueError:
+            continue
+    return result
+
+
+def _has_tenant_evidence(entry: dict[str, object], evidence_version_ids: set[str]) -> bool:
+    version_id = entry.get("load_version_id")
+    return isinstance(version_id, str) and version_id in evidence_version_ids
 
 
 def _evidence_load_response(entry: dict[str, object]) -> EvidenceLoadResponse:

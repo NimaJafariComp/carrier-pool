@@ -368,15 +368,89 @@ acceptance evidence has not yet been recorded.
   sparse fallback/low-confidence messaging, tenant-switch cache isolation, and
   identical generic `404` responses for cross-tenant and unknown load IDs.
 
-## Phases 13–16 — Not started
+## Phase 13 — Tenancy, corrections, and historical hardening — In progress
+
+- **Task 13.1 complete:** completed the tenant-scope audit across the tenant-owned
+  schema, RLS policy, ORM/repository queries, API routes, feature/decision paths,
+  frontend cache keys, and evidence payloads. Forced RLS remains mandatory defense
+  in depth. The demo header now admits only server-authored broker bindings.
+  Decision JSONB evidence is re-authorized against tenant-local immutable load
+  versions before it can be serialized; foreign or malformed embedded evidence
+  fails closed. Pricing's internal target-version lookup is explicitly tenant-scoped.
+  Direct SQL and API regression coverage verifies the boundary.
+- **Task 13.2 complete:** the production estimator and ranker serialize Tenant B's
+  Day 11 answer before and after a valid, pre-cutoff Tenant A completed load is
+  inserted; the bytes are identical. Direct SQL confirms the non-owner app role
+  cannot select, update, or delete Tenant B rows under Tenant A context. API tests
+  keep other-tenant load IDs generic-not-found and exclude foreign carrier/evidence
+  IDs. Matching MC/DOT values create distinct tenant-local carrier rows.
+- **Task 13.3 complete:** generated-scenario integration coverage proves
+  FreightFlow and BrokerOS replacement corrections create immutable new versions and
+  update current projections; HaulDesk's ledger adjustment is applied exactly once
+  across re-ingestion; a late correction changes Day 11 rate evidence without
+  changing an earlier persisted decision; historical backtests retain the correction
+  only as a later label; and rebuild reproduces corrected projection state.
+  `make correction-demo` runs this concise proof.
+- **Task 13.4 complete:** temporal-data audit traced comparable retrieval, pricing,
+  carrier features/ranking, decision persistence, and both backtest harnesses.
+  Historical model paths use immutable `LoadVersion`/`SourceRateEntry` facts at or
+  before `as_of`; current projections are used only to enumerate eventual evaluation
+  labels or serve current API state. Pricing and decision-evidence rehydration now
+  repeat the cutoff predicate rather than relying solely on upstream evidence
+  invariants. Regression coverage inserts future carrier assignment, replacement
+  rate, and correction versions before an earlier cutoff and proves they cannot enter
+  historical comparables, estimates, rankings, persisted evidence, or backtests.
+
+### Phase 13 gate — Complete
+
+- Automated API/service, direct-SQL RLS, prediction-invariance, generated-correction,
+  and temporal-leakage integration coverage passes together. It proves tenant-local
+  present state and historical reconstruction remain isolated and correction-safe.
+
+## Phases 14–16 — Not started
 
 - Phase 11: persisted decisions and complete API.
-- Phase 13: tenancy/correction/historical hardening.
 - Phase 14: reproducibility, operations, and CI completion.
 - Phase 15: documentation and review preparation.
 - Phase 16: optional shared carrier pool.
 
-## Latest verification — 2026-07-27
+## Latest verification — 2026-07-28
+
+- Phase 13.1 tenant-boundary audit: focused Ruff and Pyright pass. Tenant-header,
+  PostgreSQL API-contract, and direct-SQL RLS coverage: `7 passed`. The new
+  regression persists a deliberately malformed decision payload containing another
+  tenant's immutable evidence ID and verifies the API omits its ID, route, and rate
+  rather than serializing the embedded JSONB fields.
+- Phase 13.2 prediction-invariance coverage: API-contract, direct-SQL RLS, and
+  catalog tests: `15 passed`. This includes
+  `test_broker_a_history_never_changes_broker_b_prediction`, byte-for-byte
+  serialization before/after added Tenant A history, direct cross-tenant update and
+  delete denial, generic cross-tenant load/carrier not-found behavior, foreign
+  carrier/evidence exclusion, and distinct records for intentionally matching
+  MC/DOT values.
+- Phase 13.3 generated-correction proof: `make correction-demo` migrates the
+  local database and passes `2` focused integration tests. It verifies FreightFlow
+  and BrokerOS replacement totals, one-time HaulDesk ledger adjustment totals, a
+  late correction changing Day 11 rate evidence, immutable earlier decision output,
+  cutoff-safe backtest evidence, and corrected projection rebuild parity.
+- **Task 13.3 complete:** generated-scenario integration coverage now proves
+  FreightFlow and BrokerOS replacement corrections create immutable new versions and
+  update their current projections; HaulDesk's positive ledger adjustment is applied
+  exactly once across re-ingestion; a late FreightFlow correction changes Day 11
+  historical-rate evidence while an earlier persisted decision remains byte-stable;
+  the historical backtest keeps the correction as a later label rather than an input;
+  and rebuild reproduces the corrected current projection hash. `make correction-demo`
+  runs this concise proof.
+- Phase 13.4 temporal-leakage audit: focused Ruff/Pyright pass; decisioning,
+  comparable-retrieval, generated-correction, and new temporal-leakage integration
+  coverage: `47 passed`. The regression retains a future-assigned carrier and a
+  future replacement rate/correction in the database, but every Day 5 model input
+  and persisted decision uses only the Day 4 completed version.
+- Phase 13 gate: API contract/prediction invariance, direct-SQL RLS, generated
+  corrections, and temporal-leakage suite: `12 passed`. Ruff passes for all gate
+  files. The combined Pyright command reports pre-existing test-only unknown-type
+  diagnostics in `test_api_contract_integration.py`; source and new temporal test
+  Pyright checks pass, and this does not affect the passing gate behavior.
 
 - Ranking honesty correction: `carrier-ranking-v4` preserves unavailable
   components as `null`, uses tier-accurate rather than blanket directional language,

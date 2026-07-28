@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
 import pytest
-from sqlalchemy import create_engine, delete, select
+from sqlalchemy import create_engine, delete, select, update
 from sqlalchemy.orm import Session
 
 from carrier_pool.db.models import Customer, Tenant
@@ -79,6 +79,14 @@ def test_app_role_rls_blocks_cross_tenant_direct_sql() -> None:
                 assert (
                     app_session.execute(
                         delete(Customer).where(Customer.tenant_id == tenant_b_id)
+                    ).rowcount
+                    == 0
+                )
+                assert (
+                    app_session.execute(
+                        update(Customer)
+                        .where(Customer.tenant_id == tenant_b_id)
+                        .values(name="must-not-update")
                     ).rowcount
                     == 0
                 )

@@ -5,7 +5,7 @@ FREIGHTFLOW_TENANT_ID ?= 11111111-1111-4111-8111-111111111111
 HAULDESK_TENANT_ID ?= 22222222-2222-4222-8222-222222222222
 BROKEROS_TENANT_ID ?= 33333333-3333-4333-8333-333333333333
 
-.PHONY: setup generate validate migrate seed-demo-tenants ingest decisions demo-reset demo rebuild-projections backtest api-types api-types-check format format-check lint typecheck test-unit test-integration build db-up down check
+.PHONY: setup generate validate migrate seed-demo-tenants ingest decisions demo-reset demo correction-demo rebuild-projections backtest api-types api-types-check format format-check lint typecheck test-unit test-integration build db-up down check
 
 setup:
 	cd backend && uv sync --all-groups
@@ -41,6 +41,9 @@ demo: demo-reset generate validate
 	cd backend && DATABASE_URL="$(DEMO_DATABASE_URL)" uv run carrier-pool decide-active
 	APP_DATABASE_NAME="$(DEMO_DATABASE_NAME)" docker compose --env-file .env.example up --detach --build backend frontend
 	@echo "Carrier Pool demo: http://localhost:5173"
+
+correction-demo: migrate
+	cd backend && DATABASE_URL="$(DATABASE_URL)" uv run pytest -q tests/ingestion/test_generated_corrections_integration.py
 
 rebuild-projections:
 	test -n "$(TENANT_ID)"

@@ -83,10 +83,11 @@ class DecisionRunService:
         features = self._features.retrieve(session, tenant_id, load_id, input_version.id, as_of)
         rankings = self._scorer.score(features)
         explanations = explain_rankings(rankings, features)
-        ranking_evidence = _ranking_evidence(session, tenant_id, features, explanations)
-        comparable_loads = _pricing_evidence(session, tenant_id, estimate)
+        ranking_evidence = _ranking_evidence(session, tenant_id, features, explanations, as_of)
+        comparable_loads = _pricing_evidence(session, tenant_id, estimate, as_of)
         parameters = {
             "identity_rule": IDENTITY_RULE,
+            "evidence_schema_version": "2",
             "ranking": {
                 "component_weights": {
                     "lane": "0.4",
@@ -285,6 +286,7 @@ def _ranking_evidence(
     tenant_id: UUID,
     features: tuple[CarrierFeatureSet, ...],
     explanations: tuple[RankedCarrierExplanation, ...],
+    as_of: datetime,
 ) -> dict[str, dict[str, Any]]:
     """Persist readable, component-scoped tenant-local evidence with each decision."""
     by_carrier = {item.carrier_external_id: item for item in features}
@@ -306,7 +308,9 @@ def _ranking_evidence(
         version.id: version
         for version in session.scalars(
             select(LoadVersion).where(
-                LoadVersion.tenant_id == tenant_id, LoadVersion.id.in_(version_ids)
+                LoadVersion.tenant_id == tenant_id,
+                LoadVersion.id.in_(version_ids),
+                LoadVersion.observed_at <= as_of,
             )
         ).all()
     }
@@ -353,7 +357,7 @@ def _ranking_evidence(
 
 
 def _pricing_evidence(
-    session: Session, tenant_id: UUID, estimate: RateEstimate
+    session: Session, tenant_id: UUID, estimate: RateEstimate, as_of: datetime
 ) -> list[dict[str, Any]]:
     """Persist readable, tenant-local rate-comparison evidence in one batch."""
     version_ids = tuple(item.load_version_id for item in estimate.comparables)
@@ -361,7 +365,9 @@ def _pricing_evidence(
         version.id: version
         for version in session.scalars(
             select(LoadVersion).where(
-                LoadVersion.tenant_id == tenant_id, LoadVersion.id.in_(version_ids)
+                LoadVersion.tenant_id == tenant_id,
+                LoadVersion.id.in_(version_ids),
+                LoadVersion.observed_at <= as_of,
             )
         ).all()
     }
@@ -420,6 +426,10 @@ def _evidence_summary(
                     locations.append(f"{city.title()}, {state}")
     external_id = snapshot.get("external_id")
     result: dict[str, object] = {
+        # Keep the immutable version identifier in the persisted audit payload so
+        # the API can re-authorize this human-readable summary at read time.
+        # It is deliberately not part of the public response schema.
+        "load_version_id": str(version.id),
         # A missing source ID should be visibly incomplete, not fall back to a database UUID.
         "load_external_id": external_id if isinstance(external_id, str) else "Historical load",
         "route": (

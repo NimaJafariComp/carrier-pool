@@ -108,6 +108,16 @@ decisions, and starts the API/UI. The demo selector exposes only those three bro
 bindings. Open `http://localhost:5173` and choose a broker. Re-running the command
 recreates the same deterministic demo state.
 
+To run the focused correction proof against fresh generated scenarios:
+
+```bash
+make correction-demo
+```
+
+It verifies FreightFlow and BrokerOS replacement snapshots, HaulDesk's append-only
+adjustment semantics, immutable earlier decisions/backtests, a changed later Day 11
+estimate, and projection rebuild parity.
+
 ## Constraints (the few we do impose)
 
 **Starting point**

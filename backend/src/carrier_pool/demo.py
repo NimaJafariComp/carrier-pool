@@ -41,6 +41,7 @@ DEMO_TENANTS: tuple[DemoTenant, ...] = (
     ),
 )
 DEMO_TENANT_SLUGS = tuple(tenant.slug for tenant in DEMO_TENANTS)
+DEMO_TENANT_IDS = frozenset(tenant.id for tenant in DEMO_TENANTS)
 
 
 def seed_demo_tenants(session: Session) -> tuple[DemoTenant, ...]:

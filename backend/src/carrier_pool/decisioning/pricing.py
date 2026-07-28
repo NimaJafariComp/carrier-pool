@@ -176,7 +176,13 @@ class HierarchicalRateEstimator:
     def _comparables_by_tier(
         self, session: Session, tenant_id: UUID, target: PricingTarget, as_of: datetime
     ) -> dict[LaneTier, tuple[ComparableLoadEvidence, ...]]:
-        row = session.scalar(select(LoadVersion.load_id).where(LoadVersion.id == target.version_id))
+        row = session.scalar(
+            select(LoadVersion.load_id).where(
+                LoadVersion.tenant_id == tenant_id,
+                LoadVersion.id == target.version_id,
+                LoadVersion.observed_at <= as_of,
+            )
+        )
         if row is None:
             raise LookupError("target load version not found.")
         return self._comparable_repository.retrieve_by_tier(
@@ -197,7 +203,11 @@ class HierarchicalRateEstimator:
         rows = session.execute(
             select(LoadVersion, Load.source_system)
             .join(Load, Load.id == LoadVersion.load_id)
-            .where(LoadVersion.tenant_id == tenant_id, LoadVersion.id.in_(version_ids))
+            .where(
+                LoadVersion.tenant_id == tenant_id,
+                LoadVersion.id.in_(version_ids),
+                LoadVersion.observed_at <= as_of,
+            )
         ).all()
         result: dict[UUID, tuple[Decimal, tuple[str, ...]]] = {}
         hauldesk_load_ids: set[UUID] = set()
@@ -213,8 +223,7 @@ class HierarchicalRateEstimator:
         if not hauldesk_load_ids:
             return result
         ledger_rows = session.execute(
-            select(SourceRateEntry.load_id, SourceRateEntry.id, SourceRateEntry.amount)
-            .where(
+            select(SourceRateEntry.load_id, SourceRateEntry.id, SourceRateEntry.amount).where(
                 SourceRateEntry.tenant_id == tenant_id,
                 SourceRateEntry.source_system == SourceSystem.HAULDESK,
                 SourceRateEntry.side == FinancialSide.PAY,
@@ -363,9 +372,13 @@ def _confidence(
         len(local.comparables)
     )
     total_weight = sum((item.weight for item in local.comparables), Decimal(0))
-    age = sum(
-        (item.weight * Decimal(str(item.recency_days)) for item in local.comparables), Decimal(0)
-    ) / total_weight
+    age = (
+        sum(
+            (item.weight * Decimal(str(item.recency_days)) for item in local.comparables),
+            Decimal(0),
+        )
+        / total_weight
+    )
     recency = _decay(age, Decimal(30))
     dispersion = Decimal(1) - min(
         Decimal(1), (resolved.upper - resolved.lower) / max(resolved.point, Decimal(1))

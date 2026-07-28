@@ -4,470 +4,510 @@
  */
 
 export interface paths {
-    "/api/v1/loads": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List Loads
-         * @description List only caller-tenant current load projections, ACTIVE by default.
-         */
-        get: operations["list_loads_api_v1_loads_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+  "/api/v1/loads": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/loads/{load_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Load
-         * @description Return current tenant-owned load; hide cross-tenant existence.
-         */
-        get: operations["get_load_api_v1_loads__load_id__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * List Loads
+     * @description List only caller-tenant current load projections, ACTIVE by default.
+     */
+    get: operations["list_loads_api_v1_loads_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/loads/{load_id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/loads/{load_id}/decision": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Decision
-         * @description Return latest persisted decision for current ACTIVE input, never recompute implicitly.
-         */
-        get: operations["get_decision_api_v1_loads__load_id__decision_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get Load
+     * @description Return current tenant-owned load; hide cross-tenant existence.
+     */
+    get: operations["get_load_api_v1_loads__load_id__get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/loads/{load_id}/decision": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/tenants": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * List Tenants
-         * @description Return safe public fictional-broker fields for demo selection.
-         */
-        get: operations["list_tenants_api_v1_tenants_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get Decision
+     * @description Return latest persisted decision for current ACTIVE input, never recompute implicitly.
+     */
+    get: operations["get_decision_api_v1_loads__load_id__decision_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/api/v1/tenants": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/health": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Health */
-        get: operations["health_health_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * List Tenants
+     * @description Return safe public fictional-broker fields for demo selection.
+     */
+    get: operations["list_tenants_api_v1_tenants_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/health": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    /** Health */
+    get: operations["health_health_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/ready": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Ready
+     * @description Report readiness only when the app-role database connection succeeds.
+     */
+    get: operations["ready_ready_get"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: {
-        /**
-         * ComparableLoadResponse
-         * @description Safe, readable rate-comparison evidence for one tenant-owned load.
-         */
-        ComparableLoadResponse: {
-            /** Carrier Rate Usd */
-            carrier_rate_usd?: string | null;
-            /** Completed Observed At */
-            completed_observed_at?: string | null;
-            /** Destination Distance Miles */
-            destination_distance_miles?: number | null;
-            /** Distance Miles */
-            distance_miles?: string | null;
-            /** Equipment */
-            equipment?: string | null;
-            /** Load External Id */
-            load_external_id: string;
-            /** Origin Distance Miles */
-            origin_distance_miles?: number | null;
-            /** Recency Days */
-            recency_days?: number | null;
-            /** Route */
-            route: string;
-            /** Route Mile Difference */
-            route_mile_difference?: string | null;
-            /** Tier */
-            tier?: string | null;
-        };
-        /** ConfidenceResponse */
-        ConfidenceResponse: {
-            /** Components */
-            components: {
-                [key: string]: string;
-            };
-            /** Level */
-            level: string;
-            /** Score */
-            score: string;
-        };
-        /** DecisionResponse */
-        DecisionResponse: {
-            /** As Of */
-            as_of: string;
-            /** Comparable Loads */
-            comparable_loads: components["schemas"]["ComparableLoadResponse"][];
-            confidence: components["schemas"]["ConfidenceResponse"];
-            load: components["schemas"]["LoadResponse"];
-            /** Model Parameters */
-            model_parameters: {
-                [key: string]: unknown;
-            };
-            pricing: components["schemas"]["PricingResponse"];
-            /** Pricing Model Version */
-            pricing_model_version: string;
-            /** Ranked Carriers */
-            ranked_carriers: components["schemas"]["RankedCarrierResponse"][];
-            /** Ranking Model Version */
-            ranking_model_version: string;
-            /** Warnings */
-            warnings: string[];
-        };
-        /**
-         * EvidenceLoadResponse
-         * @description A human-readable, tenant-local completed-load reference.
-         */
-        EvidenceLoadResponse: {
-            /** Completed Observed At */
-            completed_observed_at?: string | null;
-            /** Destination Distance Miles */
-            destination_distance_miles?: number | null;
-            /** Distance Miles */
-            distance_miles?: string | null;
-            /** Equipment */
-            equipment?: string | null;
-            /** Load External Id */
-            load_external_id: string;
-            /** Origin Distance Miles */
-            origin_distance_miles?: number | null;
-            /** Route */
-            route: string;
-            /** Tier */
-            tier?: string | null;
-        };
-        /** HTTPValidationError */
-        HTTPValidationError: {
-            /** Detail */
-            detail?: components["schemas"]["ValidationError"][];
-        };
-        /** HealthResponse */
-        HealthResponse: {
-            /** Status */
-            status: string;
-        };
-        /** LoadResponse */
-        LoadResponse: {
-            /** Confidence */
-            confidence: string | null;
-            /** Distance Miles */
-            distance_miles: string | null;
-            /** Equipment */
-            equipment: string | null;
-            /** Expected Rate Usd */
-            expected_rate_usd: string | null;
-            /** External Id */
-            external_id: string;
-            /** Id */
-            id: string;
-            /** Observed At */
-            observed_at: string;
-            /** Status */
-            status: string;
-            /** Stops */
-            stops: components["schemas"]["StopResponse"][];
-        };
-        /**
-         * LoadStatus
-         * @description Canonical lifecycle states for a freight load.
-         * @enum {string}
-         */
-        LoadStatus: "PLANNED" | "ACTIVE" | "COVERED" | "IN_TRANSIT" | "DELIVERED" | "COMPLETED";
-        /** PricingResponse */
-        PricingResponse: {
-            /** Blend Local Weight */
-            blend_local_weight: string | null;
-            /** Broader Tier */
-            broader_tier: string | null;
-            /** Currency */
-            currency: string;
-            /** Effective Evidence Count */
-            effective_evidence_count: string;
-            /** Historical Comparison Lower Usd */
-            historical_comparison_lower_usd: string | null;
-            /** Historical Comparison Upper Usd */
-            historical_comparison_upper_usd: string | null;
-            /** Local Tier */
-            local_tier: string | null;
-            /** Point Estimate Usd */
-            point_estimate_usd: string | null;
-            /** Raw Evidence Count */
-            raw_evidence_count: number;
-            /** Warnings */
-            warnings: string[];
-        };
-        /** RankedCarrierResponse */
-        RankedCarrierResponse: {
-            /** Adjusted Score */
-            adjusted_score: string;
-            /** Carrier Id */
-            carrier_id: string;
-            /** Carrier Name */
-            carrier_name: string;
-            /** Component Scores */
-            component_scores: {
-                [key: string]: string | null;
-            };
-            /** Confidence Score */
-            confidence_score: string;
-            /** Evidence By Component */
-            evidence_by_component: {
-                [key: string]: components["schemas"]["EvidenceLoadResponse"][];
-            };
-            /** Evidence Ids */
-            evidence_ids: string[];
-            /** Evidence Status */
-            evidence_status: string;
-            /** Explanation Bullets */
-            explanation_bullets: string[];
-            /** Rank */
-            rank: number;
-            /** Reason Codes */
-            reason_codes: string[];
-            /** Tie Group */
-            tie_group: number | null;
-        };
-        /** StopResponse */
-        StopResponse: {
-            /** City */
-            city: string;
-            /** Is Dropoff */
-            is_dropoff: boolean;
-            /** Is Pickup */
-            is_pickup: boolean;
-            /** Planned Date */
-            planned_date: string | null;
-            /** Postal Code */
-            postal_code: string;
-            /** Scheduled Start At */
-            scheduled_start_at: string | null;
-            /** Sequence */
-            sequence: number;
-            /** State */
-            state: string;
-        };
-        /** TenantResponse */
-        TenantResponse: {
-            /** Id */
-            id: string;
-            /** Name */
-            name: string;
-            /** Slug */
-            slug: string;
-            /** Source System */
-            source_system: string;
-        };
-        /** ValidationError */
-        ValidationError: {
-            /** Context */
-            ctx?: Record<string, never>;
-            /** Input */
-            input?: unknown;
-            /** Location */
-            loc: (string | number)[];
-            /** Message */
-            msg: string;
-            /** Error Type */
-            type: string;
-        };
+  schemas: {
+    /**
+     * ComparableLoadResponse
+     * @description Safe, readable rate-comparison evidence for one tenant-owned load.
+     */
+    ComparableLoadResponse: {
+      /** Carrier Rate Usd */
+      carrier_rate_usd?: string | null;
+      /** Completed Observed At */
+      completed_observed_at?: string | null;
+      /** Destination Distance Miles */
+      destination_distance_miles?: number | null;
+      /** Distance Miles */
+      distance_miles?: string | null;
+      /** Equipment */
+      equipment?: string | null;
+      /** Load External Id */
+      load_external_id: string;
+      /** Origin Distance Miles */
+      origin_distance_miles?: number | null;
+      /** Recency Days */
+      recency_days?: number | null;
+      /** Route */
+      route: string;
+      /** Route Mile Difference */
+      route_mile_difference?: string | null;
+      /** Tier */
+      tier?: string | null;
     };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    /** ConfidenceResponse */
+    ConfidenceResponse: {
+      /** Components */
+      components: {
+        [key: string]: string;
+      };
+      /** Level */
+      level: string;
+      /** Score */
+      score: string;
+    };
+    /** DecisionResponse */
+    DecisionResponse: {
+      /** As Of */
+      as_of: string;
+      /** Comparable Loads */
+      comparable_loads: components["schemas"]["ComparableLoadResponse"][];
+      confidence: components["schemas"]["ConfidenceResponse"];
+      load: components["schemas"]["LoadResponse"];
+      /** Model Parameters */
+      model_parameters: {
+        [key: string]: unknown;
+      };
+      pricing: components["schemas"]["PricingResponse"];
+      /** Pricing Model Version */
+      pricing_model_version: string;
+      /** Ranked Carriers */
+      ranked_carriers: components["schemas"]["RankedCarrierResponse"][];
+      /** Ranking Model Version */
+      ranking_model_version: string;
+      /** Warnings */
+      warnings: string[];
+    };
+    /**
+     * EvidenceLoadResponse
+     * @description A human-readable, tenant-local completed-load reference.
+     */
+    EvidenceLoadResponse: {
+      /** Completed Observed At */
+      completed_observed_at?: string | null;
+      /** Destination Distance Miles */
+      destination_distance_miles?: number | null;
+      /** Distance Miles */
+      distance_miles?: string | null;
+      /** Equipment */
+      equipment?: string | null;
+      /** Load External Id */
+      load_external_id: string;
+      /** Origin Distance Miles */
+      origin_distance_miles?: number | null;
+      /** Route */
+      route: string;
+      /** Tier */
+      tier?: string | null;
+    };
+    /** HTTPValidationError */
+    HTTPValidationError: {
+      /** Detail */
+      detail?: components["schemas"]["ValidationError"][];
+    };
+    /** HealthResponse */
+    HealthResponse: {
+      /** Status */
+      status: string;
+    };
+    /** LoadResponse */
+    LoadResponse: {
+      /** Confidence */
+      confidence: string | null;
+      /** Distance Miles */
+      distance_miles: string | null;
+      /** Equipment */
+      equipment: string | null;
+      /** Expected Rate Usd */
+      expected_rate_usd: string | null;
+      /** External Id */
+      external_id: string;
+      /** Id */
+      id: string;
+      /** Observed At */
+      observed_at: string;
+      /** Status */
+      status: string;
+      /** Stops */
+      stops: components["schemas"]["StopResponse"][];
+    };
+    /**
+     * LoadStatus
+     * @description Canonical lifecycle states for a freight load.
+     * @enum {string}
+     */
+    LoadStatus: "PLANNED" | "ACTIVE" | "COVERED" | "IN_TRANSIT" | "DELIVERED" | "COMPLETED";
+    /** PricingResponse */
+    PricingResponse: {
+      /** Blend Local Weight */
+      blend_local_weight: string | null;
+      /** Broader Tier */
+      broader_tier: string | null;
+      /** Currency */
+      currency: string;
+      /** Effective Evidence Count */
+      effective_evidence_count: string;
+      /** Historical Comparison Lower Usd */
+      historical_comparison_lower_usd: string | null;
+      /** Historical Comparison Upper Usd */
+      historical_comparison_upper_usd: string | null;
+      /** Local Tier */
+      local_tier: string | null;
+      /** Point Estimate Usd */
+      point_estimate_usd: string | null;
+      /** Raw Evidence Count */
+      raw_evidence_count: number;
+      /** Warnings */
+      warnings: string[];
+    };
+    /** RankedCarrierResponse */
+    RankedCarrierResponse: {
+      /** Adjusted Score */
+      adjusted_score: string;
+      /** Carrier Id */
+      carrier_id: string;
+      /** Carrier Name */
+      carrier_name: string;
+      /** Component Scores */
+      component_scores: {
+        [key: string]: string | null;
+      };
+      /** Confidence Score */
+      confidence_score: string;
+      /** Evidence By Component */
+      evidence_by_component: {
+        [key: string]: components["schemas"]["EvidenceLoadResponse"][];
+      };
+      /** Evidence Ids */
+      evidence_ids: string[];
+      /** Evidence Status */
+      evidence_status: string;
+      /** Explanation Bullets */
+      explanation_bullets: string[];
+      /** Rank */
+      rank: number;
+      /** Reason Codes */
+      reason_codes: string[];
+      /** Tie Group */
+      tie_group: number | null;
+    };
+    /** StopResponse */
+    StopResponse: {
+      /** City */
+      city: string;
+      /** Is Dropoff */
+      is_dropoff: boolean;
+      /** Is Pickup */
+      is_pickup: boolean;
+      /** Planned Date */
+      planned_date: string | null;
+      /** Postal Code */
+      postal_code: string;
+      /** Scheduled Start At */
+      scheduled_start_at: string | null;
+      /** Sequence */
+      sequence: number;
+      /** State */
+      state: string;
+    };
+    /** TenantResponse */
+    TenantResponse: {
+      /** Id */
+      id: string;
+      /** Name */
+      name: string;
+      /** Slug */
+      slug: string;
+      /** Source System */
+      source_system: string;
+    };
+    /** ValidationError */
+    ValidationError: {
+      /** Context */
+      ctx?: Record<string, never>;
+      /** Input */
+      input?: unknown;
+      /** Location */
+      loc: (string | number)[];
+      /** Message */
+      msg: string;
+      /** Error Type */
+      type: string;
+    };
+  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    list_loads_api_v1_loads_get: {
-        parameters: {
-            query?: {
-                status?: components["schemas"]["LoadStatus"];
-            };
-            header?: {
-                "x-tenant-id"?: string | null;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LoadResponse"][];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+  list_loads_api_v1_loads_get: {
+    parameters: {
+      query?: {
+        status?: components["schemas"]["LoadStatus"];
+      };
+      header?: {
+        "x-tenant-id"?: string | null;
+      };
+      path?: never;
+      cookie?: never;
     };
-    get_load_api_v1_loads__load_id__get: {
-        parameters: {
-            query?: never;
-            header?: {
-                "x-tenant-id"?: string | null;
-            };
-            path: {
-                load_id: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LoadResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
+        content: {
+          "application/json": components["schemas"]["LoadResponse"][];
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
     };
-    get_decision_api_v1_loads__load_id__decision_get: {
-        parameters: {
-            query?: never;
-            header?: {
-                "x-tenant-id"?: string | null;
-            };
-            path: {
-                load_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DecisionResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+  };
+  get_load_api_v1_loads__load_id__get: {
+    parameters: {
+      query?: never;
+      header?: {
+        "x-tenant-id"?: string | null;
+      };
+      path: {
+        load_id: string;
+      };
+      cookie?: never;
     };
-    list_tenants_api_v1_tenants_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TenantResponse"][];
-                };
-            };
+        content: {
+          "application/json": components["schemas"]["LoadResponse"];
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
     };
-    health_health_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HealthResponse"];
-                };
-            };
-        };
+  };
+  get_decision_api_v1_loads__load_id__decision_get: {
+    parameters: {
+      query?: never;
+      header?: {
+        "x-tenant-id"?: string | null;
+      };
+      path: {
+        load_id: string;
+      };
+      cookie?: never;
     };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["DecisionResponse"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  list_tenants_api_v1_tenants_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["TenantResponse"][];
+        };
+      };
+    };
+  };
+  health_health_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HealthResponse"];
+        };
+      };
+    };
+  };
+  ready_ready_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["HealthResponse"];
+        };
+      };
+    };
+  };
 }

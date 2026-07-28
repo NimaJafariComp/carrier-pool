@@ -7,7 +7,8 @@ from uuid import UUID
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query
 from pydantic import BaseModel
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, select, text
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from carrier_pool.db.models import (
@@ -151,6 +152,20 @@ def tenant_context(x_tenant_id: str | None = Header(default=None)) -> UUID:
 
 @app.get("/health", response_model=HealthResponse, tags=["health"])
 def health() -> HealthResponse:
+    return HealthResponse(status="ok")
+
+
+@app.get("/ready", response_model=HealthResponse, tags=["health"])
+def ready() -> HealthResponse:
+    """Report readiness only when the app-role database connection succeeds."""
+    engine = create_engine(os.environ["DATABASE_URL"])
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+    except SQLAlchemyError as error:
+        raise HTTPException(status_code=503, detail="Service unavailable.") from error
+    finally:
+        engine.dispose()
     return HealthResponse(status="ok")
 
 

@@ -5,7 +5,7 @@ FREIGHTFLOW_TENANT_ID ?= 11111111-1111-4111-8111-111111111111
 HAULDESK_TENANT_ID ?= 22222222-2222-4222-8222-222222222222
 BROKEROS_TENANT_ID ?= 33333333-3333-4333-8333-333333333333
 
-.PHONY: setup generate validate migrate seed-demo-tenants ingest decisions demo-reset demo correction-demo rebuild-projections backtest api-types api-types-check format format-check lint typecheck test-unit test-integration build db-up down check
+.PHONY: setup generate validate db-up migrate seed-demo-tenants ingest rebuild rebuild-projections decisions demo-reset reset demo correction-demo test test-unit test-integration e2e backtest api-types api-types-check format format-check lint typecheck build down check
 
 setup:
 	cd backend && uv sync --all-groups
@@ -34,13 +34,19 @@ demo-reset: db-up
 	docker compose --env-file .env.example exec -T db dropdb --if-exists --force --username=carrier_pool $(DEMO_DATABASE_NAME)
 	docker compose --env-file .env.example exec -T db createdb --username=carrier_pool $(DEMO_DATABASE_NAME)
 
+reset:
+	@echo "Resetting only the dedicated $(DEMO_DATABASE_NAME) database."
+	$(MAKE) demo-reset
+
 demo: demo-reset generate validate
 	cd backend && DATABASE_URL="$(DEMO_DATABASE_URL)" uv run alembic upgrade head
 	cd backend && DATABASE_URL="$(DEMO_DATABASE_URL)" uv run carrier-pool seed-demo-tenants
 	cd backend && DATABASE_URL="$(DEMO_DATABASE_URL)" uv run carrier-pool ingest-all --data-root ../data --freightflow-tenant-id "$(FREIGHTFLOW_TENANT_ID)" --hauldesk-tenant-id "$(HAULDESK_TENANT_ID)" --brokeros-tenant-id "$(BROKEROS_TENANT_ID)"
 	cd backend && DATABASE_URL="$(DEMO_DATABASE_URL)" uv run carrier-pool decide-active
 	APP_DATABASE_NAME="$(DEMO_DATABASE_NAME)" docker compose --env-file .env.example up --detach --build backend frontend
-	@echo "Carrier Pool demo: http://localhost:5173"
+	@echo "Carrier Pool UI:  http://localhost:5173"
+	@echo "Carrier Pool API: http://localhost:8000/docs"
+	@echo "Demo brokers: North Star Freight, Alamo Brokerage, Gulf Bridge Logistics"
 
 correction-demo: migrate
 	cd backend && DATABASE_URL="$(DATABASE_URL)" uv run pytest -q tests/ingestion/test_generated_corrections_integration.py
@@ -49,7 +55,9 @@ rebuild-projections:
 	test -n "$(TENANT_ID)"
 	cd backend && uv run carrier-pool rebuild-projections --tenant-id "$(TENANT_ID)"
 
-backtest: db-up
+rebuild: rebuild-projections
+
+backtest: decisions
 	cd backend && DATABASE_URL="$(DATABASE_URL)" uv run carrier-pool rate-backtest --artifacts-dir ../artifacts
 
 api-types:
@@ -82,12 +90,17 @@ test-unit:
 test-integration: db-up
 	cd backend && DATABASE_URL="$(DATABASE_URL)" uv run pytest tests/db/test_persistence_integration.py tests/db/test_rls_direct_sql_integration.py tests/ingestion/test_freightflow_persistence_integration.py tests/ingestion/test_hauldesk_persistence_integration.py tests/ingestion/test_brokeros_persistence_integration.py
 
+test: test-unit test-integration
+
+e2e:
+	cd frontend && pnpm e2e
+
 build:
 	cd backend && uv build
 	cd frontend && pnpm build
 
 db-up:
-	docker compose --env-file .env.example up --detach db
+	docker compose --env-file .env.example up --detach --wait db
 
 down:
 	docker compose --env-file .env.example down

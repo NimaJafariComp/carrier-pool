@@ -179,11 +179,7 @@ def test_source_adapters_return_database_free_canonical_contract(
     parsed: ParsedSync = adapter.parse_file(source_factory(), tenant)
     normalized: NormalizedSync = adapter.normalize(parsed, tenant)
     load = normalized.loads[0]
-    money = (
-        load.customer_rate
-        or load.carrier_rate
-        or normalized.source_financial_entries[0].amount
-    )
+    money = load.customer_rate or load.carrier_rate or normalized.source_financial_entries[0].amount
 
     assert normalized.metadata.tenant_id == tenant.tenant_id
     assert normalized.metadata.source_system is source_system

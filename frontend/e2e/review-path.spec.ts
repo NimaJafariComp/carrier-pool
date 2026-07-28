@@ -73,7 +73,7 @@ function decision(loadData: typeof exactLoad, sparse = false) {
       blend_local_weight: sparse ? "0.25" : "1",
       raw_evidence_count: sparse ? 2 : 6,
       effective_evidence_count: sparse ? "1.4" : "5.3",
-      warnings: sparse ? ["Sparse historical evidence."] : [],
+      warnings: sparse ? ["SPARSE_EVIDENCE", "BROADER_FALLBACK"] : [],
     },
     confidence: { level: sparse ? "LOW" : "HIGH", score: sparse ? "0.31" : "0.83", components: {} },
     ranked_carriers: [
@@ -169,15 +169,16 @@ test("reviews exact and sparse Day 11 decisions without tenant cache leakage", a
   const sparseDecision = page.getByRole("region", { name: "Plano, TX to Baytown, TX" });
   await expect(sparseDecision.getByText("Limited evidence", { exact: true })).toBeVisible();
   await expect(
-    sparseDecision.getByText("Regional lane matches, blended with metro corridor matches"),
+    sparseDecision.getByText("Regional lane, blended with metro corridor"),
   ).toBeVisible();
-  await expect(sparseDecision.getByText("Sparse historical evidence.")).toBeVisible();
   await expect(
     sparseDecision.getByText("Limited completed history pulls the score toward a neutral prior."),
   ).toBeVisible();
-  await sparseDecision.getByText("Why this is not high evidence", { exact: true }).click();
-  await expect(sparseDecision.getByText("Limited independent history.")).toBeVisible();
-  await expect(sparseDecision.getByText("Used broader lane evidence.")).toBeVisible();
+  await expect(
+    sparseDecision.getByText(
+      "Limited history — this estimate is based on a small set of this broker’s completed loads, so certainty is lower.",
+    ),
+  ).toBeVisible();
 });
 
 test("returns the same generic not-found response for cross-tenant and unknown load IDs", async ({

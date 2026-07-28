@@ -127,7 +127,9 @@ function comparableMatch(item: Decision["comparable_loads"][number]): {
   const sameDestination = destination !== null && destination !== undefined && destination < 0.5;
   const endpoint = (distance: number | null | undefined, place: string): string => {
     if (distance === null || distance === undefined) return `${place} unavailable`;
-    return distance < 0.5 ? `Same ${place.toLowerCase()}` : `${Math.round(distance)} mi ${place.toLowerCase()}`;
+    return distance < 0.5
+      ? `Same ${place.toLowerCase()}`
+      : `${Math.round(distance)} mi ${place.toLowerCase()}`;
   };
 
   return {
@@ -162,9 +164,7 @@ function pricingWarning(warning: string): string {
 function pricingWarnings(warnings: string[]): string[] {
   const hasSparseEvidence = warnings.includes("SPARSE_EVIDENCE");
   const visibleWarnings = hasSparseEvidence
-    ? warnings.filter(
-        (warning) => warning !== "SPARSE_EVIDENCE" && warning !== "BROADER_FALLBACK",
-      )
+    ? warnings.filter((warning) => warning !== "SPARSE_EVIDENCE" && warning !== "BROADER_FALLBACK")
     : warnings;
   return [
     ...(hasSparseEvidence
@@ -420,8 +420,8 @@ function DecisionDetail({ decision }: { decision: Decision }) {
         <div>
           <span>Historical evidence</span>
           <strong>
-            {tierDescription(decision).replace(" matches", "")} · {pricing.raw_evidence_count} completed
-            {" "}loads · {roundedEffectiveEvidence(pricing.effective_evidence_count)} effective
+            {tierDescription(decision).replace(" matches", "")} · {pricing.raw_evidence_count}{" "}
+            completed loads · {roundedEffectiveEvidence(pricing.effective_evidence_count)} effective
           </strong>
         </div>
       </div>
@@ -465,13 +465,17 @@ function DecisionDetail({ decision }: { decision: Decision }) {
                           {item.equipment && <span>{titleCase(item.equipment)}</span>}
                         </div>
                       </td>
-                      <td className="comparables__rate">{usd(item.carrier_rate_usd ?? null, "").trim()}</td>
+                      <td className="comparables__rate">
+                        {usd(item.carrier_rate_usd ?? null, "").trim()}
+                      </td>
                       <td className="comparables__match">
                         <strong>{match.tier}</strong>
                         <span>{match.endpoints}</span>
                       </td>
                       <td className="comparables__completed">
-                        {item.completed_observed_at ? formatDate(item.completed_observed_at) : "Date unavailable"}
+                        {item.completed_observed_at
+                          ? formatDate(item.completed_observed_at)
+                          : "Date unavailable"}
                       </td>
                     </tr>
                   );

@@ -153,9 +153,7 @@ class ComparableLoadRepository:
             tier = _tier(target, target_route, version, has_exact_equipment)
             if tier is not None:
                 buckets[tier].append(_evidence(target, target_route, version, tier, as_of))
-        return {
-            tier: tuple(sorted(buckets[tier], key=_evidence_sort_key)) for tier in LaneTier
-        }
+        return {tier: tuple(sorted(buckets[tier], key=_evidence_sort_key)) for tier in LaneTier}
 
 
 def _tier(

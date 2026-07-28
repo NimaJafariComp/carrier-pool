@@ -112,10 +112,7 @@
             "title": "Tier"
           }
         },
-        "required": [
-          "load_external_id",
-          "route"
-        ],
+        "required": ["load_external_id", "route"],
         "title": "ComparableLoadResponse",
         "type": "object"
       },
@@ -137,11 +134,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "level",
-          "score",
-          "components"
-        ],
+        "required": ["level", "score", "components"],
         "title": "ConfidenceResponse",
         "type": "object"
       },
@@ -288,10 +281,7 @@
             "title": "Tier"
           }
         },
-        "required": [
-          "load_external_id",
-          "route"
-        ],
+        "required": ["load_external_id", "route"],
         "title": "EvidenceLoadResponse",
         "type": "object"
       },
@@ -315,9 +305,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "status"
-        ],
+        "required": ["status"],
         "title": "HealthResponse",
         "type": "object"
       },
@@ -407,14 +395,7 @@
       },
       "LoadStatus": {
         "description": "Canonical lifecycle states for a freight load.",
-        "enum": [
-          "PLANNED",
-          "ACTIVE",
-          "COVERED",
-          "IN_TRANSIT",
-          "DELIVERED",
-          "COMPLETED"
-        ],
+        "enum": ["PLANNED", "ACTIVE", "COVERED", "IN_TRANSIT", "DELIVERED", "COMPLETED"],
         "title": "LoadStatus",
         "type": "string"
       },
@@ -702,12 +683,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "id",
-          "slug",
-          "name",
-          "source_system"
-        ],
+        "required": ["id", "slug", "name", "source_system"],
         "title": "TenantResponse",
         "type": "object"
       },
@@ -743,11 +719,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ],
+        "required": ["loc", "msg", "type"],
         "title": "ValidationError",
         "type": "object"
       }
@@ -817,9 +789,7 @@
           }
         },
         "summary": "List Loads",
-        "tags": [
-          "loads"
-        ]
+        "tags": ["loads"]
       }
     },
     "/api/v1/loads/{load_id}": {
@@ -877,9 +847,7 @@
           }
         },
         "summary": "Get Load",
-        "tags": [
-          "loads"
-        ]
+        "tags": ["loads"]
       }
     },
     "/api/v1/loads/{load_id}/decision": {
@@ -937,9 +905,7 @@
           }
         },
         "summary": "Get Decision",
-        "tags": [
-          "decisions"
-        ]
+        "tags": ["decisions"]
       }
     },
     "/api/v1/tenants": {
@@ -963,9 +929,7 @@
           }
         },
         "summary": "List Tenants",
-        "tags": [
-          "tenants"
-        ]
+        "tags": ["tenants"]
       }
     },
     "/health": {
@@ -984,9 +948,27 @@
           }
         },
         "summary": "Health",
-        "tags": [
-          "health"
-        ]
+        "tags": ["health"]
+      }
+    },
+    "/ready": {
+      "get": {
+        "description": "Report readiness only when the app-role database connection succeeds.",
+        "operationId": "ready_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Ready",
+        "tags": ["health"]
       }
     }
   }

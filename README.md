@@ -77,6 +77,12 @@ The `example_sync.jsonc` files are the schema documentation (comments included).
 
 ## Development
 
+### Prerequisites
+
+- Docker Desktop or Docker Engine with the Compose plugin running.
+- Python 3.13 and [`uv`](https://docs.astral.sh/uv/).
+- Node.js 22 and [`pnpm` 11.3.0](https://pnpm.io/installation).
+
 Run commands from repository root:
 
 ```bash
@@ -90,6 +96,25 @@ make down       # stop local Compose services
 Use `make build`, `make lint`, `make typecheck`, or `make test-unit` to run one
 verification category. Copy `.env.example` to `.env` only when overriding the safe
 local defaults.
+
+### Command reference
+
+| Command | Purpose |
+| --- | --- |
+| `make setup` | Install locked backend and frontend dependencies. |
+| `make generate` / `make validate` | Deterministically generate and validate source sync files. |
+| `make db-up` / `make migrate` | Start PostgreSQL and apply migrations to the normal local database. |
+| `make ingest` / `make decisions` | Ingest the generated files chronologically, then persist Day 11 decisions. |
+| `make rebuild TENANT_ID=<uuid>` | Rebuild one tenant's current projections from immutable facts. |
+| `make backtest` | Prepare deterministic local data and write rate-backtest artifacts. |
+| `make test` / `make test-unit` / `make test-integration` / `make e2e` | Run all automated tests, focused unit tests, database integration tests, or browser tests. |
+| `make api-types` | Regenerate frontend types from the FastAPI OpenAPI document. |
+| `make check` | Run formatting, lint, type checks, unit tests, and production builds. |
+| `make reset` | Explicitly recreate **only** the dedicated `carrier_pool_demo` database. |
+| `make demo` | Build and start the complete deterministic review demo. |
+
+`make reset` never drops the normal `carrier_pool` database or any integration-test
+database; it has a fixed-name guard before issuing the database commands.
 
 ### Review demo
 

@@ -3,25 +3,36 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.13"
+  NODE_VERSION: "22"
+  DATABASE_URL: postgresql+psycopg://carrier_pool:carrier_pool@localhost:5432/carrier_pool
+  APP_DATABASE_URL: postgresql+psycopg://carrier_pool_app:carrier_pool_app@localhost:5432/carrier_pool
+
 jobs:
-  backend:
-    name: Backend
+  backend-quality:
+    name: Backend quality and unit tests
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: backend
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Set up uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
@@ -41,18 +52,18 @@ jobs:
       - name: Type check
         run: uv run pyright
 
-      - name: Test
+      - name: Run backend unit and transport-contract tests
         run: uv run pytest
 
-  frontend:
-    name: Frontend
+  frontend-contracts:
+    name: Frontend quality and API contract
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: frontend
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v6
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v6
@@ -60,22 +71,29 @@ jobs:
           version: 11.3.0
 
       - name: Set up Node
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v6
         with:
-          node-version: "22"
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
 
-      - name: Install locked dependencies
+      - name: Install locked frontend dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Set up Python for OpenAPI export
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Set up uv for OpenAPI export
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Install locked backend dependencies for OpenAPI export
+        working-directory: backend
+        run: uv sync --frozen --no-dev
 
       - name: Verify generated API types are current
         working-directory: .
@@ -87,8 +105,124 @@ jobs:
       - name: Type check
         run: pnpm typecheck
 
-      - name: Test
+      - name: Unit tests
         run: pnpm test
 
-      - name: Build
+      - name: Production build
         run: pnpm build
+
+  database-and-data:
+    name: PostgreSQL integration, RLS, and data smoke
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: carrier_pool
+          POSTGRES_USER: carrier_pool
+          POSTGRES_PASSWORD: carrier_pool
+        options: >-
+          --health-cmd "pg_isready -U carrier_pool -d carrier_pool"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+        ports:
+          - 5432:5432
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+
+      - name: Install locked dependencies
+        run: uv sync --all-groups --frozen
+
+      - name: Confirm PostgreSQL is reachable
+        run: |
+          uv run python - <<'PY'
+          import os
+          from sqlalchemy import create_engine, text
+
+          engine = create_engine(os.environ["DATABASE_URL"])
+          with engine.connect() as connection:
+              connection.execute(text("SELECT 1"))
+          engine.dispose()
+          PY
+
+      - name: Apply migrations
+        run: uv run alembic upgrade head
+
+      - name: Run PostgreSQL integration and RLS tests
+        run: uv run pytest
+
+      - name: Generate and validate deterministic source data
+        run: |
+          uv run carrier-pool generate --data-root ../data
+          uv run carrier-pool validate-data --data-root ../data
+
+      - name: Ingest chronologically and persist Day 11 decisions
+        run: |
+          uv run carrier-pool seed-demo-tenants
+          uv run carrier-pool ingest-all --data-root ../data --freightflow-tenant-id 11111111-1111-4111-8111-111111111111 --hauldesk-tenant-id 22222222-2222-4222-8222-222222222222 --brokeros-tenant-id 33333333-3333-4333-8333-333333333333
+          uv run carrier-pool decide-active
+
+      - name: Upload generated diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: database-and-data-diagnostics
+          path: artifacts/
+          if-no-files-found: ignore
+
+  playwright:
+    name: Playwright review path
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 11.3.0
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Install locked frontend dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium
+        working-directory: frontend
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run browser review path
+        working-directory: frontend
+        run: pnpm e2e
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            frontend/playwright-report/
+            frontend/test-results/
+          if-no-files-found: ignore

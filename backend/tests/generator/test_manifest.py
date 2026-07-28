@@ -19,9 +19,7 @@ def test_manifest_covers_required_scenarios_with_valid_files_and_entities(tmp_pa
     assert len(manifest["scenarios"]) == len(REQUIRED_SCENARIO_IDS)
     assert len(manifest["ranking_holdouts"]) >= 24
     assert {"RICH", "SPARSE", "CLOSE_SCORE_TIE"} <= {
-        tag
-        for holdout in manifest["ranking_holdouts"]
-        for tag in holdout["coverage_tags"]
+        tag for holdout in manifest["ranking_holdouts"] for tag in holdout["coverage_tags"]
     }
     assert all(
         holdout["source_files"]

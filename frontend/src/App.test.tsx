@@ -560,9 +560,7 @@ describe("App", () => {
         "Limited history — this estimate is based on a small set of this broker’s completed loads, so certainty is lower.",
       ),
     ).toBeInTheDocument();
-    expect(
-      screen.queryByText(/few close route matches were available/i),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/few close route matches were available/i)).not.toBeInTheDocument();
     expect(
       screen.getByText("No historical delivery-to-pickup distance is available for this carrier."),
     ).toBeInTheDocument();

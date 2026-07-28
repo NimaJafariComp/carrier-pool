@@ -44,11 +44,27 @@ def test_distance_equipment_evidence_is_not_described_as_directional() -> None:
         "carrier-1",
         (
             ComparableLoadEvidence(
-                uuid4(), "history-1", version_id, None, LaneTier.DISTANCE_EQUIPMENT,
-                None, None, None, 1, (str(version_id),),
+                uuid4(),
+                "history-1",
+                version_id,
+                None,
+                LaneTier.DISTANCE_EQUIPMENT,
+                None,
+                None,
+                None,
+                1,
+                (str(version_id),),
             ),
         ),
-        1, 1, None, None, None, None, None, (str(version_id),), False,
+        1,
+        1,
+        None,
+        None,
+        None,
+        None,
+        None,
+        (str(version_id),),
+        False,
     )
 
     explanation = explain_rankings(CarrierHistoricalFitScorer().score((feature,)), (feature,))[0]

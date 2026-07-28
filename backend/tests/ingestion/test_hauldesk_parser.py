@@ -144,9 +144,7 @@ def test_hauldesk_known_prior_carrier_does_not_warn() -> None:
     ("section", "field", "value"),
     [("loads", "load_num", "HD-1"), ("carriers", "carrier_id", 1), ("rates", "rate_id", 1)],
 )
-def test_hauldesk_rejects_duplicate_stable_ids(
-    section: str, field: str, value: str | int
-) -> None:
+def test_hauldesk_rejects_duplicate_stable_ids(section: str, field: str, value: str | int) -> None:
     payload = {
         "synced_at": "2026-07-06 06:00:00",
         "loads": [],

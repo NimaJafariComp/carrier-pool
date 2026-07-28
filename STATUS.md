@@ -401,20 +401,75 @@ acceptance evidence has not yet been recorded.
   rate, and correction versions before an earlier cutoff and proves they cannot enter
   historical comparables, estimates, rankings, persisted evidence, or backtests.
 
-### Phase 13 gate — Complete
-
-- Automated API/service, direct-SQL RLS, prediction-invariance, generated-correction,
+  - **Phase 13 gate — Complete** Automated API/service, direct-SQL RLS, prediction-invariance, generated-correction,
   and temporal-leakage integration coverage passes together. It proves tenant-local
   present state and historical reconstruction remain isolated and correction-safe.
 
-## Phases 14–16 — Not started
+## Phases 14–16 — In progress
 
-- Phase 11: persisted decisions and complete API.
-- Phase 14: reproducibility, operations, and CI completion.
+- **Phase 14, Task 14.1 complete:** backend now uses a dependency-builder/runtime
+  Dockerfile and both final application images run non-root. Compose has explicit
+  database, migration, backend, frontend, and optional `initialize` services;
+  backend readiness verifies a live app-role database connection; frontend/backend
+  wait on healthy dependencies; and `initialize` mounts generated source data
+  read-only, validates it, ingests it, and persists Day 11 decisions.
+- **Phase 14, Task 14.2 complete:** the root Makefile now exposes the complete
+  documented repository command surface, including explicit `test`, `e2e`,
+  `rebuild`, and guarded `reset` targets. `make demo` deterministically recreates
+  the dedicated demo database, validates/ingests source syncs chronologically,
+  persists Day 11 decisions, builds and starts the API/UI, and prints both URLs and
+  the three demo brokers. README contains the command reference and reset boundary.
+- **Phase 14, Task 14.3 complete:** GitHub Actions CI now has explicit backend,
+  frontend/OpenAPI, PostgreSQL/data-smoke, and Playwright jobs. Every job installs
+  from the uv or pnpm lockfile; PostgreSQL is health-checked before migrations;
+  CI runs lint/type/unit/integration/RLS checks, deterministic generation and
+  validation, chronological ingestion, Day 11 decisions, generated-type freshness,
+  and browser review coverage. Failure-only database and Playwright artifacts are
+  uploaded where available.
+- **Phase 14, Task 14.4 complete:** a clean, disposable committed snapshot with
+  an empty Compose volume was evaluated using README commands only. The first run
+  exposed a database-readiness race in `make demo` and missing tool prerequisites;
+  `db-up` now waits for the Compose database health check, and README names Docker
+  Compose, Python/uv, and Node/pnpm requirements. The repaired snapshot completed
+  `make setup`, `make demo`, `make check`, and `make backtest`, and live API
+  inspection confirmed both a rich and a sparse Day 11 decision.
+- **Phase 14 gate — Complete.** A clean environment reaches the UI, ingests data,
+  computes decisions, runs checks, and writes backtest artifacts with documented
+  commands only.
 - Phase 15: documentation and review preparation.
 - Phase 16: optional shared carrier pool.
 
 ## Latest verification — 2026-07-28
+
+- Phase 14.2 repository commands: Make dry-runs confirm required dependency order
+  for `reset`, `demo`, `rebuild`, `test`, `e2e`, `backtest`, `api-types`, and
+  `check`. Backend/unit and frontend tests: `196 passed, 26 skipped`; database
+  integration target: `7 passed`; Playwright: `3 passed`; focused API tests:
+  `6 passed`; Make/OpenAPI generation and diff whitespace checks pass.
+- Phase 14.3 CI: `actionlint` and Prettier validate the workflow. `make check`
+  passes after applying the repository formatters; Playwright passes (`3`); and the
+  local equivalent of the PostgreSQL CI job passes migrations plus all `222` backend
+  tests (including RLS), deterministic generation/validation of `123` files,
+  chronological ingestion, and `3` persisted Day 11 decisions.
+- Phase 14 skipped-test audit: all `26` tests that skip only when `DATABASE_URL`
+  is absent were run against PostgreSQL with the separate non-owner app role and
+  passed. This covers persistence, direct-SQL RLS, temporal leakage, comparable
+  retrieval, source persistence/failure/correction/rebuild behavior, generated-data
+  ingestion smoke, precedence, and tenant-safe API contracts.
+- Phase 14.4 clean-clone rehearsal: an initial empty-volume `make demo` failed
+  because `dropdb` ran before PostgreSQL accepted connections. After changing
+  `db-up` to Compose `--wait` and documenting required local tools, a fresh clean
+  snapshot passed `make setup`, `make demo`, `make check`, and `make backtest`.
+  It produced all `123` source files, three persisted Day 11 decisions, and the
+  backtest artifacts. API inspection verified rich FreightFlow load `888509`
+  (`NEAR_EXACT`, 5 raw / 4.46 effective observations, High) and sparse HaulDesk
+  load `HD-9001` (broader fallback, 6 raw / 3.26 effective observations, Medium).
+- Phase 14.1 container hardening: Compose configuration and clean image builds pass.
+  A separate `carrier-pool-phase14` project with an empty named volume completed
+  migrations, reached healthy DB/backend/frontend services, returned `/ready` and the
+  UI HTML, then ran the optional read-only initializer: `123` sync files validated and
+  ingested, with `3` Day 11 decisions created. The isolated project and its volume
+  were removed afterward. Final images run as `app` UID `999` and `nginx` UID `101`.
 
 - Phase 13.1 tenant-boundary audit: focused Ruff and Pyright pass. Tenant-header,
   PostgreSQL API-contract, and direct-SQL RLS coverage: `7 passed`. The new

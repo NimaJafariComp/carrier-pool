@@ -461,7 +461,7 @@ acceptance evidence has not yet been recorded.
   decisions, rebuild parity, and historical `as_of` cutoffs. The demo retains
   rich and sparse Day 11 examples without claiming production accuracy.
 - **Most recent local checks:** `make check`, `make api-types-check`,
-  database-enabled backend tests (228 passed), generated-data validation,
+  database-enabled backend tests (229 passed), generated-data validation,
   chronological ingestion/decision persistence, and Playwright (4 passed).
   The GitHub workflow runs equivalent backend, PostgreSQL/RLS/data-smoke,
   frontend/OpenAPI, and browser-review jobs.
@@ -469,6 +469,7 @@ acceptance evidence has not yet been recorded.
   source-appropriate schedule wording, and tenant-safe comparable-load labels are
   available in the demo. The optional geography view is bundled/offline and
   explicitly avoids live routing, traffic, or truck-location claims.
-- **Remaining demo-data follow-up:** broaden each broker's authored carrier history
-  so strong, moderate, sparse, stale, and unsupported cases are all visible without
-  relaxing ranking, privacy, or temporal safeguards.
+- **Demo-history coverage:** authored completed work now yields 5, 8, and 8 Day 11
+  candidates for FreightFlow, HaulDesk, and BrokerOS, with 2, 2, and 3 supported
+  call-order candidates. The roster remains intentionally mixed with sparse and
+  unsupported histories; ranking safeguards were not relaxed.

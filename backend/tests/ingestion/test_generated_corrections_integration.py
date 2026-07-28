@@ -125,6 +125,18 @@ def _external_load_id_with_carrier_rate(sync: DiscoveredSync, amount: Decimal) -
     raise AssertionError("HaulDesk corrections are append-only ledger rows.")
 
 
+def _hauldesk_load_id_with_pay_rate(sync: DiscoveredSync, amount: Decimal) -> str:
+    """Select the ledger row's load, not the first changed snapshot in its sync file."""
+    payload = json.loads(sync.path.read_text())
+    expected = float(amount)
+    rate = next(
+        item
+        for item in payload["rates"]
+        if item["side"] == "pay" and item["amount_usd"] == expected
+    )
+    return str(rate["load_num"])
+
+
 def _load(session: Session, tenant_id: UUID, external_id: str) -> Load:
     set_tenant_context(session, tenant_id)
     load = session.scalar(
@@ -217,7 +229,11 @@ def test_generated_replacement_and_ledger_corrections_update_current_state_once(
                 if sync.binding.source_system is SourceSystem.HAULDESK
                 and '"amount_usd": 35' in sync.path.read_text()
             )
-            hauldesk_load = _load(session, hauldesk_tenant, _external_load_id(hauldesk_adjustment))
+            hauldesk_load = _load(
+                session,
+                hauldesk_tenant,
+                _hauldesk_load_id_with_pay_rate(hauldesk_adjustment, Decimal("35")),
+            )
             entries = tuple(
                 session.scalars(
                     select(SourceRateEntry)

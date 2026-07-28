@@ -121,6 +121,17 @@
       },
       "LoadResponse": {
         "properties": {
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
           "distance_miles": {
             "anyOf": [
               {
@@ -142,6 +153,17 @@
               }
             ],
             "title": "Equipment"
+          },
+          "expected_rate_usd": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Rate Usd"
           },
           "external_id": {
             "title": "External Id",
@@ -174,6 +196,8 @@
           "equipment",
           "distance_miles",
           "observed_at",
+          "expected_rate_usd",
+          "confidence",
           "stops"
         ],
         "title": "LoadResponse",
@@ -378,6 +402,17 @@
             "title": "Postal Code",
             "type": "string"
           },
+          "scheduled_start_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scheduled Start At"
+          },
           "sequence": {
             "title": "Sequence",
             "type": "integer"
@@ -393,7 +428,8 @@
           "is_dropoff",
           "city",
           "state",
-          "postal_code"
+          "postal_code",
+          "scheduled_start_at"
         ],
         "title": "StopResponse",
         "type": "object"

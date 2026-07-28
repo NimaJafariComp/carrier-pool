@@ -299,10 +299,42 @@ acceptance evidence has not yet been recorded.
   identity reuses that immutable run, while later source observations do not mutate
   it. Generated OpenAPI schema/types are fresh and API requests remain tenant-safe.
 
-## Phases 12–16 — Not started
+## Phase 12 — Finish frontend — Tasks 12.1–12.4 complete
+
+- Dark, accessible fictional-broker selector fetches only safe tenant fields,
+  persists only the approved tenant ID in browser storage, and sends that ID only
+  through the existing `X-Tenant-ID` trusted context header.
+- TanStack Query scopes active-load data by tenant and invalidates all load queries
+  before switching tenants, preventing stale tenant data from being displayed.
+- The active-load desk shows route, equipment, pickup date, distance, persisted
+  expected rate when available, confidence, and status, with loading, empty, and
+  error states. The list endpoint now supplies stop timing and persisted current
+  decision summaries without implicitly recomputing decisions.
+- Component tests cover rendered summaries, tenant switching/storage, cache
+  invalidation, loading, empty, and error states.
+- **Task 12.2 complete:** selecting a load retrieves its tenant-scoped persisted
+  decision and displays canonical route/timing, expected carrier rate, historical
+  comparison range, confidence, retrieval/fallback tier, raw/effective evidence,
+  comparable completed-load summaries, and explicit warnings. `as_of` and model
+  versions remain in a secondary native disclosure. The UI never calls the range a
+  prediction interval or recomputes a decision. Component tests cover high,
+  medium, low, and insufficient-data states.
+- **Task 12.3 complete:** ranked carrier cards render persisted rank order,
+  adjusted historical-fit score, derived confidence, component breakdown,
+  fixed evidence bullets, and expandable tenant-local evidence IDs. Historical
+  delivery distance/time wording appears only when the persisted bullet supplies
+  it; missing deadhead and sparse-history conditions render explicit warnings.
+  The surrounding language states historical-fit evidence only and never claims
+  availability, acceptance, or reliability.
+- **Task 12.4 complete:** Playwright starts an isolated Vite review server and
+  uses the deterministic `SC-24` exact/rich and `SC-26` sparse Day 11 scenario
+  identities. Semantic browser flows verify rate/range/confidence/top evidence,
+  sparse fallback/low-confidence messaging, tenant-switch cache isolation, and
+  identical generic `404` responses for cross-tenant and unknown load IDs.
+
+## Phases 13–16 — Not started
 
 - Phase 11: persisted decisions and complete API.
-- Phase 12: final frontend.
 - Phase 13: tenancy/correction/historical hardening.
 - Phase 14: reproducibility, operations, and CI completion.
 - Phase 15: documentation and review preparation.
@@ -326,5 +358,19 @@ acceptance evidence has not yet been recorded.
   full backend Pyright: `0 errors, 0 warnings, 0 informations`.
 - Phase 11 gate suite: `10 passed`; OpenAPI freshness, frontend typecheck/tests/lint,
   production build, and `git diff --check`: pass.
+- Phase 12.1 frontend components: `5 passed`; frontend typecheck, lint, and
+  production build pass. Focused API contracts: `5 passed`; Ruff passes.
+- Phase 12.2 frontend components: `9 passed`; frontend typecheck, lint, and
+  production build pass; `git diff --check` passes.
+- Phase 12.3 frontend components: `11 passed`; frontend typecheck, lint, and
+  production build pass; `git diff --check` passes.
+- Phase 12.4 browser review path: `2 passed` in Chromium; frontend component and
+  contract suite (`11 passed`), typecheck, lint, production build, and
+  `git diff --check` pass.
+- Phase 12 accessibility sign-off fixes: carrier rank is visible text rather than
+  an aria-label on a non-semantic container, and long monospace evidence IDs wrap
+  safely on narrow cards. Focused component tests (`10 passed`), frontend
+  typecheck, lint, production build, browser review path (`2 passed`), and
+  `git diff --check` pass.
 - Prior baseline verification: `make test-integration`: `7 passed`; full backend
   suite with `DATABASE_URL`: `182 passed` (before Phase 10 additions).

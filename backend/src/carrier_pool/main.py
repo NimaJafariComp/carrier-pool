@@ -33,6 +33,7 @@ class StopResponse(BaseModel):
     city: str
     state: str
     postal_code: str
+    scheduled_start_at: str | None
 
 
 class LoadResponse(BaseModel):
@@ -42,6 +43,8 @@ class LoadResponse(BaseModel):
     equipment: str | None
     distance_miles: str | None
     observed_at: str
+    expected_rate_usd: str | None
+    confidence: str | None
     stops: list[StopResponse]
 
 
@@ -242,6 +245,7 @@ def _load_response(session: Session, tenant_id: UUID, load: Load) -> LoadRespons
         .where(Stop.load_id == load.id, Stop.tenant_id == tenant_id)
         .order_by(Stop.sequence)
     ).all()
+    summary = _load_decision_summary(session, tenant_id, load)
     return LoadResponse(
         id=str(load.id),
         external_id=load.external_id,
@@ -249,6 +253,8 @@ def _load_response(session: Session, tenant_id: UUID, load: Load) -> LoadRespons
         equipment=None if load.equipment is None else load.equipment.value,
         distance_miles=None if load.distance_miles is None else str(load.distance_miles),
         observed_at=load.observed_at.isoformat(),
+        expected_rate_usd=summary[0],
+        confidence=summary[1],
         stops=[
             StopResponse(
                 sequence=stop.sequence,
@@ -257,9 +263,37 @@ def _load_response(session: Session, tenant_id: UUID, load: Load) -> LoadRespons
                 city=stop.city,
                 state=stop.state,
                 postal_code=stop.postal_code,
+                scheduled_start_at=None
+                if stop.scheduled_start_at is None
+                else stop.scheduled_start_at.isoformat(),
             )
             for stop in stops
         ],
+    )
+
+
+def _load_decision_summary(
+    session: Session, tenant_id: UUID, load: Load
+) -> tuple[str | None, str | None]:
+    """Expose a persisted current-input pricing summary without recomputing it."""
+    if load.current_version_id is None:
+        return None, None
+    decision = session.scalar(
+        select(DecisionRun)
+        .where(
+            DecisionRun.tenant_id == tenant_id,
+            DecisionRun.load_id == load.id,
+            DecisionRun.input_version_id == load.current_version_id,
+        )
+        .order_by(DecisionRun.created_at.desc())
+    )
+    if decision is None:
+        return None, None
+    rate = decision.price_estimate.get("point_estimate_usd")
+    confidence = decision.confidence.get("level")
+    return (
+        rate if isinstance(rate, str) else None,
+        confidence if isinstance(confidence, str) else None,
     )
 
 

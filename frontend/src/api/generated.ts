@@ -152,10 +152,14 @@ export interface components {
         };
         /** LoadResponse */
         LoadResponse: {
+            /** Confidence */
+            confidence: string | null;
             /** Distance Miles */
             distance_miles: string | null;
             /** Equipment */
             equipment: string | null;
+            /** Expected Rate Usd */
+            expected_rate_usd: string | null;
             /** External Id */
             external_id: string;
             /** Id */
@@ -229,6 +233,8 @@ export interface components {
             is_pickup: boolean;
             /** Postal Code */
             postal_code: string;
+            /** Scheduled Start At */
+            scheduled_start_at: string | null;
             /** Sequence */
             sequence: number;
             /** State */

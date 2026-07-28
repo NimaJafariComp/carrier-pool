@@ -9,6 +9,8 @@ describe("generated API contract", () => {
       status: "ACTIVE",
       equipment: "DRY_VAN",
       distance_miles: "240",
+      expected_rate_usd: null,
+      confidence: null,
       observed_at: "2026-07-11T06:00:00+00:00",
       stops: [],
     };

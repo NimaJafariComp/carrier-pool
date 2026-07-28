@@ -56,6 +56,7 @@ def test_load_api_returns_own_tenant_current_load() -> None:
         status=SimpleNamespace(value="ACTIVE"),
         equipment=None,
         distance_miles=None,
+        current_version_id=None,
         observed_at=datetime(2026, 7, 11, tzinfo=UTC),
     )
     app.dependency_overrides[database_session] = lambda: FakeSession(load)
